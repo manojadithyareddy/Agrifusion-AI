@@ -92,8 +92,22 @@ app.include_router(user.router)
 
 
 # --- Health & Root ---
-@app.get("/", tags=["Root"])
+@app.get("/api", tags=["Root"])
 async def root():
+    return {
+        "name": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "status": "running",
+    }
+
+
+@app.get("/", tags=["Root"], include_in_schema=False)
+async def frontend_root():
+    from pathlib import Path
+    from fastapi.responses import HTMLResponse
+    root_dist_index = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist" / "index.html"
+    if root_dist_index.exists():
+        return HTMLResponse(content=root_dist_index.read_text(encoding="utf-8"))
     return {
         "name": settings.APP_NAME,
         "version": settings.APP_VERSION,

@@ -43,3 +43,4 @@ pypdf==4.3.1
 gunicorn==22.0.0
 langchain-text-splitters==0.2.2
 aiosqlite==0.20.0
+aiofiles>=23.2.0

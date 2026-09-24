@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useUndoRedo } from '../hooks/useUndoRedo';
 import {
@@ -15,10 +15,6 @@ import {
   DEFAULT_GEMINI_KEY,
 } from '../utils/geminiVisionEngine';
 
-// Subcomponents for collapsible technical depth
-import FramerCanvas from '../components/assistant/FramerCanvas';
-import FramerPipelineFlow from '../components/assistant/FramerPipelineFlow';
-import JsonSchemaViewer from '../components/assistant/JsonSchemaViewer';
 
 interface ChatMessage {
   id: string;
@@ -98,8 +94,6 @@ export default function Assistant() {
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
-  // Active expanded technical tool per message (messageId -> 'pipeline' | 'yolo' | 'json' | null)
-  const [expandedTool, setExpandedTool] = useState<Record<string, 'pipeline' | 'yolo' | 'json' | null>>({});
 
   // Language & TTS
   const [selectedLanguage, setSelectedLanguage] = useState<string>(
@@ -451,13 +445,6 @@ export default function Assistant() {
     setAssistantState(initialAssistantState, 'Reset Chat to Initial State');
   };
 
-  // Toggle tool inside message
-  const toggleTool = (messageId: string, tool: 'pipeline' | 'yolo' | 'json') => {
-    setExpandedTool((prev) => ({
-      ...prev,
-      [messageId]: prev[messageId] === tool ? null : tool,
-    }));
-  };
 
   return (
     <div
@@ -774,7 +761,6 @@ export default function Assistant() {
           {assistantState.messages.map((msg) => {
             const isUser = msg.sender === 'user';
             const plainDiag = msg.analysis ? getPlainLanguageDiagnosis(msg.analysis) : null;
-            const currentExpTool = expandedTool[msg.id];
 
             return (
               <div
@@ -1169,8 +1155,6 @@ export default function Assistant() {
                             ))}
                           </ul>
                         </div>
-                      </div>
-
                       </div>
                     </div>
                   )}
