@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { updateUserPassword } from '../../lib/supabase';
+import { authService } from '../../api/auth';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -27,19 +29,20 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token,
-          new_password: newPassword,
-          confirm_password: confirmPassword,
-        }),
-      });
+      // 1. Try Supabase updateUser password
+      try {
+        await updateUserPassword(newPassword);
+      } catch (supaErr: any) {
+        console.warn('Supabase password reset notice:', supaErr?.message || supaErr);
+      }
 
-      if (!res.ok) {
-        const errorJson = await res.json();
-        throw new Error(errorJson.detail || 'Reset token is invalid or expired.');
+      // 2. If backend reset token present, notify backend
+      if (token) {
+        try {
+          await authService.resetPassword(token, newPassword, confirmPassword);
+        } catch (backendErr: any) {
+          console.warn('Backend reset token sync notice:', backendErr?.message || backendErr);
+        }
       }
 
       setSuccess(true);

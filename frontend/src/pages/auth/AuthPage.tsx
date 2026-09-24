@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { sendPasswordReset } from '../../lib/supabase';
 
 interface AuthPageProps {
   initialMode?: 'signin' | 'signup';
@@ -63,7 +64,12 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
       const { role } = await login({ email, password, remember_me: rememberMe });
       handleRoleRedirect(role);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Incorrect email or password. Please verify your credentials.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('unreachable')) {
+        setErrorMsg('Authentication server is offline. Please use the 1-Click Demo accounts below.');
+      } else {
+        setErrorMsg(msg || 'Incorrect email or password. Please verify your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,7 +115,12 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
       });
       handleRoleRedirect(role);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Registration failed. An account with this email may already exist.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('unreachable')) {
+        setErrorMsg('Registration service is currently offline. You can test immediately using the 1-Click Demo accounts.');
+      } else {
+        setErrorMsg(msg || 'Registration failed. An account with this email may already exist.');
+      }
     } finally {
       setLoading(false);
     }
@@ -120,13 +131,7 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
     setErrorMsg(null);
     setLoading(true);
     try {
-      // Simulate Google identity modal or connect via Google API
-      const googleProfile = {
-        email: mode === 'signup' && email.includes('@') ? email : 'manoj.farmer@gmail.com',
-        name: mode === 'signup' && fullName ? fullName : 'Manoj Kumar',
-        profile_image: 'https://api.dicebear.com/7.x/initials/svg?seed=ManojKumar',
-      };
-      const { role } = await loginWithGoogle(googleProfile);
+      const { role } = await loginWithGoogle();
       handleRoleRedirect(role);
     } catch (err: any) {
       setErrorMsg(err.message || 'Google authentication could not be completed.');
@@ -155,16 +160,14 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
     if (!forgotEmail) return;
     setForgotLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-      const data = await res.json();
-      setForgotResult(data);
-    } catch {
+      await sendPasswordReset(forgotEmail);
       setForgotResult({
-        message: 'Password reset instructions dispatched to your email address.',
+        message: 'Password reset link dispatched to your email address.',
+        reset_token: 'supabase-dispatched',
+      });
+    } catch (err: any) {
+      setForgotResult({
+        message: err.message || 'Password reset instructions dispatched to your email address.',
         reset_token: 'demo-token-12345',
       });
     } finally {

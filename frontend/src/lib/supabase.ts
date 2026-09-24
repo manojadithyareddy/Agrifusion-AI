@@ -72,10 +72,23 @@ export async function signInWithEmail(email: string, password: string) {
 /**
  * Register a new user with email and password via Supabase Auth
  */
-export async function registerWithEmail(email: string, password: string) {
+export async function registerWithEmail(
+  email: string,
+  password: string,
+  userData?: { name?: string; role?: string; phone?: string }
+) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: userData
+      ? {
+          data: {
+            full_name: userData.name,
+            role: userData.role || 'USER',
+            phone: userData.phone,
+          },
+        }
+      : undefined,
   });
 
   if (error) {
@@ -96,6 +109,21 @@ export async function sendPasswordReset(email: string) {
   if (error) {
     throw error;
   }
+}
+
+/**
+ * Update authenticated user's password in Supabase
+ */
+export async function updateUserPassword(newPassword: string) {
+  const { data, error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data.user;
 }
 
 /**

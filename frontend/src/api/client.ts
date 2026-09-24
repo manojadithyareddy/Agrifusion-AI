@@ -98,8 +98,16 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     }
 
     return (await response.json()) as T;
-  } catch (error) {
-    console.error(`API Error on ${endpoint}:`, error);
+  } catch (error: any) {
+    console.warn(`API Error on ${endpoint}:`, error);
+    if (
+      error?.name === 'TypeError' &&
+      (error?.message === 'Failed to fetch' ||
+        error?.message?.toLowerCase().includes('fetch') ||
+        error?.message?.toLowerCase().includes('networkerror'))
+    ) {
+      throw new Error('AgriFusion server is unreachable. You can continue with Demo Mode or check your connection.');
+    }
     throw error;
   }
 }
@@ -123,28 +131,40 @@ export const api = {
     }
     const token = getStoredToken();
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      body: formData,
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-    if (response.status === 401) {
-      setStoredAuth(null, null);
-      window.dispatchEvent(new CustomEvent('agrifusion_auth_expired'));
-    }
-
-    if (!response.ok) {
-      let errDetail = `Upload failed with status ${response.status}`;
-      try {
-        const errorJson = await response.json();
-        if (errorJson.detail) errDetail = errorJson.detail;
-      } catch {
-        // fallback
+      if (response.status === 401) {
+        setStoredAuth(null, null);
+        window.dispatchEvent(new CustomEvent('agrifusion_auth_expired'));
       }
-      throw new Error(errDetail);
-    }
 
-    return (await response.json()) as T;
+      if (!response.ok) {
+        let errDetail = `Upload failed with status ${response.status}`;
+        try {
+          const errorJson = await response.json();
+          if (errorJson.detail) errDetail = errorJson.detail;
+        } catch {
+          // fallback
+        }
+        throw new Error(errDetail);
+      }
+
+      return (await response.json()) as T;
+    } catch (error: any) {
+      if (
+        error?.name === 'TypeError' &&
+        (error?.message === 'Failed to fetch' ||
+          error?.message?.toLowerCase().includes('fetch') ||
+          error?.message?.toLowerCase().includes('networkerror'))
+      ) {
+        throw new Error('Server connection offline. Please verify backend service.');
+      }
+      throw error;
+    }
   },
 };
