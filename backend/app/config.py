@@ -17,9 +17,9 @@ class Settings(BaseSettings):
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
     
-    # Firebase
-    FIREBASE_PROJECT_ID: Optional[str] = None
-    FIREBASE_CREDENTIALS_PATH: Optional[str] = None
+    # Supabase
+    SUPABASE_URL: Optional[str] = "https://xenrnczedenmvljzlbin.supabase.co"
+    SUPABASE_KEY: Optional[str] = "sb_publishable_BkmeBl1mAwJl6uQDOctAPw_gtrQwkC-"
     
     # LLM / GenAI
     LLM_PROVIDER: str = "gemini"  # gemini, openai, anthropic

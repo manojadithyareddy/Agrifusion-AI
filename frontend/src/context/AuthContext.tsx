@@ -8,7 +8,7 @@ import type {
 } from '../types/auth';
 import { authService } from '../api/auth';
 import { setStoredAuth, getStoredUser } from '../api/client';
-import { signInWithGoogle as firebaseGoogleSignIn, firebaseSignOut } from '../lib/firebase';
+import { signInWithGoogle as supabaseGoogleSignIn, supabaseSignOut, supabase } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
@@ -100,13 +100,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     initAuth();
 
+    // Listen for Supabase OAuth redirect or sign-in state changes
+    const { data: authSub } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user && !localStorage.getItem('agrifusion_token')) {
+        const payload: GoogleCredentials = {
+          email: session.user.email || '',
+          name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'Google User',
+          profile_image: session.user.user_metadata?.avatar_url || undefined,
+        };
+        try {
+          const response = await authService.googleAuth(payload);
+          handleAuthSuccess(response.access_token, response.user);
+        } catch (syncErr) {
+          console.warn('[AgriFusion] Supabase OAuth session backend sync error:', syncErr);
+        }
+      }
+    });
+
     // Listen for custom auth expired event from client.ts
     const onAuthExpired = () => {
       setUser(null);
       setToken(null);
     };
     window.addEventListener('agrifusion_auth_expired', onAuthExpired);
-    return () => window.removeEventListener('agrifusion_auth_expired', onAuthExpired);
+    return () => {
+      window.removeEventListener('agrifusion_auth_expired', onAuthExpired);
+      authSub?.subscription?.unsubscribe();
+    };
   }, [refreshUser]);
 
   const login = async (credentials: LoginCredentials) => {
@@ -144,14 +164,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loginWithGoogle = async (_googleCreds?: GoogleCredentials) => {
     setIsLoading(true);
     try {
-      // 1. Trigger real Firebase Google Sign-In popup
-      const { user: fbUser } = await firebaseGoogleSignIn();
+      if (_googleCreds?.email) {
+        const response = await authService.googleAuth(_googleCreds);
+        return handleAuthSuccess(response.access_token, response.user);
+      }
 
-      // 2. Send the Google user info to our backend to create/get session
+      // 1. Trigger Supabase Google OAuth sign-in
+      const { user: supaUser } = await supabaseGoogleSignIn();
+
+      // 2. Send Google user info to backend to create/get session
       const payload: GoogleCredentials = {
-        email: fbUser.email || '',
-        name: fbUser.displayName || 'Google User',
-        profile_image: fbUser.photoURL || undefined,
+        email: supaUser?.email || '',
+        name: supaUser?.user_metadata?.full_name || supaUser?.user_metadata?.name || 'Google User',
+        profile_image: supaUser?.user_metadata?.avatar_url || undefined,
       };
       const response = await authService.googleAuth(payload);
       return handleAuthSuccess(response.access_token, response.user);
@@ -196,8 +221,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     try {
       await authService.logout();
-      // Also sign out from Firebase
-      await firebaseSignOut().catch(() => {});
+      // Also sign out from Supabase
+      await supabaseSignOut().catch(() => {});
     } catch {
       // Ignore
     } finally {

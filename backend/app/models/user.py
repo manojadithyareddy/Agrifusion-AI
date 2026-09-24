@@ -7,12 +7,12 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
-    firebase_uid = Column(String, unique=True, index=True, nullable=True)
+    firebase_uid = Column(String, unique=True, index=True, nullable=True)  # External auth provider UID (Supabase/OAuth)
     email = Column(String, unique=True, index=True, nullable=False)
-    password_hash = Column(String, nullable=True)  # Null for Firebase-only users
+    password_hash = Column(String, nullable=True)  # Null for Supabase/OAuth users
     name = Column(String, nullable=False)
     profile_image = Column(String, nullable=True)
-    authentication_provider = Column(String, default="email")  # "email", "google", "firebase"
+    authentication_provider = Column(String, default="email")  # "email", "google", "supabase"
     phone = Column(String, nullable=True)
     preferred_language = Column(String, default="en")
     state_id = Column(Integer, ForeignKey("states.id"), nullable=True)
