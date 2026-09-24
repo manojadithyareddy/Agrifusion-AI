@@ -38,12 +38,12 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
   const from = (location.state as any)?.from?.pathname;
 
   const handleRoleRedirect = (role: 'USER' | 'ADMIN') => {
-    if (from && from !== '/login' && from !== '/signup') {
+    if (from && from !== '/login' && from !== '/signup' && from !== '/dashboard') {
       navigate(from, { replace: true });
     } else if (role === 'ADMIN') {
       navigate('/admin/dashboard', { replace: true });
     } else {
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   };
 

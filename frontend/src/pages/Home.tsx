@@ -353,7 +353,7 @@ const CAPABILITY_CARDS = [
     desc: 'Scientific crop recommendation evaluating soil NPK, pH, rainfall, temperature, and seasonal suitability.',
     aiIndicator: 'ML / XGBoost',
     color: '#22c55e',
-    route: 'predictions',
+    route: 'crop-recommendation',
   },
   {
     icon: '🔬',
@@ -361,7 +361,7 @@ const CAPABILITY_CARDS = [
     desc: 'Deep learning computer vision for leaf lesion classification, pathogen diagnosis, and treatment guidance.',
     aiIndicator: 'YOLOv8 / CV',
     color: '#06b6d4',
-    route: 'predictions',
+    route: 'disease-detection',
   },
   {
     icon: '📊',
@@ -369,7 +369,7 @@ const CAPABILITY_CARDS = [
     desc: 'Forecast expected crop output per acre based on historical climate, irrigation method, and soil type.',
     aiIndicator: 'LightGBM Regression',
     color: '#3b82f6',
-    route: 'predictions',
+    route: 'yield-prediction',
   },
   {
     icon: '💧',
@@ -377,7 +377,7 @@ const CAPABILITY_CARDS = [
     desc: 'Precision irrigation scheduling based on crop growth stage, evapotranspiration, and water stress level.',
     aiIndicator: 'Water Stress Index',
     color: '#0ea5e9',
-    route: 'predictions',
+    route: 'irrigation-prediction',
   },
   {
     icon: '⚠️',

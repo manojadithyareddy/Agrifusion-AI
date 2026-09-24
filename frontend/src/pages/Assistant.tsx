@@ -451,7 +451,9 @@ export default function Assistant() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: '100vh',
+        paddingTop: '72px',
+        boxSizing: 'border-box',
         minHeight: 0,
         background: '#070a11',
         color: '#f1f5f9',

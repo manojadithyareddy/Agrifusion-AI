@@ -16,7 +16,7 @@ export default function UserHistory() {
   }, []);
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '120px 24px 80px' }}>
       <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 6px', color: '#fff' }}>
         Agricultural Activity Timeline
       </h1>

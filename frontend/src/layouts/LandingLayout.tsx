@@ -19,20 +19,23 @@ export default function LandingLayout({
   currentPredictionBg = '/backgrounds/sustainable_journey.jpg',
 }: LandingLayoutProps) {
   const routerNavigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Dynamic Navigation Items: About followed by Sign In (unauthenticated) or Profile (authenticated)
+  // Dynamic Navigation Items: About followed by Sign In (unauthenticated) or Profile & Admin (authenticated)
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'predictions', label: 'AI Prediction' },
     { id: 'market', label: 'Market Insights' },
     { id: 'assistant', label: 'AI Assistant' },
     { id: 'about', label: 'About' },
-    isAuthenticated
-      ? { id: 'profile', label: 'Profile' }
-      : { id: 'signin', label: 'Sign In' },
+    ...(isAuthenticated
+      ? [
+          { id: 'profile', label: 'Profile' },
+          ...(user?.role === 'ADMIN' ? [{ id: 'admin', label: '🛡️ Admin' }] : []),
+        ]
+      : [{ id: 'signin', label: 'Sign In' }]),
   ];
 
   const handleNavigate = (page: string) => {
@@ -40,6 +43,8 @@ export default function LandingLayout({
       routerNavigate('/login');
     } else if (page === 'profile') {
       routerNavigate('/profile');
+    } else if (page === 'admin') {
+      routerNavigate('/admin/dashboard');
     } else {
       onNavigate?.(page);
     }
@@ -110,8 +115,8 @@ export default function LandingLayout({
           </div>
         )}
 
-        {/* Prediction page: Dynamic background based on active prediction model & selected crop */}
-        {activePage === 'predictions' && (
+        {/* Prediction, Disease & Profile pages: Dynamic background based on active prediction model & selected crop */}
+        {(activePage === 'predictions' || activePage === 'disease' || activePage === 'profile') && (
           <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <div
               key={currentPredictionBg}
@@ -336,7 +341,83 @@ export default function LandingLayout({
             >
               Get Started <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>➔</span>
             </button>
-          ) : null}
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} className="desktop-nav">
+              {user?.role === 'ADMIN' && (
+                <button
+                  onClick={() => routerNavigate('/admin/dashboard')}
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    color: '#fca5a5',
+                    padding: '7px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  🛡️ Admin Panel
+                </button>
+              )}
+              <div
+                onClick={() => routerNavigate('/profile')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  padding: '5px 12px',
+                  borderRadius: '24px',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                }}
+              >
+                <img
+                  src={user?.profile_image || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || 'Farmer'}`}
+                  alt="Avatar"
+                  style={{ width: '26px', height: '26px', borderRadius: '50%', border: '1px solid #10b981' }}
+                />
+                <span style={{ fontSize: '0.84rem', fontWeight: 600, color: '#fff' }}>
+                  {user?.name?.split(' ')[0] || 'Farmer'}
+                </span>
+                <span style={{
+                  fontSize: '0.66rem',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  background: user?.role === 'ADMIN' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(16, 185, 129, 0.25)',
+                  color: user?.role === 'ADMIN' ? '#fca5a5' : '#86efac',
+                  fontWeight: 700,
+                }}>
+                  {user?.role === 'ADMIN' ? 'ADMIN' : 'FARMER'}
+                </span>
+              </div>
+              <button
+                onClick={async () => {
+                  await logout();
+                  routerNavigate('/login');
+                }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.08)',
+                  border: '1px solid rgba(239, 68, 68, 0.25)',
+                  color: '#fca5a5',
+                  padding: '7px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)')}
+                onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)')}
+              >
+                Logout
+              </button>
+            </div>
+          )}
 
           {/* Mobile Hamburger */}
           <button
@@ -386,7 +467,7 @@ export default function LandingLayout({
               {item.label}
             </button>
           ))}
-          {!isAuthenticated && (
+          {!isAuthenticated ? (
             <button
               onClick={(e) => { e.stopPropagation(); setMobileMenuOpen(false); routerNavigate('/signup'); }}
               style={{
@@ -397,6 +478,22 @@ export default function LandingLayout({
             >
               Get Started ➔
             </button>
+          ) : (
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                setMobileMenuOpen(false);
+                await logout();
+                routerNavigate('/login');
+              }}
+              style={{
+                marginTop: '10px', background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5',
+                border: '1px solid rgba(239, 68, 68, 0.4)', padding: '14px 40px',
+                borderRadius: '30px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', width: '280px',
+              }}
+            >
+              🚪 Logout
+            </button>
           )}
         </div>
       )}
@@ -406,8 +503,9 @@ export default function LandingLayout({
         {children}
       </main>
 
-      {/* ─── Premium Footer ─── */}
-      <footer role="contentinfo" style={{ position: 'relative', zIndex: 1, background: '#03060a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '80px 40px 40px' }}>
+      {/* ─── Premium Footer (Hidden on assistant page for full-height ChatGPT immersion) ─── */}
+      {activePage !== 'assistant' && (
+        <footer role="contentinfo" style={{ position: 'relative', zIndex: 1, background: '#03060a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '80px 40px 40px' }}>
         <div className="footer-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: '32px' }}>
           <div>
             <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🌿</div>
@@ -467,6 +565,7 @@ export default function LandingLayout({
           </div>
         </div>
       </footer>
+      )}
 
       {/* ─── Responsive Styles ─── */}
       <style>{`

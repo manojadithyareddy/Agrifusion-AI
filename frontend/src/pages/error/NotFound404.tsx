@@ -11,7 +11,7 @@ export default function NotFound404() {
     } else if (role === 'ADMIN') {
       navigate('/admin/dashboard');
     } else {
-      navigate('/dashboard');
+      navigate('/');
     }
   };
 

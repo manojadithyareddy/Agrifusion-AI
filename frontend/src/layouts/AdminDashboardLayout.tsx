@@ -142,7 +142,7 @@ export default function AdminDashboardLayout() {
           background: 'rgba(0, 0, 0, 0.25)',
         }}>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             style={{
               width: '100%',
               padding: '8px 12px',
@@ -160,7 +160,7 @@ export default function AdminDashboardLayout() {
               gap: '6px',
             }}
           >
-            🌾 View Farmer Dashboard
+            🌾 View Farmer Portal / Home
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>

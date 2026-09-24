@@ -82,7 +82,7 @@ export default function Forbidden403() {
         {/* Action Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             style={{
               width: '100%',
               padding: '14px',
@@ -103,7 +103,7 @@ export default function Forbidden403() {
             onMouseOver={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            🌱 Return to Farmer Dashboard
+            🌾 Return to AgriFusion Home
           </button>
 
           <button
