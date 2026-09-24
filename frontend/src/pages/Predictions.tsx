@@ -15,6 +15,14 @@ import {
   formatLocation,
 } from '../utils/geoCropData';
 import { getBackgroundForCrop } from '../utils/backgroundMedia';
+import {
+  getOfflineCropRecommendation,
+  getOfflineYieldPrediction,
+  getOfflineClimateRisk,
+  getOfflineIrrigationAdvice,
+  getOfflineMarketPrice,
+  getOfflineRevenue,
+} from '../utils/offlinePredictionEngine';
 
 /* ─── Types ─── */
 interface PredictionTab {
@@ -455,7 +463,12 @@ function CropRecommendationTab({ onCropSelect }: { onCropSelect: (crop: string) 
         onCropSelect(res.recommendations[0].crop);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to get prediction.');
+      console.warn('Backend prediction endpoint offline, using client agronomy engine:', err);
+      const fallback = getOfflineCropRecommendation(state, district, soilType, season, targetCrop);
+      setResult(fallback);
+      if (!targetCrop && fallback.recommendations && fallback.recommendations.length > 0) {
+        onCropSelect(fallback.recommendations[0].crop);
+      }
     } finally {
       setLoading(false);
     }
@@ -770,8 +783,19 @@ function YieldPredictionTab({ onCropSelect }: { onCropSelect: (crop: string) => 
         area_hectares: parseFloat(form.area_hectares) || 1,
       });
       setResult(res);
-    } catch (err: any) { setError(err.message || 'Failed.'); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      console.warn('Backend yield prediction offline, using client engine:', err);
+      const fallback = getOfflineYieldPrediction(
+        form.crop,
+        form.state,
+        resolvedDistrict,
+        form.season,
+        parseFloat(form.area_hectares) || 1
+      );
+      setResult(fallback);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -956,8 +980,21 @@ function ClimateRiskTab({ onCropSelect }: { onCropSelect: (crop: string) => void
         month: form.month ? parseInt(form.month) : undefined,
       });
       setResult(res);
-    } catch (err: any) { setError(err.message || 'Failed.'); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      console.warn('Backend climate risk offline, using client engine:', err);
+      const fallback = getOfflineClimateRisk(
+        form.state,
+        resolvedDistrict,
+        form.crop,
+        form.temperature ? parseFloat(form.temperature) : undefined,
+        form.rainfall ? parseFloat(form.rainfall) : undefined,
+        form.humidity ? parseFloat(form.humidity) : undefined,
+        form.month ? parseInt(form.month) : undefined
+      );
+      setResult(fallback);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const riskColor = (level: string) => {
@@ -1110,8 +1147,20 @@ function IrrigationTab({ onCropSelect }: { onCropSelect: (crop: string) => void 
         recent_rainfall_mm: parseFloat(form.recent_rainfall_mm),
       });
       setResult(res);
-    } catch (err: any) { setError(err.message || 'Failed.'); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      console.warn('Backend irrigation offline, using client engine:', err);
+      const fallback = getOfflineIrrigationAdvice(
+        form.crop,
+        parseFloat(form.temperature) || 28,
+        parseFloat(form.humidity) || 60,
+        parseFloat(form.recent_rainfall_mm) || 0,
+        form.growth_stage,
+        form.soil_type
+      );
+      setResult(fallback);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1287,8 +1336,18 @@ function MarketPriceTab({ onCropSelect }: { onCropSelect: (crop: string) => void
         months_ahead: parseInt(form.months_ahead),
       });
       setResult(res);
-    } catch (err: any) { setError(err.message || 'Failed.'); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      console.warn('Backend market price offline, using client engine:', err);
+      const fallback = getOfflineMarketPrice(
+        form.crop,
+        form.state,
+        resolvedDistrict,
+        parseInt(form.months_ahead) || 1
+      );
+      setResult(fallback);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1467,8 +1526,19 @@ function RevenueProfitTab({ onCropSelect }: { onCropSelect: (crop: string) => vo
         estimated_cost_per_hectare: form.estimated_cost_per_hectare ? parseFloat(form.estimated_cost_per_hectare) : undefined,
       });
       setResult(res);
-    } catch (err: any) { setError(err.message || 'Failed.'); }
-    finally { setLoading(false); }
+    } catch (err: any) {
+      console.warn('Backend revenue offline, using client engine:', err);
+      const fallback = getOfflineRevenue(
+        form.crop,
+        parseFloat(form.area_hectares) || 1,
+        parseFloat(form.predicted_yield_kg_per_hectare),
+        parseFloat(form.predicted_price_per_quintal),
+        form.estimated_cost_per_hectare ? parseFloat(form.estimated_cost_per_hectare) : undefined
+      );
+      setResult(fallback);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

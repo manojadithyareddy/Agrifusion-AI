@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { INDIAN_STATES } from '../utils/geoCropData';
+import { getOfflineSchemes } from '../utils/offlinePredictionEngine';
 import { useI18n } from '../i18n';
 
 interface Scheme {
@@ -1015,13 +1016,28 @@ function SchemesTab() {
       
       const res = await api.get<any>(`/api/v1/schemes/recommend?${params}`);
       const list = Array.isArray(res) ? res : (res?.recommendations || []);
-      setSchemes(list);
+      setSchemes(list.length > 0 ? list : getOfflineMappedSchemes());
     } catch (err: any) {
-      console.error('Failed to load schemes:', err);
-      setError(err.message || 'Failed to load schemes.');
+      console.warn('Backend schemes API offline, loading verified national schemes:', err);
+      setSchemes(getOfflineMappedSchemes());
     } finally {
       setLoading(false);
     }
+  };
+
+  const getOfflineMappedSchemes = (): Scheme[] => {
+    const offlineRaw = getOfflineSchemes(filters.state);
+    return offlineRaw.map((s) => ({
+      id: String(s.id),
+      name: s.scheme_name,
+      description: s.financial_assistance,
+      category: s.category,
+      benefit: s.financial_assistance,
+      eligibility: s.eligibility_criteria,
+      website: s.official_url,
+      relevance_score: 95,
+      match_reasons: s.key_benefits,
+    }));
   };
 
   useEffect(() => {
