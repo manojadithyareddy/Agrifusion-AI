@@ -1,0 +1,28 @@
+.env
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.whl
+.venv/
+venv/
+env/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# ML model artifacts (large)
+app/ml/models/*.pkl
+app/ml/models/*.joblib
+app/ml/models/*.pt
+app/ml/models/*.onnx
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

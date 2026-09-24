@@ -1,0 +1,14 @@
+[
+    {"name": "Cereals", "description": "Grain crops grown for food including rice, wheat, maize, millets, sorghum, barley"},
+    {"name": "Pulses", "description": "Leguminous crops harvested for dry seed including chickpea, pigeon pea, lentils, green gram, black gram"},
+    {"name": "Oilseeds", "description": "Crops grown primarily for extracting edible or industrial oils including groundnut, mustard, soybean, sunflower, sesame"},
+    {"name": "Fruits", "description": "Horticultural fruit crops including mango, banana, citrus, guava, papaya, apple, grape"},
+    {"name": "Vegetables", "description": "Horticultural vegetable crops including tomato, onion, potato, brinjal, okra, cauliflower, cabbage"},
+    {"name": "Fibre Crops", "description": "Crops grown for fibre including cotton, jute, hemp, flax"},
+    {"name": "Cash Crops", "description": "Crops grown for commercial value including sugarcane, tobacco, rubber"},
+    {"name": "Plantation Crops", "description": "Perennial tree crops grown on plantations including tea, coffee, coconut, arecanut, oil palm"},
+    {"name": "Spices", "description": "Aromatic crops used for flavoring including turmeric, chilli, ginger, garlic, coriander, cumin, black pepper, cardamom"},
+    {"name": "Medicinal Crops", "description": "Crops grown for medicinal and aromatic properties including ashwagandha, tulsi, aloe vera, senna, isabgol"},
+    {"name": "Commercial Crops", "description": "Crops grown for industrial and commercial processing including indigo, lac, natural dyes"},
+    {"name": "Fodder Crops", "description": "Crops grown as animal feed including berseem, lucerne, napier grass, guinea grass, oats"}
+]

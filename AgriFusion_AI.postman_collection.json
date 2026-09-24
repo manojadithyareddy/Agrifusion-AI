@@ -1,0 +1,331 @@
+{
+  "info": {
+    "name": "AgriFusion AI - Backend API (Render & Local)",
+    "description": "Production Postman Collection for AgriFusion AI FastAPI Backend hosted on Render or localhost.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://agrifusion-backend.onrender.com",
+      "type": "string",
+      "description": "Base URL of the FastAPI backend. Switch to http://localhost:8000 for local development."
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Bearer JWT token auto-saved by Login request"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. System & Health (Render Probes)",
+      "item": [
+        {
+          "name": "Health Check (Render Health Probe)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Root API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "OpenAPI JSON Specification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/openapi.json",
+              "host": ["{{base_url}}"],
+              "path": ["openapi.json"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Login (Auto-stores Bearer Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.access_token);",
+                  "    console.log('Saved token successfully to {{token}}');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "farmer@agrifusion.ai",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Kisan@2024",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. AI Agriculture Predictions",
+      "item": [
+        {
+          "name": "Crop Recommendation (Percentage format)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nitrogen\": 85.0,\n  \"phosphorus\": 45.0,\n  \"potassium\": 40.0,\n  \"temperature\": 28.5,\n  \"humidity\": 75.0,\n  \"ph\": 6.8,\n  \"rainfall\": 1100.0,\n  \"state\": \"Maharashtra\",\n  \"district\": \"Pune\",\n  \"season\": \"kharif\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/predictions/crop-recommendation",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "predictions", "crop-recommendation"]
+            }
+          }
+        },
+        {
+          "name": "Yield Prediction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"cotton\",\n  \"state\": \"Maharashtra\",\n  \"district\": \"Pune\",\n  \"area_hectares\": 2.5,\n  \"season\": \"kharif\",\n  \"soil_type\": \"Black Soil\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/predictions/yield",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "predictions", "yield"]
+            }
+          }
+        },
+        {
+          "name": "Climate Risk Assessment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"cotton\",\n  \"state\": \"Maharashtra\",\n  \"district\": \"Pune\",\n  \"temperature\": 34.0,\n  \"rainfall\": 450.0,\n  \"humidity\": 55.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/predictions/climate-risk",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "predictions", "climate-risk"]
+            }
+          }
+        },
+        {
+          "name": "Irrigation Schedule Advisory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"cotton\",\n  \"soil_type\": \"Black Soil\",\n  \"field_area_acres\": 2.0,\n  \"growth_stage\": \"flowering\",\n  \"irrigation_method\": \"drip\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/predictions/irrigation",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "predictions", "irrigation"]
+            }
+          }
+        },
+        {
+          "name": "Market Mandi Price Forecast",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"crop\": \"cotton\",\n  \"state\": \"Maharashtra\",\n  \"market\": \"Pune Mandi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/predictions/market-price",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "predictions", "market-price"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. AI Assistant & Vision",
+      "item": [
+        {
+          "name": "Agrifusion AI Chatbot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What is the best treatment and fungicide for mango anthracnose?\",\n  \"language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/assistant/chat",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "assistant", "chat"]
+            }
+          }
+        },
+        {
+          "name": "Crop Leaf Disease Diagnosis (File Upload)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Upload a crop leaf image (.jpg / .png)"
+                },
+                {
+                  "key": "crop_hint",
+                  "value": "mango",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vision/diagnose",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vision", "diagnose"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Geography & Mandis",
+      "item": [
+        {
+          "name": "Get States",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/geo/states",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "geo", "states"]
+            }
+          }
+        },
+        {
+          "name": "Get Districts by State Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/geo/districts?state_code=IN-MH",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "geo", "districts"],
+              "query": [
+                {
+                  "key": "state_code",
+                  "value": "IN-MH"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

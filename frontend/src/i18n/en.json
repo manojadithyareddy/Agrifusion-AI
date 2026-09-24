@@ -1,0 +1,114 @@
+{
+  "app_name": "AgriFusion AI",
+  "tagline": "Your Intelligent Farming Companion",
+  "nav": {
+    "home": "Home",
+    "predictions": "Crop Recommendation",
+    "crop_health": "Crop Health",
+    "weather": "Weather",
+    "market": "Market Prices",
+    "assistant": "AI Assistant",
+    "profile": "My Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "home": {
+    "welcome": "Welcome to AgriFusion AI",
+    "subtitle": "Your intelligent farming companion — powered by AI to help you make smarter decisions.",
+    "stats": {
+      "crops": "Crops Supported",
+      "states": "States & UTs",
+      "models": "AI Models",
+      "languages": "Languages"
+    },
+    "actions": {
+      "find_crop": "Find the Best Crop",
+      "find_crop_desc": "Tell us about your soil and weather — we'll recommend the most suitable crops with expected yield and revenue.",
+      "check_health": "Check Crop Health",
+      "check_health_desc": "Upload a photo of your crop — AI will detect diseases or pests and suggest what to do.",
+      "irrigation": "Irrigation Advice",
+      "irrigation_desc": "Get AI-powered irrigation recommendations based on your crop, weather, and soil conditions.",
+      "ask_ai": "Ask AI Assistant",
+      "ask_ai_desc": "Ask any farming question in your language — our AI assistant will help you with expert guidance."
+    }
+  },
+  "predictions": {
+    "title": "AI Crop Recommendation",
+    "subtitle": "Enter your soil and weather conditions — AI will recommend the best crops for your farm.",
+    "form": {
+      "nitrogen": "Nitrogen (N) kg/ha",
+      "phosphorus": "Phosphorus (P) kg/ha",
+      "potassium": "Potassium (K) kg/ha",
+      "temperature": "Temperature (°C)",
+      "humidity": "Humidity (%)",
+      "ph": "Soil pH",
+      "rainfall": "Annual Rainfall (mm)",
+      "submit": "Get Recommendations",
+      "analyzing": "Analyzing..."
+    },
+    "results": {
+      "suitability": "Suitability",
+      "empty": "Fill in your soil and weather data to get AI-powered crop recommendations."
+    }
+  },
+  "crop_health": {
+    "title": "AI Crop Health Checker",
+    "subtitle": "Upload a clear photo of your plant's leaves, stem, or fruit to detect diseases or pests.",
+    "upload": {
+      "prompt": "Click to browse or drag & drop image here",
+      "formats": "Supports JPG, PNG, WEBP up to 10MB",
+      "analyze": "Analyze Crop Health",
+      "analyzing": "Analyzing Image..."
+    },
+    "results": {
+      "title": "Analysis Result",
+      "detections": "Detections",
+      "actions": "Recommended Actions",
+      "empty": "Upload an image to get an AI-powered health assessment and actionable treatment recommendations."
+    }
+  },
+  "weather": {
+    "title": "Weather Dashboard",
+    "subtitle": "Real-time weather data and 7-day forecast for your farm location.",
+    "current": "Current Weather",
+    "forecast": "7-Day Forecast",
+    "advisory": "Farm Advisory",
+    "fields": {
+      "temperature": "Temperature",
+      "humidity": "Humidity",
+      "wind": "Wind Speed",
+      "rain": "Rainfall",
+      "pressure": "Pressure",
+      "uv": "UV Index"
+    }
+  },
+  "assistant": {
+    "title": "AI Agriculture Assistant",
+    "subtitle": "Chat with your intelligent farming expert.",
+    "placeholder": "Ask about crops, diseases, weather, or market prices...",
+    "greeting": "Hello! I am your AgriFusion AI assistant. You can ask me anything about farming, crop management, weather impacts, or government schemes."
+  },
+  "auth": {
+    "login_title": "Welcome Back",
+    "register_title": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "login_btn": "Login",
+    "register_btn": "Register",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "no_data": "No data available.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search"
+  }
+}
