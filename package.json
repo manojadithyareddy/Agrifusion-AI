@@ -1,0 +1,11 @@
+{
+  "name": "agrifusion-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AgriFusion AI - Multimodal Agriculture Intelligence & Decision Agent",
+  "scripts": {
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
+    "dev": "python app.py --dev",
+    "start": "python app.py"
+  }
+}
