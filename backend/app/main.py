@@ -8,7 +8,7 @@ import uuid
 
 from app.config import settings
 import app.models  # Register all SQLAlchemy models and relationships
-from app.routers.v1 import geography, crops, predictions, vision, assistant, auth, weather, schemes, soil_health, admin, user
+from app.routers.v1 import geography, crops, predictions, vision, assistant, auth, weather, schemes, soil_health, admin, user, assistant_agent
 
 # Configure structured logging
 logging.basicConfig(
@@ -83,6 +83,7 @@ app.include_router(crops.router)
 app.include_router(predictions.router)
 app.include_router(vision.router)
 app.include_router(assistant.router)
+app.include_router(assistant_agent.router)
 app.include_router(auth.router)
 app.include_router(weather.router)
 app.include_router(schemes.router)
