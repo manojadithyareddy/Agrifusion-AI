@@ -30,7 +30,6 @@ interface AICommandHeaderProps {
   historyTotal: number;
   selectedLanguage: string;
   onSelectLanguage: (langCode: string) => void;
-  onOpenKeyModal: () => void;
   onSelectSample: (sample: PresetCropSample) => void;
   presetSamples: PresetCropSample[];
   className?: string;
@@ -47,7 +46,6 @@ export default function AICommandHeader({
   historyTotal,
   selectedLanguage,
   onSelectLanguage,
-  onOpenKeyModal,
   onSelectSample,
   presetSamples,
   className = '',
@@ -295,29 +293,6 @@ export default function AICommandHeader({
               </div>
             )}
           </div>
-
-          {/* Gemini Vision API Key Settings */}
-          <button
-            onClick={onOpenKeyModal}
-            style={{
-              background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid rgba(16, 185, 129, 0.35)',
-              color: '#86efac',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-            title="Configure Google Gemini Vision API Key"
-          >
-            <span>🔑</span>
-            <span className="hide-mobile-sm">API Key</span>
-            <span style={{ fontSize: '0.62rem', color: '#34d399', fontWeight: 800 }}>● ON</span>
-          </button>
 
           {/* Reset / Clear Chat */}
           <button

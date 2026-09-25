@@ -386,14 +386,14 @@ export default function AIInputWorkspace({
                   >
                     🖼️
                   </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#f8fafc' }}>
-                      {isHi ? 'छवि जोड़ें' : 'Add image'}
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#f8fafc' }}>
+                        {isHi ? 'छवि अपलोड करें' : 'Upload Image'}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
+                        {isHi ? 'गैलरी या डिवाइस से फोटो चुनें' : 'Upload photo from device or gallery'}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
-                      {isHi ? 'गैलरी या फ़ाइल से अपलोड करें' : 'Upload photo from device'}
-                    </div>
-                  </div>
                 </button>
 
                 {/* Option 2: Scan */}

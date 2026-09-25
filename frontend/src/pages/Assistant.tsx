@@ -10,8 +10,6 @@ import {
 import {
   scanCropImageWithGeminiAPI,
   getActiveGeminiApiKey,
-  saveGeminiApiKey,
-  DEFAULT_GEMINI_KEY,
 } from '../utils/geminiVisionEngine';
 
 // Subcomponents
@@ -90,10 +88,8 @@ export default function Assistant() {
   );
   const isHi = selectedLanguage === 'hi';
 
-  // Active Gemini Vision API Key & Settings Modal
-  const [apiKey, setApiKey] = useState<string>(() => getActiveGeminiApiKey());
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const [tempKey, setTempKey] = useState<string>(() => getActiveGeminiApiKey());
+  // Active Gemini Vision API Key (handled securely in background)
+  const [apiKey] = useState<string>(() => getActiveGeminiApiKey());
 
   // Camera Scanner Modal State
   const [showCameraModal, setShowCameraModal] = useState(false);
@@ -500,10 +496,6 @@ export default function Assistant() {
         onSelectLanguage={(langCode) => {
           setSelectedLanguage(langCode);
           localStorage.setItem('farmer_lang_chosen', langCode);
-        }}
-        onOpenKeyModal={() => {
-          setTempKey(apiKey);
-          setShowKeyModal(true);
         }}
         onSelectSample={handleLoadSample}
         presetSamples={PRESET_CROP_SAMPLES}
@@ -953,10 +945,10 @@ export default function Assistant() {
                       </div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#f8fafc' }}>
-                          {isHi ? 'छवि जोड़ें' : 'Add image'}
+                          {isHi ? 'छवि अपलोड करें' : 'Upload Image'}
                         </div>
                         <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
-                          {isHi ? 'गैलरी या फ़ाइल से अपलोड करें' : 'Upload photo from device'}
+                          {isHi ? 'गैलरी या डिवाइस से फोटो चुनें' : 'Upload photo from device or gallery'}
                         </div>
                       </div>
                     </button>
@@ -1269,133 +1261,6 @@ export default function Assistant() {
               >
                 <span>📸</span>
                 <span>Capture & Diagnose</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── GEMINI API KEY CONFIGURATION MODAL ── */}
-      {showKeyModal && (
-        <div
-          role="dialog"
-          aria-label="Google Gemini Vision API Key settings modal"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(10px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-            padding: '16px',
-          }}
-        >
-          <div
-            style={{
-              background: '#141a26',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '24px',
-              maxWidth: '520px',
-              width: '100%',
-              padding: '24px',
-              boxShadow: '0 25px 60px rgba(0,0,0,0.8)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.25rem' }}>🔑</span>
-                <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#fff' }}>
-                  Google Gemini Vision API Key
-                </span>
-              </div>
-              <button
-                onClick={() => setShowKeyModal(false)}
-                aria-label="Close API Key modal"
-                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div
-              style={{
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                padding: '12px 14px',
-                borderRadius: '12px',
-                marginBottom: '16px',
-                fontSize: '0.82rem',
-                color: '#86efac',
-                lineHeight: 1.5,
-              }}
-            >
-              ✅ <strong>Active Vision AI Connected:</strong> When you upload or scan an image, AgriFusion AI directly calls Google Gemini Vision API to detect the real crop, real disease, pest status, symptoms, and exact medicine dosages.
-            </div>
-
-            <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '0.78rem', color: '#94a3b8', marginBottom: '6px', fontWeight: 600 }}>
-                Gemini API Key:
-              </label>
-              <input
-                type="text"
-                value={tempKey}
-                onChange={(e) => setTempKey(e.target.value)}
-                placeholder="Paste your Google Gemini API Key here"
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  background: '#090e17',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '10px',
-                  color: '#fff',
-                  fontSize: '0.85rem',
-                  fontFamily: 'monospace',
-                  boxSizing: 'border-box',
-                }}
-              />
-              <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '6px' }}>
-                Stored safely in your browser session. Free Gemini keys available at aistudio.google.com.
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => setTempKey(DEFAULT_GEMINI_KEY)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: '10px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#cbd5e1',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Reset to Default System Key
-              </button>
-
-              <button
-                onClick={() => {
-                  const keyToSave = tempKey.trim() || DEFAULT_GEMINI_KEY;
-                  setApiKey(keyToSave);
-                  saveGeminiApiKey(keyToSave);
-                  setShowKeyModal(false);
-                }}
-                style={{
-                  padding: '9px 20px',
-                  borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  border: 'none',
-                  color: '#fff',
-                  fontWeight: 800,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                }}
-              >
-                Save & Apply Key
               </button>
             </div>
           </div>
