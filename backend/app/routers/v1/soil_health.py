@@ -1,4 +1,4 @@
-from app.auth.security import get_optional_current_user
+from app.auth.security import get_current_user
 from app.models.user import User
 from fastapi import Depends, APIRouter, Query
 from pydantic import BaseModel, Field
@@ -26,10 +26,7 @@ class SoilHealthInput(BaseModel):
 
 
 @router.post("/report")
-async def generate_soil_report(
-    input_data: SoilHealthInput,
-    current_user: Optional[User] = Depends(get_optional_current_user),
-):
+async def generate_soil_report(input_data: SoilHealthInput, current_user: User = Depends(get_current_user)):
     """
     Generate a comprehensive soil health report with nutrient analysis,
     deficiency identification, and fertilizer recommendations.

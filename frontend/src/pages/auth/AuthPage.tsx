@@ -48,27 +48,6 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
     }
   };
 
-  // Helper to sanitize any raw or backend error format into human-friendly text
-  const sanitizeErrorMessage = (raw: any): string => {
-    if (!raw) return 'Incorrect email or password. Please verify your credentials or use 1-Click Demo below.';
-    const text = typeof raw === 'string' ? raw : raw?.message || JSON.stringify(raw);
-    if (text.includes('Unsupported provider') || text.includes('provider is not enabled') || text.includes('validation_failed')) {
-      return 'Cloud auth provider is updating. You can sign in immediately using the 1-Click Demo accounts below or create a free account.';
-    }
-    if (text.startsWith('{') && text.includes('msg')) {
-      try {
-        const parsed = JSON.parse(text);
-        if (parsed.msg) return parsed.msg;
-      } catch {
-        // ignore
-      }
-    }
-    if (text.toLowerCase().includes('fetch') || text.toLowerCase().includes('unreachable')) {
-      return 'Authentication server is offline. Please use the 1-Click Demo accounts below.';
-    }
-    return text;
-  };
-
   // Sign In Handler
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +64,12 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
       const { role } = await login({ email, password, remember_me: rememberMe });
       handleRoleRedirect(role);
     } catch (err: any) {
-      setErrorMsg(sanitizeErrorMessage(err));
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('unreachable')) {
+        setErrorMsg('Authentication server is offline. Please use the 1-Click Demo accounts below.');
+      } else {
+        setErrorMsg(msg || 'Incorrect email or password. Please verify your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -131,7 +115,12 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
       });
       handleRoleRedirect(role);
     } catch (err: any) {
-      setErrorMsg(sanitizeErrorMessage(err) || 'Registration failed. An account with this email may already exist.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('unreachable')) {
+        setErrorMsg('Registration service is currently offline. You can test immediately using the 1-Click Demo accounts.');
+      } else {
+        setErrorMsg(msg || 'Registration failed. An account with this email may already exist.');
+      }
     } finally {
       setLoading(false);
     }
@@ -145,7 +134,7 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
       const { role } = await loginWithGoogle();
       handleRoleRedirect(role);
     } catch (err: any) {
-      setErrorMsg(sanitizeErrorMessage(err) || 'Google authentication could not be completed.');
+      setErrorMsg(err.message || 'Google authentication could not be completed.');
     } finally {
       setLoading(false);
     }

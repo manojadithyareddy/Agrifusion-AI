@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import {
   INDIAN_STATES,
@@ -46,42 +46,9 @@ interface PredictionsProps {
   initialTab?: string;
 }
 
-// ── My Crops localStorage helpers ──
-const MY_CROPS_KEY = 'agrifusion_my_crops';
-function loadMyCrops(): string[] {
-  try {
-    const stored = localStorage.getItem(MY_CROPS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch { return []; }
-}
-function saveMyCrops(crops: string[]) {
-  localStorage.setItem(MY_CROPS_KEY, JSON.stringify(crops));
-}
-
 export default function Predictions({ onBgChange, initialTab = 'crop' }: PredictionsProps) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [selectedCrop, setSelectedCrop] = useState<string>('');
-
-  // My Crops feature: user can add/remove their crops
-  const [myCrops, setMyCrops] = useState<string[]>(() => loadMyCrops());
-  const [addCropDropdown, setAddCropDropdown] = useState(false);
-  const [newCropToAdd, setNewCropToAdd] = useState('');
-
-  const handleAddCrop = useCallback((crop: string) => {
-    if (crop && !myCrops.includes(crop)) {
-      const updated = [...myCrops, crop];
-      setMyCrops(updated);
-      saveMyCrops(updated);
-    }
-    setNewCropToAdd('');
-    setAddCropDropdown(false);
-  }, [myCrops]);
-
-  const handleRemoveCrop = useCallback((crop: string) => {
-    const updated = myCrops.filter(c => c !== crop);
-    setMyCrops(updated);
-    saveMyCrops(updated);
-  }, [myCrops]);
 
   const currentTheme = getBackgroundForCrop(selectedCrop, activeTab);
 
@@ -150,122 +117,6 @@ export default function Predictions({ onBgChange, initialTab = 'crop' }: Predict
           </p>
         </div>
 
-        {/* ── My Crops Management Section ── */}
-        <div style={{
-          background: 'rgba(15, 23, 42, 0.78)', backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '16px 20px',
-          marginBottom: '24px', boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1rem' }}>🌱</span>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem' }}>My Crops</span>
-              <span style={{
-                fontSize: '0.68rem', fontWeight: 700, padding: '2px 10px', borderRadius: '12px',
-                background: myCrops.length > 0 ? 'rgba(74,222,128,0.12)' : 'rgba(251,191,36,0.12)',
-                color: myCrops.length > 0 ? '#4ade80' : '#fbbf24',
-                border: `1px solid ${myCrops.length > 0 ? 'rgba(74,222,128,0.3)' : 'rgba(251,191,36,0.3)'}`,
-              }}>
-                {myCrops.length > 0 ? `${myCrops.length} crop${myCrops.length > 1 ? 's' : ''} selected` : 'No crops added – showing all'}
-              </span>
-            </div>
-            <button
-              onClick={() => setAddCropDropdown(!addCropDropdown)}
-              style={{
-                padding: '6px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
-                cursor: 'pointer', transition: 'all 0.2s',
-                background: 'linear-gradient(135deg, #00ff66, #00e1ff)', color: '#050a11',
-                border: 'none', boxShadow: '0 2px 10px rgba(0,255,102,0.2)',
-              }}
-            >
-              + Add Crop
-            </button>
-          </div>
-
-          {/* Add Crop Dropdown */}
-          {addCropDropdown && (
-            <div style={{ marginBottom: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <select
-                value={newCropToAdd}
-                onChange={(e) => setNewCropToAdd(e.target.value)}
-                style={{
-                  padding: '8px 14px', background: '#1e293b', border: '1px solid rgba(255,255,255,0.18)',
-                  borderRadius: '10px', color: '#fff', fontSize: '0.85rem', cursor: 'pointer', minWidth: '180px',
-                }}
-              >
-                <option value="">-- Select a crop --</option>
-                {CROPS_LIST.filter(c => !myCrops.includes(c)).map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              <button
-                onClick={() => newCropToAdd && handleAddCrop(newCropToAdd)}
-                disabled={!newCropToAdd}
-                style={{
-                  padding: '8px 18px', borderRadius: '10px', fontSize: '0.82rem', fontWeight: 700,
-                  background: newCropToAdd ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${newCropToAdd ? 'rgba(74,222,128,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                  color: newCropToAdd ? '#4ade80' : '#64748b',
-                  cursor: newCropToAdd ? 'pointer' : 'not-allowed',
-                }}
-              >
-                ✓ Add
-              </button>
-              <button
-                onClick={() => { setAddCropDropdown(false); setNewCropToAdd(''); }}
-                style={{
-                  padding: '8px 14px', borderRadius: '10px', fontSize: '0.82rem',
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#94a3b8', cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-
-          {/* My Crops Tags */}
-          {myCrops.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {myCrops.map(crop => (
-                <div key={crop} style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)',
-                  borderRadius: '20px', padding: '4px 12px',
-                }}>
-                  <span style={{ fontSize: '0.82rem', color: '#4ade80', fontWeight: 600 }}>🌾 {crop}</span>
-                  <button
-                    onClick={() => handleRemoveCrop(crop)}
-                    title={`Remove ${crop}`}
-                    style={{
-                      background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer',
-                      fontSize: '0.8rem', lineHeight: 1, padding: '0 2px',
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() => { setMyCrops([]); saveMyCrops([]); }}
-                style={{
-                  fontSize: '0.72rem', color: '#f87171', background: 'rgba(239,68,68,0.08)',
-                  border: '1px solid rgba(239,68,68,0.2)', borderRadius: '15px',
-                  padding: '4px 10px', cursor: 'pointer',
-                }}
-              >
-                Clear All
-              </button>
-            </div>
-          )}
-
-          {myCrops.length === 0 && (
-            <div style={{ color: '#64748b', fontSize: '0.78rem', fontStyle: 'italic' }}>
-              💡 Add your crops to filter predictions to only your farming crops. Without any selection, all crops will be shown.
-            </div>
-          )}
-        </div>
-
         {/* Tab Selector */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
           {TABS.map((tab) => (
@@ -295,12 +146,12 @@ export default function Predictions({ onBgChange, initialTab = 'crop' }: Predict
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'crop' && <CropRecommendationTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
-        {activeTab === 'yield' && <YieldPredictionTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
-        {activeTab === 'climate' && <ClimateRiskTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
-        {activeTab === 'irrigation' && <IrrigationTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
-        {activeTab === 'market' && <MarketPriceTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
-        {activeTab === 'revenue' && <RevenueProfitTab onCropSelect={setSelectedCrop} userCrops={myCrops} />}
+        {activeTab === 'crop' && <CropRecommendationTab onCropSelect={setSelectedCrop} />}
+        {activeTab === 'yield' && <YieldPredictionTab onCropSelect={setSelectedCrop} />}
+        {activeTab === 'climate' && <ClimateRiskTab onCropSelect={setSelectedCrop} />}
+        {activeTab === 'irrigation' && <IrrigationTab onCropSelect={setSelectedCrop} />}
+        {activeTab === 'market' && <MarketPriceTab onCropSelect={setSelectedCrop} />}
+        {activeTab === 'revenue' && <RevenueProfitTab onCropSelect={setSelectedCrop} />}
       </div>
 
       {/* Keyframe animations for smooth Ken Burns pan */}
@@ -561,7 +412,7 @@ function CropRiskCard({
 /* ═════════════════════════════════════════════
    TAB 1: Crop Recommendation
    ═════════════════════════════════════════════ */
-function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
+function CropRecommendationTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
   const [state, setState] = useState('Karnataka');
   const [district, setDistrict] = useState('Belgaum');
   const initialVillages = getVillagesForDistrict('Belgaum');
@@ -576,9 +427,6 @@ function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (cro
   const districts = getDistrictsForState(state);
   const villages = getVillagesForDistrict(district);
 
-  // Crop dropdown: show only user's crops if they have any, else all
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
-
   const handleStateChange = (newState: string) => {
     setState(newState);
     const newDistricts = getDistrictsForState(newState);
@@ -586,8 +434,6 @@ function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (cro
     setDistrict(newD);
     const newVillages = getVillagesForDistrict(newD);
     setVillage(newVillages[0] || 'All Villages / District Central');
-    // Clear results when state changes so stale predictions are removed
-    setResult(null);
   };
 
   const handleDistrictChange = (newDistrict: string) => {
@@ -612,15 +458,13 @@ function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (cro
         season,
         targetCrop: targetCrop || undefined,
       });
-      // Limit to top 3 even from backend
-      if (res.recommendations) res.recommendations = res.recommendations.slice(0, 3);
       setResult(res);
       if (!targetCrop && res.recommendations && res.recommendations.length > 0) {
         onCropSelect(res.recommendations[0].crop);
       }
     } catch (err: any) {
       console.warn('Backend prediction endpoint offline, using client agronomy engine:', err);
-      const fallback = getOfflineCropRecommendation(state, district, soilType, season, targetCrop, userCrops.length > 0 ? userCrops : undefined);
+      const fallback = getOfflineCropRecommendation(state, district, soilType, season, targetCrop);
       setResult(fallback);
       if (!targetCrop && fallback.recommendations && fallback.recommendations.length > 0) {
         onCropSelect(fallback.recommendations[0].crop);
@@ -666,8 +510,8 @@ function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (cro
             {/* 4. Target Crop Dropdown (Optional for Risk Analysis) */}
             <FormField label="Target Crop (Optional Risk Analysis)">
               <StyledSelect value={targetCrop} onChange={(e) => handleTargetCropChange(e.target.value)}>
-                <option value="">-- Auto-Recommend Top 3 --</option>
-                {availableCrops.map((c) => (
+                <option value="">-- Auto-Recommend All Crops --</option>
+                {CROPS_LIST.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </StyledSelect>
@@ -879,11 +723,10 @@ function CropRecommendationTab({ onCropSelect, userCrops }: { onCropSelect: (cro
 /* ═════════════════════════════════════════════
    TAB 2: Yield Prediction
    ═════════════════════════════════════════════ */
-function YieldPredictionTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
+function YieldPredictionTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
   const initialVillages = getVillagesForDistrict('Belgaum');
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
   const [form, setForm] = useState({
-    crop: availableCrops[0] || 'Rice',
+    crop: 'Rice',
     state: 'Karnataka',
     district: 'Belgaum',
     village: initialVillages[0] || 'All Villages / District Central',
@@ -897,6 +740,8 @@ function YieldPredictionTab({ onCropSelect, userCrops }: { onCropSelect: (crop: 
   const districts = getDistrictsForState(form.state);
   const villages = getVillagesForDistrict(form.district);
 
+  // Prediction model backdrop active by default; updates to crop when user chooses crop
+
   const handleStateChange = (newState: string) => {
     const newDistricts = getDistrictsForState(newState);
     const newD = newDistricts[0] || '';
@@ -907,7 +752,6 @@ function YieldPredictionTab({ onCropSelect, userCrops }: { onCropSelect: (crop: 
       district: newD,
       village: newVillages[0] || 'All Villages / District Central',
     });
-    setResult(null);
   };
 
   const handleDistrictChange = (newDistrict: string) => {
@@ -962,7 +806,7 @@ function YieldPredictionTab({ onCropSelect, userCrops }: { onCropSelect: (crop: 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
             <FormField label="Crop">
               <StyledSelect value={form.crop} onChange={e => handleCropChange(e.target.value)}>
-                {availableCrops.map(c => <option key={c} value={c}>{c}</option>)}
+                {CROPS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
               </StyledSelect>
             </FormField>
 
@@ -1072,14 +916,13 @@ function YieldPredictionTab({ onCropSelect, userCrops }: { onCropSelect: (crop: 
 /* ═════════════════════════════════════════════
    TAB 3: Climate Risk
    ═════════════════════════════════════════════ */
-function ClimateRiskTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
+function ClimateRiskTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
   const initialVillages = getVillagesForDistrict('Belgaum');
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
   const [form, setForm] = useState({
     state: 'Karnataka',
     district: 'Belgaum',
     village: initialVillages[0] || 'All Villages / District Central',
-    crop: availableCrops[0] || 'Rice',
+    crop: 'Rice',
     temperature: '28',
     rainfall: '140',
     humidity: '65',
@@ -1092,6 +935,8 @@ function ClimateRiskTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
   const districts = getDistrictsForState(form.state);
   const villages = getVillagesForDistrict(form.district);
 
+  // Climate model backdrop active by default; updates to crop when user chooses crop
+
   const handleStateChange = (newState: string) => {
     const newDistricts = getDistrictsForState(newState);
     const newD = newDistricts[0] || '';
@@ -1102,7 +947,6 @@ function ClimateRiskTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
       district: newD,
       village: newVillages[0] || 'All Villages / District Central',
     });
-    setResult(null);
   };
 
   const handleDistrictChange = (newDistrict: string) => {
@@ -1189,7 +1033,7 @@ function ClimateRiskTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
 
             <FormField label="Crop">
               <StyledSelect value={form.crop} onChange={e => handleCropChange(e.target.value)}>
-                {availableCrops.map(c => <option key={c} value={c}>{c}</option>)}
+                {CROPS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
               </StyledSelect>
             </FormField>
 
@@ -1270,10 +1114,9 @@ function ClimateRiskTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
 /* ═════════════════════════════════════════════
    TAB 4: Irrigation Advice
    ═════════════════════════════════════════════ */
-function IrrigationTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
+function IrrigationTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
   const [form, setForm] = useState({
-    crop: availableCrops[0] || 'Wheat',
+    crop: 'Wheat',
     soil_type: 'Alluvial',
     growth_stage: 'Vegetative Growth',
     temperature: '30',
@@ -1288,7 +1131,6 @@ function IrrigationTab({ onCropSelect, userCrops }: { onCropSelect: (crop: strin
 
   const handleCropChange = (newCrop: string) => {
     setForm({ ...form, crop: newCrop });
-    setResult(null);
     onCropSelect(newCrop);
   };
 
@@ -1329,7 +1171,7 @@ function IrrigationTab({ onCropSelect, userCrops }: { onCropSelect: (crop: strin
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
             <FormField label="Crop">
               <StyledSelect value={form.crop} onChange={e => handleCropChange(e.target.value)}>
-                {availableCrops.map(c => <option key={c} value={c}>{c}</option>)}
+                {CROPS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
               </StyledSelect>
             </FormField>
 
@@ -1436,11 +1278,10 @@ function IrrigationTab({ onCropSelect, userCrops }: { onCropSelect: (crop: strin
 /* ═════════════════════════════════════════════
    TAB 5: Market Price
    ═════════════════════════════════════════════ */
-function MarketPriceTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
+function MarketPriceTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
   const initialVillages = getVillagesForDistrict('Ludhiana');
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
   const [form, setForm] = useState({
-    crop: availableCrops[0] || 'Wheat',
+    crop: 'Wheat',
     state: 'Punjab',
     district: 'Ludhiana',
     village: initialVillages[0] || 'All Villages / District Central',
@@ -1465,7 +1306,6 @@ function MarketPriceTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
       district: newD,
       village: newVillages[0] || 'All Villages / District Central',
     });
-    setResult(null);
   };
 
   const handleDistrictChange = (newDistrict: string) => {
@@ -1475,12 +1315,10 @@ function MarketPriceTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
       district: newDistrict,
       village: newVillages[0] || 'All Villages / District Central',
     });
-    setResult(null);
   };
 
   const handleCropChange = (newCrop: string) => {
     setForm({ ...form, crop: newCrop });
-    setResult(null);
     onCropSelect(newCrop);
   };
 
@@ -1520,7 +1358,7 @@ function MarketPriceTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
             <FormField label="Crop">
               <StyledSelect value={form.crop} onChange={e => handleCropChange(e.target.value)}>
-                {availableCrops.map(c => <option key={c} value={c}>{c}</option>)}
+                {CROPS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
               </StyledSelect>
             </FormField>
 
@@ -1621,11 +1459,10 @@ function MarketPriceTab({ onCropSelect, userCrops }: { onCropSelect: (crop: stri
 /* ═════════════════════════════════════════════
    TAB 6: Revenue & Profit Calculator
    ═════════════════════════════════════════════ */
-function RevenueProfitTab({ onCropSelect, userCrops }: { onCropSelect: (crop: string) => void; userCrops: string[] }) {
-  const availableCrops = userCrops.length > 0 ? userCrops : CROPS_LIST;
-  const initialBenchmark = getCropFinancialBenchmark(availableCrops[0] || 'Rice');
+function RevenueProfitTab({ onCropSelect }: { onCropSelect: (crop: string) => void }) {
+  const initialBenchmark = getCropFinancialBenchmark('Rice');
   const [form, setForm] = useState({
-    crop: availableCrops[0] || 'Rice',
+    crop: 'Rice',
     area_hectares: '1',
     predicted_yield_kg_per_hectare: initialBenchmark.defaultYieldKgPerHa.toString(),
     predicted_price_per_quintal: initialBenchmark.defaultPricePerQuintal.toString(),
@@ -1731,7 +1568,7 @@ function RevenueProfitTab({ onCropSelect, userCrops }: { onCropSelect: (crop: st
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
             <FormField label="Crop Selection">
               <StyledSelect value={form.crop} onChange={e => handleCropChange(e.target.value)}>
-                {availableCrops.map(c => <option key={c} value={c}>{c}</option>)}
+                {CROPS_LIST.map(c => <option key={c} value={c}>{c}</option>)}
               </StyledSelect>
             </FormField>
 

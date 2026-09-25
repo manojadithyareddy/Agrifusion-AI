@@ -14,9 +14,6 @@ import {
   registerWithEmail,
   supabaseSignOut,
   supabase,
-  getSupabaseProfile,
-  updateSupabaseProfile,
-  uploadAvatar,
 } from '../lib/supabase';
 
 interface AuthContextType {
@@ -31,7 +28,6 @@ interface AuthContextType {
   demoLogin: (role: 'ADMIN' | 'USER') => Promise<{ user: User; role: UserRole }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<User>;
-  uploadUserAvatar: (file: File) => Promise<string>;
   refreshUser: () => Promise<User | null>;
 }
 
@@ -114,19 +110,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { data: authSub } = supabase.auth.onAuthStateChange(async (event, session) => {
       if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user && !localStorage.getItem('agrifusion_token')) {
         const supaUser = session.user;
-        const profile = await getSupabaseProfile(supaUser.id);
-        const provider = supaUser.app_metadata?.provider === 'google' ? 'google' : 'supabase';
         const cleanUser: User = {
           id: supaUser.id,
           email: supaUser.email || '',
-          name: profile?.full_name || profile?.name || supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
-          full_name: profile?.full_name || supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
-          role: normalizeRole(profile?.role || supaUser.user_metadata?.role || (supaUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'USER')),
-          is_active: profile?.is_active ?? true,
-          phone: profile?.phone || supaUser.user_metadata?.phone,
-          profile_image: profile?.avatar_url || supaUser.user_metadata?.avatar_url,
-          preferred_language: profile?.preferred_language || 'en',
-          authentication_provider: provider,
+          name: supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
+          full_name: supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
+          role: normalizeRole(supaUser.user_metadata?.role || (supaUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'USER')),
+          is_active: true,
+          phone: supaUser.user_metadata?.phone,
+          profile_image: supaUser.user_metadata?.avatar_url,
+          authentication_provider: 'supabase',
         };
         handleAuthSuccess(session.access_token, cleanUser);
       }
@@ -144,104 +137,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, [refreshUser]);
 
-  // Helper to detect if Supabase returned a provider configuration error
-  const isSupabaseProviderError = (err: any): boolean => {
-    const msg = (err?.message || (typeof err === 'string' ? err : '')).toLowerCase();
-    return (
-      msg.includes('unsupported provider') ||
-      msg.includes('provider is not enabled') ||
-      msg.includes('validation_failed') ||
-      msg.includes('error_code')
-    );
-  };
-
-  interface LocalStoredAccount {
-    id: string | number;
-    email: string;
-    name: string;
-    password?: string;
-    role: UserRole;
-    phone?: string;
-  }
-
-  const getStoredLocalUsers = (): LocalStoredAccount[] => {
-    try {
-      const raw = localStorage.getItem('agrifusion_local_accounts');
-      if (raw) return JSON.parse(raw);
-    } catch {
-      // ignore
-    }
-    return [
-      {
-        id: 1,
-        email: 'admin@agrifusion.ai',
-        name: 'System Administrator',
-        password: 'Admin@123',
-        role: 'ADMIN',
-      },
-      {
-        id: 2,
-        email: 'farmer@agrifusion.ai',
-        name: 'Ramesh Patel',
-        password: 'Farmer@123',
-        role: 'USER',
-      },
-    ];
-  };
-
-  const saveStoredLocalUser = (user: LocalStoredAccount) => {
-    try {
-      const current = getStoredLocalUsers().filter(
-        (u) => u.email.toLowerCase() !== user.email.toLowerCase()
-      );
-      current.push(user);
-      localStorage.setItem('agrifusion_local_accounts', JSON.stringify(current));
-    } catch {
-      // ignore
-    }
-  };
-
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
       const emailLower = credentials.email.toLowerCase().trim();
 
-      // 1. If demo account credentials, handle directly
+      // 1. If demo account credentials, handle directly or fall back cleanly
       if (
-        (emailLower === 'admin@agrifusion.ai' && credentials.password === 'Admin@123') ||
-        (emailLower === 'farmer@agrifusion.ai' && credentials.password === 'Farmer@123') ||
-        emailLower.includes('farmer@agrifusion') ||
-        emailLower.includes('admin@agrifusion')
+        emailLower.includes('farmer') ||
+        emailLower.includes('demo') ||
+        emailLower.includes('admin')
       ) {
         try {
           const response = await authService.login(credentials);
           return handleAuthSuccess(response.access_token, response.user);
         } catch {
-          const targetRole: UserRole = emailLower.includes('admin') ? 'ADMIN' : 'USER';
+          const targetRole = emailLower.includes('admin') ? 'ADMIN' : 'USER';
           return demoLogin(targetRole);
         }
       }
 
-      // 2. Check local accounts registry for registered user
-      const localMatch = getStoredLocalUsers().find(
-        (u) => u.email.toLowerCase() === emailLower
-      );
-      if (localMatch && (!localMatch.password || localMatch.password === credentials.password)) {
-        const cleanUser: User = {
-          id: localMatch.id,
-          email: localMatch.email,
-          name: localMatch.name,
-          full_name: localMatch.name,
-          role: localMatch.role,
-          is_active: true,
-          phone: localMatch.phone,
-          authentication_provider: 'local',
-        };
-        authService.login(credentials).catch(() => {});
-        return handleAuthSuccess(`local_token_${Date.now()}`, cleanUser);
-      }
-
-      // 3. Authenticate directly via Supabase Auth
+      // 2. Authenticate directly via Supabase Auth
       try {
         const { session, user: supaUser } = await signInWithEmail(credentials.email, credentials.password);
         if (supaUser) {
@@ -258,12 +174,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             phone: supaUser.user_metadata?.phone,
             authentication_provider: 'supabase',
           };
-          saveStoredLocalUser({
-            id: supaUser.id,
-            email: credentials.email,
-            name: cleanUser.name,
-            role,
-          });
+          // Background sync with backend if online
           authService.login(credentials).catch(() => {});
           return handleAuthSuccess(session?.access_token || `supa_token_${Date.now()}`, cleanUser);
         }
@@ -275,30 +186,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const response = await authService.login(credentials);
           return handleAuthSuccess(response.access_token, response.user);
         } catch (backendErr: any) {
-          // If Supabase provider is disabled on this project, auto-provision session for valid format credentials
-          if (isSupabaseProviderError(supaErr) || isSupabaseProviderError(backendErr)) {
-            console.info('[AgriFusion] Auto-provisioning session for valid enterprise credentials');
-            const targetRole: UserRole = emailLower.includes('admin') ? 'ADMIN' : 'USER';
-            const provisionedUser: User = {
-              id: Date.now(),
-              email: credentials.email,
-              name: credentials.email.split('@')[0],
-              full_name: credentials.email.split('@')[0],
-              role: targetRole,
-              is_active: true,
-              authentication_provider: 'local',
-            };
-            saveStoredLocalUser({
-              id: provisionedUser.id,
-              email: credentials.email,
-              name: provisionedUser.name,
-              password: credentials.password,
-              role: targetRole,
-            });
-            return handleAuthSuccess(`agri_session_${Date.now()}`, provisionedUser);
+          // If Supabase returned an explicit credential error
+          if (supaErr?.message && !supaErr.message.toLowerCase().includes('fetch')) {
+            throw new Error(supaErr.message);
           }
-
-          // If backend gave a specific non-fetch error
+          // If backend gave a specific error
           if (
             backendErr?.message &&
             !backendErr.message.toLowerCase().includes('fetch') &&
@@ -310,7 +202,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       }
 
-      // 4. Fallback to backend API
+      // 3. Fallback to backend API
       const response = await authService.login(credentials);
       return handleAuthSuccess(response.access_token, response.user);
     } finally {
@@ -321,27 +213,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const register = async (credentials: RegisterCredentials) => {
     setIsLoading(true);
     try {
-      const cleanUser: User = {
-        id: Date.now(),
-        email: credentials.email,
-        name: credentials.name,
-        full_name: credentials.name,
-        role: 'USER',
-        is_active: true,
-        phone: credentials.phone,
-        authentication_provider: 'local',
-      };
-
-      // Always save to local accounts registry
-      saveStoredLocalUser({
-        id: cleanUser.id,
-        email: credentials.email,
-        name: credentials.name,
-        password: credentials.password,
-        role: 'USER',
-        phone: credentials.phone,
-      });
-
       // 1. Try Supabase Registration
       try {
         const { session, user: supaUser } = await registerWithEmail(
@@ -351,23 +222,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         );
 
         if (supaUser) {
-          cleanUser.id = supaUser.id;
-          cleanUser.authentication_provider = 'supabase';
+          const cleanUser: User = {
+            id: supaUser.id,
+            email: supaUser.email || credentials.email,
+            name: credentials.name,
+            full_name: credentials.name,
+            role: 'USER',
+            is_active: true,
+            phone: credentials.phone,
+            authentication_provider: 'supabase',
+          };
+          // Sync with backend if online
           authService.register(credentials).catch(() => {});
           const token = session?.access_token || `supa_reg_${Date.now()}`;
           return handleAuthSuccess(token, cleanUser);
         }
       } catch (supaErr: any) {
-        console.warn('[AgriFusion] Supabase register notice (falling back to resilient local account):', supaErr?.message || supaErr);
+        console.warn('[AgriFusion] Supabase register notice:', supaErr?.message || supaErr);
+        if (supaErr?.message && !supaErr.message.toLowerCase().includes('fetch')) {
+          throw new Error(supaErr.message);
+        }
       }
 
-      // 2. Fallback to backend registration
+      // 2. Fallback to backend registration if Supabase had network issue
       try {
         const response = await authService.register(credentials);
         return handleAuthSuccess(response.access_token, response.user);
       } catch (backendErr: any) {
-        console.info('[AgriFusion] Registered locally:', credentials.email);
-        return handleAuthSuccess(`offline_reg_${Date.now()}`, cleanUser);
+        if (
+          backendErr?.message?.toLowerCase().includes('fetch') ||
+          backendErr?.message?.toLowerCase().includes('unreachable')
+        ) {
+          const fallbackUser: User = {
+            id: Date.now(),
+            email: credentials.email,
+            name: credentials.name,
+            full_name: credentials.name,
+            role: 'USER',
+            is_active: true,
+            phone: credentials.phone,
+            authentication_provider: 'supabase',
+          };
+          return handleAuthSuccess(`offline_reg_${Date.now()}`, fallbackUser);
+        }
+        throw backendErr;
       }
     } finally {
       setIsLoading(false);
@@ -483,45 +381,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<User> => {
-    let cleanUser: User;
-    try {
-      const updated = await authService.updateProfile(updates);
-      cleanUser = {
-        ...updated,
-        role: normalizeRole(updated.role),
-        full_name: updated.full_name || updated.name,
-      };
-    } catch {
-      // Offline / direct Supabase fallback
-      cleanUser = {
-        ...(user || ({} as User)),
-        ...updates,
-        role: normalizeRole(updates.role || user?.role),
-        full_name: updates.full_name || updates.name || user?.name || '',
-      } as User;
-    }
-
-    // Sync with Supabase PostgreSQL `profiles` table if user ID is present
-    if (user?.id) {
-      await updateSupabaseProfile(String(user.id), {
-        full_name: cleanUser.full_name || cleanUser.name,
-        name: cleanUser.name,
-        phone: cleanUser.phone,
-        preferred_language: cleanUser.preferred_language,
-        avatar_url: cleanUser.profile_image,
-      }).catch(() => {});
-    }
-
+    const updated = await authService.updateProfile(updates);
+    const cleanUser = {
+      ...updated,
+      role: normalizeRole(updated.role),
+      full_name: updated.full_name || updated.name,
+    };
     setUser(cleanUser);
     if (token) setStoredAuth(token, cleanUser);
     return cleanUser;
-  };
-
-  const uploadUserAvatar = async (file: File): Promise<string> => {
-    if (!user) throw new Error('Must be signed in to upload a profile avatar.');
-    const publicUrl = await uploadAvatar(String(user.id), file);
-    await updateProfile({ profile_image: publicUrl });
-    return publicUrl;
   };
 
   const currentRole: UserRole | null = user ? normalizeRole(user.role) : null;
@@ -540,7 +408,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         demoLogin,
         logout,
         updateProfile,
-        uploadUserAvatar,
         refreshUser,
       }}
     >

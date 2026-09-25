@@ -1,4 +1,4 @@
-from app.auth.security import get_optional_current_user
+from app.auth.security import get_current_user
 from app.models.user import User
 from fastapi import Depends, APIRouter, Query
 from typing import Optional
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/")
-async def list_schemes(current_user: Optional[User] = Depends(get_optional_current_user)):
+async def list_schemes( current_user: User = Depends(get_current_user)):
     """List all active government agriculture schemes."""
     service = get_scheme_service()
     return {"schemes": service.get_all_schemes(), "count": len(service.get_all_schemes())}
@@ -44,7 +44,7 @@ async def recommend_schemes(
 
 
 @router.get("/{scheme_id}")
-async def get_scheme(scheme_id: str, current_user: Optional[User] = Depends(get_optional_current_user)):
+async def get_scheme(scheme_id: str, current_user: User = Depends(get_current_user)):
     """Get detailed information about a specific scheme."""
     service = get_scheme_service()
     scheme = service.get_scheme_by_id(scheme_id)

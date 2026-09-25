@@ -1,10 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { uploadCropScanImage, saveCropScanToSupabase } from '../lib/supabase';
 import { CROPS_LIST, getCropRiskProfile } from '../utils/geoCropData';
 import { SAMPLE_LEAF_PRESETS, generateSampleLeafFile } from '../utils/sampleLeafImages';
-import { useCameraScanner } from '../hooks/useCameraScanner';
 
 interface Detection {
   id: string;
@@ -25,6 +23,8 @@ interface AnalysisResult {
 
 export default function CropHealth() {
   const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+
   const [selectedCrop, setSelectedCrop] = useState('Tomato');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -34,27 +34,6 @@ export default function CropHealth() {
   const [error, setError] = useState('');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Optical Camera Scanner Hook
-  const {
-    isCameraActive,
-    cameraError,
-    videoRef,
-    startCamera,
-    stopCamera,
-    toggleFacingMode,
-    captureFrame,
-  } = useCameraScanner();
-
-  const handleCaptureCamera = () => {
-    const capture = captureFrame('crop_health_scan');
-    if (capture) {
-      setFile(capture.file);
-      setPreview(capture.dataUrl);
-      setResult(null);
-      setError('');
-    }
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -107,13 +86,10 @@ export default function CropHealth() {
     setLoading(true);
     setError('');
     
-    let finalResult: AnalysisResult | null = null;
-
     try {
       const data = await api.uploadFile<AnalysisResult>('/api/v1/vision/analyze-image', file, {
         crop: selectedCrop !== 'auto' ? selectedCrop : undefined,
       });
-      finalResult = data;
       setResult(data);
     } catch (err: unknown) {
       console.warn('Backend vision API offline, executing client-side pathology diagnosis:', err);
@@ -146,34 +122,9 @@ export default function CropHealth() {
         ],
         safety_notice: 'Follow chemical pre-harvest interval (PHI) guidelines and wear personal protective equipment (PPE) during spraying.',
       };
-      finalResult = fallbackResult;
       setResult(fallbackResult);
     } finally {
       setLoading(false);
-      
-      // Persist to Supabase Cloud Storage & PostgreSQL if user is authenticated
-      if (user?.id && finalResult) {
-        const payloadToSave = finalResult;
-        (async () => {
-          try {
-            let cloudImageUrl = preview || undefined;
-            if (file) {
-              cloudImageUrl = await uploadCropScanImage(String(user.id), file).catch(() => undefined);
-            }
-            await saveCropScanToSupabase({
-              user_id: String(user.id),
-              crop_name: selectedCrop !== 'auto' ? selectedCrop : 'Tomato',
-              image_url: cloudImageUrl,
-              health_status: payloadToSave.status || 'DIAGNOSED',
-              diagnosis_summary: payloadToSave.summary,
-              detections: payloadToSave.detections,
-              recommendations: payloadToSave.recommendations,
-            });
-          } catch (storageErr) {
-            console.warn('[AgriFusion] Supabase cloud storage notice:', storageErr);
-          }
-        })();
-      }
     }
   };
 
@@ -260,128 +211,29 @@ export default function CropHealth() {
             onChange={handleFileChange}
           />
           
-          {/* Upload / Camera Mode Toggle Buttons */}
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
-            <button
-              onClick={() => {
-                stopCamera();
-                fileInputRef.current?.click();
-              }}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                background: !isCameraActive ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                border: !isCameraActive ? '1px solid #38bdf8' : '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '12px',
-                color: !isCameraActive ? '#38bdf8' : '#cbd5e1',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                transition: 'all 0.2s',
-              }}
-            >
-              <span>📁</span>
-              <span>Upload Image</span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (isCameraActive) {
-                  stopCamera();
-                } else {
-                  startCamera('environment');
-                }
-              }}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                background: isCameraActive ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 255, 102, 0.15)',
-                border: isCameraActive ? '1px solid #ef4444' : '1px solid #00ff66',
-                borderRadius: '12px',
-                color: isCameraActive ? '#fca5a5' : '#4ade80',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                transition: 'all 0.2s',
-              }}
-            >
-              <span>📷</span>
-              <span>{isCameraActive ? 'Stop Camera' : 'Scan Option ON (Camera)'}</span>
-            </button>
-          </div>
-
-          {cameraError && (
-            <div style={{ color: '#f87171', fontSize: '0.82rem', marginBottom: '12px', background: 'rgba(239,68,68,0.1)', padding: '8px 12px', borderRadius: '8px' }}>
-              ⚠️ {cameraError}
-            </div>
-          )}
-
-          {isCameraActive ? (
-            /* Live Camera Viewfinder */
-            <div style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', minHeight: '340px', background: '#000' }}>
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                style={{ width: '100%', height: '100%', minHeight: '340px', objectFit: 'cover' }}
-              />
-
-              {/* Optical HUD Overlay */}
-              <div style={{ position: 'absolute', inset: '16px', border: '1px dashed rgba(0,255,102,0.4)', borderRadius: '14px', pointerEvents: 'none' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '20px', height: '20px', borderTop: '3px solid #00ff66', borderLeft: '3px solid #00ff66' }} />
-                <div style={{ position: 'absolute', top: 0, right: 0, width: '20px', height: '20px', borderTop: '3px solid #00ff66', borderRight: '3px solid #00ff66' }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, width: '20px', height: '20px', borderBottom: '3px solid #00ff66', borderLeft: '3px solid #00ff66' }} />
-                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '20px', height: '20px', borderBottom: '3px solid #00ff66', borderRight: '3px solid #00ff66' }} />
-              </div>
-
-              {/* Controls */}
-              <div style={{ position: 'absolute', bottom: '16px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '10px', padding: '0 12px' }}>
-                <button
-                  onClick={toggleFacingMode}
-                  style={{ background: 'rgba(15,23,42,0.85)', border: '1px solid rgba(255,255,255,0.2)', color: '#cbd5e1', padding: '8px 14px', borderRadius: '20px', fontSize: '0.8rem', cursor: 'pointer' }}
-                >
-                  🔄 Flip
-                </button>
-                <button
-                  onClick={handleCaptureCamera}
-                  style={{ background: 'linear-gradient(135deg, #00ff66, #10b981)', border: 'none', color: '#022c22', padding: '10px 22px', borderRadius: '24px', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,255,102,0.5)' }}
-                >
-                  📸 Capture & Diagnose
-                </button>
-                <button
-                  onClick={stopCamera}
-                  style={{ background: 'rgba(239,68,68,0.3)', border: '1px solid #ef4444', color: '#fca5a5', padding: '8px 14px', borderRadius: '20px', fontSize: '0.8rem', cursor: 'pointer' }}
-                >
-                  ✕ Close
-                </button>
-              </div>
-            </div>
-          ) : !preview ? (
+          {!preview ? (
             <div 
               style={{
                 border: '2px dashed rgba(255,255,255,0.15)', borderRadius: '16px',
                 padding: '48px 24px', textAlign: 'center', cursor: 'pointer',
                 transition: 'all 0.2s', background: 'rgba(255,255,255,0.02)',
               }}
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
+              onClick={() => {
+                if (!isAdmin) {
+                  setError('ℹ️ Custom image file upload is available for Admin only. Please select any of the disease presets above to run instant automated AI diagnosis!');
+                  return;
+                }
+                fileInputRef.current?.click();
+              }}
+              onDragOver={isAdmin ? handleDragOver : undefined}
+              onDrop={isAdmin ? handleDrop : undefined}
             >
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📸</div>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>{isAdmin ? '📷' : '🔒'}</div>
               <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '6px' }}>
-                Click to browse photo or drag & drop here
+                {isAdmin ? 'Click to browse photo or drag & drop here' : 'Custom Image Upload (Admin Only)'}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                Supports JPG, PNG, WEBP (Max 10MB) • Unrestricted access for all users
+                {isAdmin ? 'Supports JPG, PNG, WEBP (Max 10MB)' : 'Select any verified crop leaf preset above for instant AI diagnosis'}
               </div>
             </div>
           ) : (

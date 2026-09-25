@@ -23,13 +23,12 @@ export default function LandingLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Premium Navigation Items aligning with enterprise architecture
+  // Dynamic Navigation Items: About followed by Sign In (unauthenticated) or Profile & Admin (authenticated)
   const navItems = [
-    { id: 'platform', label: 'Platform' },
+    { id: 'home', label: 'Home' },
+    { id: 'predictions', label: 'AI Prediction' },
+    { id: 'market', label: 'Market Insights' },
     { id: 'assistant', label: 'AI Assistant' },
-    { id: 'models', label: 'AI Models' },
-    { id: 'technology', label: 'Technology' },
-    { id: 'architecture', label: 'Architecture' },
     { id: 'about', label: 'About' },
     ...(isAuthenticated
       ? [
@@ -46,36 +45,6 @@ export default function LandingLayout({
       routerNavigate('/profile');
     } else if (page === 'admin') {
       routerNavigate('/admin/dashboard');
-    } else if (page === 'platform') {
-      if (activePage === 'home') {
-        const el = document.getElementById('section-pipeline');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-        else routerNavigate('/predictions');
-      } else {
-        routerNavigate('/predictions');
-      }
-    } else if (page === 'assistant') {
-      routerNavigate('/ai-assistant');
-    } else if (page === 'models') {
-      routerNavigate('/predictions');
-    } else if (page === 'technology') {
-      if (activePage === 'home') {
-        const el = document.getElementById('section-trust') || document.getElementById('section-scan-demo');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-        else routerNavigate('/');
-      } else {
-        routerNavigate('/');
-      }
-    } else if (page === 'architecture') {
-      if (activePage === 'home') {
-        const el = document.getElementById('section-architecture');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-        else routerNavigate('/');
-      } else {
-        routerNavigate('/');
-      }
-    } else if (page === 'about') {
-      routerNavigate('/about');
     } else {
       onNavigate?.(page);
     }
@@ -350,27 +319,27 @@ export default function LandingLayout({
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {!isAuthenticated ? (
             <button
-              onClick={() => routerNavigate('/ai-assistant')}
+              onClick={() => routerNavigate('/signup')}
               className="desktop-nav"
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #00ff66 100%)',
+                background: '#86efac',
                 color: '#022c22',
                 border: 'none',
-                padding: '10px 22px',
+                padding: '10px 24px',
                 borderRadius: '30px',
                 fontWeight: 800,
                 cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(0,255,102,0.4)',
+                boxShadow: '0 4px 15px rgba(134,239,172,0.4)',
                 transition: 'transform 0.2s',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                fontSize: '0.88rem',
+                fontSize: '0.9rem',
               }}
               onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
               onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              Launch AI Assistant <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>➔</span>
+              Get Started <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>➔</span>
             </button>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} className="desktop-nav">
@@ -548,36 +517,36 @@ export default function LandingLayout({
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>Platform</h4>
-            <FooterLink text="AI Prediction Engine" onClick={() => handleNavigate('predictions')} />
-            <FooterLink text="Crop Diagnostics" onClick={() => handleNavigate('predictions')} />
+            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>AI Prediction</h4>
+            <FooterLink text="Crop Recommendation" onClick={() => handleNavigate('predictions')} />
+            <FooterLink text="Disease Detection" onClick={() => handleNavigate('predictions')} />
             <FooterLink text="Yield Forecast" onClick={() => handleNavigate('predictions')} />
-            <FooterLink text="Climate Intelligence" onClick={() => handleNavigate('predictions')} />
+            <FooterLink text="Climate Risk" onClick={() => handleNavigate('predictions')} />
             <FooterLink text="Irrigation Advice" onClick={() => handleNavigate('predictions')} />
+            <FooterLink text="Revenue & Profit" onClick={() => handleNavigate('predictions')} />
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>Technology</h4>
-            <FooterLink text="Computer Vision & YOLO" onClick={() => handleNavigate('technology')} />
-            <FooterLink text="Multimodal Fusion" onClick={() => handleNavigate('technology')} />
-            <FooterLink text="RAG Knowledge Engine" onClick={() => handleNavigate('technology')} />
-            <FooterLink text="Autonomous Agents" onClick={() => handleNavigate('technology')} />
-            <FooterLink text="System Architecture" onClick={() => handleNavigate('architecture')} />
+            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>Market Insights</h4>
+            <FooterLink text="Live Mandi Rates" onClick={() => handleNavigate('market')} />
+            <FooterLink text="Price Trends" onClick={() => handleNavigate('market')} />
+            <FooterLink text="e-NAM APMC Bids" onClick={() => handleNavigate('market')} />
+            <FooterLink text="State Mandis" onClick={() => handleNavigate('market')} />
           </div>
 
           <div>
             <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>AI Assistant</h4>
-            <FooterLink text="Launch AI Assistant" onClick={() => handleNavigate('assistant')} />
+            <FooterLink text="Agrifusion Chatbot" onClick={() => handleNavigate('assistant')} />
             <FooterLink text="Multimodal Diagnosis" onClick={() => handleNavigate('assistant')} />
             <FooterLink text="Voice Agro Advisory" onClick={() => handleNavigate('assistant')} />
-            <FooterLink text="APMC Market Insights" onClick={() => handleNavigate('platform')} />
+            <FooterLink text="About Platform" onClick={() => handleNavigate('about')} />
           </div>
 
           <div>
-            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>Documentation & Legal</h4>
-            <FooterLink text="API Schema (OpenAPI)" href="/api/docs" external />
-            <FooterLink text="Platform Architecture" onClick={() => handleNavigate('architecture')} />
-            <FooterLink text="GitHub Repository" href="https://github.com/manojadithyareddy/Agrifusion-AI" external />
+            <h4 style={{ color: '#fff', marginBottom: '16px', fontSize: '0.95rem', fontWeight: 700 }}>Resources</h4>
+            <FooterLink text="Documentation" href="/docs" external />
+            <FooterLink text="API Schema (OpenAPI)" href="/openapi.json" external />
+            <FooterLink text="GitHub Repository" href="https://github.com" external />
             <FooterLink text="About AgriFusion" onClick={() => handleNavigate('about')} />
           </div>
         </div>
@@ -589,13 +558,10 @@ export default function LandingLayout({
           </p>
         </div>
 
-        <div style={{ maxWidth: '1200px', margin: '30px auto 0', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.85rem', flexWrap: 'wrap', gap: '14px' }}>
+        <div style={{ maxWidth: '1200px', margin: '30px auto 0', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.85rem', flexWrap: 'wrap', gap: '10px' }}>
           <p>© {new Date().getFullYear()} AgriFusion AI. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <span style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={() => handleNavigate('about')}>Privacy Policy</span>
-            <span style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={() => handleNavigate('about')}>Terms of Service</span>
-            <span style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={() => handleNavigate('about')}>Contact Us</span>
-            <a href="https://github.com/manojadithyareddy/Agrifusion-AI" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none' }}>GitHub</a>
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <span>Built for farmers, powered by Multimodal AI</span>
           </div>
         </div>
       </footer>
