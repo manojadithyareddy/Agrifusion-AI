@@ -525,7 +525,9 @@ export default function Assistant() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100vh - 72px)',
+        height: '100vh',
+        boxSizing: 'border-box',
+        paddingTop: '86px',
         background: '#090e17',
         color: '#f8fafc',
         fontFamily: 'Inter, system-ui, sans-serif',
