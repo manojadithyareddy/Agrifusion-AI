@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Supabase
     SUPABASE_URL: Optional[str] = "https://xenrnczedenmvljzlbin.supabase.co"
     SUPABASE_KEY: Optional[str] = "sb_publishable_BkmeBl1mAwJl6uQDOctAPw_gtrQwkC-"
+    SUPABASE_JWT_SECRET: Optional[str] = None
     
     # LLM / GenAI
     LLM_PROVIDER: str = "gemini"  # gemini, openai, anthropic

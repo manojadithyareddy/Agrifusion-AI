@@ -46,6 +46,9 @@ FRONTEND_DIST = FRONTEND_DIR / "dist"
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
+# Enable Python package resolution for `uvicorn app.main:app` when executed from root
+__path__ = [str(BACKEND_DIR / "app")]
+
 # Try loading .env from backend or root
 try:
     from dotenv import load_dotenv

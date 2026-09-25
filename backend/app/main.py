@@ -101,20 +101,6 @@ async def root():
     }
 
 
-@app.get("/", tags=["Root"], include_in_schema=False)
-async def frontend_root():
-    from pathlib import Path
-    from fastapi.responses import HTMLResponse
-    root_dist_index = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist" / "index.html"
-    if root_dist_index.exists():
-        return HTMLResponse(content=root_dist_index.read_text(encoding="utf-8"))
-    return {
-        "name": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running",
-    }
-
-
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
@@ -157,3 +143,36 @@ async def readiness_check():
         "version": settings.APP_VERSION,
         "timestamp": time.time(),
     }
+
+
+# --- SPA & Static Assets Serving (Must be at end to avoid route conflicts) ---
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
+
+_dist_dir = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+if _dist_dir.is_dir():
+    _assets_dir = _dist_dir / "assets"
+    if _assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="assets")
+
+    @app.get("/{full_path:path}", tags=["Frontend SPA"], include_in_schema=False)
+    async def serve_spa_main(full_path: str, request: Request):
+        if full_path.startswith("api/") or full_path in ["api", "docs", "redoc", "openapi.json", "health", "readiness"]:
+            return JSONResponse(status_code=404, content={"detail": f"Not found: /{full_path}"})
+        if full_path:
+            candidate = _dist_dir / full_path
+            if candidate.is_file():
+                return FileResponse(str(candidate))
+        index_file = _dist_dir / "index.html"
+        if index_file.is_file():
+            return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
+        return JSONResponse(status_code=404, content={"detail": "Frontend build not found"})
+else:
+    @app.get("/", tags=["Frontend SPA"], include_in_schema=False)
+    async def frontend_root():
+        return {
+            "name": settings.APP_NAME,
+            "version": settings.APP_VERSION,
+            "status": "running",
+        }

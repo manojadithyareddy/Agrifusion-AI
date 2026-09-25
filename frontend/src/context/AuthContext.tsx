@@ -14,6 +14,9 @@ import {
   registerWithEmail,
   supabaseSignOut,
   supabase,
+  getSupabaseProfile,
+  updateSupabaseProfile,
+  uploadAvatar,
 } from '../lib/supabase';
 
 interface AuthContextType {
@@ -28,6 +31,7 @@ interface AuthContextType {
   demoLogin: (role: 'ADMIN' | 'USER') => Promise<{ user: User; role: UserRole }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<User>;
+  uploadUserAvatar: (file: File) => Promise<string>;
   refreshUser: () => Promise<User | null>;
 }
 
@@ -110,16 +114,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { data: authSub } = supabase.auth.onAuthStateChange(async (event, session) => {
       if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user && !localStorage.getItem('agrifusion_token')) {
         const supaUser = session.user;
+        const profile = await getSupabaseProfile(supaUser.id);
+        const provider = supaUser.app_metadata?.provider === 'google' ? 'google' : 'supabase';
         const cleanUser: User = {
           id: supaUser.id,
           email: supaUser.email || '',
-          name: supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
-          full_name: supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
-          role: normalizeRole(supaUser.user_metadata?.role || (supaUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'USER')),
-          is_active: true,
-          phone: supaUser.user_metadata?.phone,
-          profile_image: supaUser.user_metadata?.avatar_url,
-          authentication_provider: 'supabase',
+          name: profile?.full_name || profile?.name || supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
+          full_name: profile?.full_name || supaUser.user_metadata?.full_name || supaUser.email?.split('@')[0] || 'Farmer User',
+          role: normalizeRole(profile?.role || supaUser.user_metadata?.role || (supaUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'USER')),
+          is_active: profile?.is_active ?? true,
+          phone: profile?.phone || supaUser.user_metadata?.phone,
+          profile_image: profile?.avatar_url || supaUser.user_metadata?.avatar_url,
+          preferred_language: profile?.preferred_language || 'en',
+          authentication_provider: provider,
         };
         handleAuthSuccess(session.access_token, cleanUser);
       }
@@ -476,15 +483,45 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<User> => {
-    const updated = await authService.updateProfile(updates);
-    const cleanUser = {
-      ...updated,
-      role: normalizeRole(updated.role),
-      full_name: updated.full_name || updated.name,
-    };
+    let cleanUser: User;
+    try {
+      const updated = await authService.updateProfile(updates);
+      cleanUser = {
+        ...updated,
+        role: normalizeRole(updated.role),
+        full_name: updated.full_name || updated.name,
+      };
+    } catch {
+      // Offline / direct Supabase fallback
+      cleanUser = {
+        ...(user || ({} as User)),
+        ...updates,
+        role: normalizeRole(updates.role || user?.role),
+        full_name: updates.full_name || updates.name || user?.name || '',
+      } as User;
+    }
+
+    // Sync with Supabase PostgreSQL `profiles` table if user ID is present
+    if (user?.id) {
+      await updateSupabaseProfile(String(user.id), {
+        full_name: cleanUser.full_name || cleanUser.name,
+        name: cleanUser.name,
+        phone: cleanUser.phone,
+        preferred_language: cleanUser.preferred_language,
+        avatar_url: cleanUser.profile_image,
+      }).catch(() => {});
+    }
+
     setUser(cleanUser);
     if (token) setStoredAuth(token, cleanUser);
     return cleanUser;
+  };
+
+  const uploadUserAvatar = async (file: File): Promise<string> => {
+    if (!user) throw new Error('Must be signed in to upload a profile avatar.');
+    const publicUrl = await uploadAvatar(String(user.id), file);
+    await updateProfile({ profile_image: publicUrl });
+    return publicUrl;
   };
 
   const currentRole: UserRole | null = user ? normalizeRole(user.role) : null;
@@ -503,6 +540,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         demoLogin,
         logout,
         updateProfile,
+        uploadUserAvatar,
         refreshUser,
       }}
     >

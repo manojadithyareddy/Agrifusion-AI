@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { api } from '../api/client';
+import { useAuth } from '../context/AuthContext';
+import { uploadCropScanImage, saveCropScanToSupabase } from '../lib/supabase';
 import { CROPS_LIST, getCropRiskProfile } from '../utils/geoCropData';
 import { SAMPLE_LEAF_PRESETS, generateSampleLeafFile } from '../utils/sampleLeafImages';
 import { useCameraScanner } from '../hooks/useCameraScanner';
@@ -22,6 +24,7 @@ interface AnalysisResult {
 }
 
 export default function CropHealth() {
+  const { user } = useAuth();
   const [selectedCrop, setSelectedCrop] = useState('Tomato');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -104,10 +107,13 @@ export default function CropHealth() {
     setLoading(true);
     setError('');
     
+    let finalResult: AnalysisResult | null = null;
+
     try {
       const data = await api.uploadFile<AnalysisResult>('/api/v1/vision/analyze-image', file, {
         crop: selectedCrop !== 'auto' ? selectedCrop : undefined,
       });
+      finalResult = data;
       setResult(data);
     } catch (err: unknown) {
       console.warn('Backend vision API offline, executing client-side pathology diagnosis:', err);
@@ -140,9 +146,34 @@ export default function CropHealth() {
         ],
         safety_notice: 'Follow chemical pre-harvest interval (PHI) guidelines and wear personal protective equipment (PPE) during spraying.',
       };
+      finalResult = fallbackResult;
       setResult(fallbackResult);
     } finally {
       setLoading(false);
+      
+      // Persist to Supabase Cloud Storage & PostgreSQL if user is authenticated
+      if (user?.id && finalResult) {
+        const payloadToSave = finalResult;
+        (async () => {
+          try {
+            let cloudImageUrl = preview || undefined;
+            if (file) {
+              cloudImageUrl = await uploadCropScanImage(String(user.id), file).catch(() => undefined);
+            }
+            await saveCropScanToSupabase({
+              user_id: String(user.id),
+              crop_name: selectedCrop !== 'auto' ? selectedCrop : 'Tomato',
+              image_url: cloudImageUrl,
+              health_status: payloadToSave.status || 'DIAGNOSED',
+              diagnosis_summary: payloadToSave.summary,
+              detections: payloadToSave.detections,
+              recommendations: payloadToSave.recommendations,
+            });
+          } catch (storageErr) {
+            console.warn('[AgriFusion] Supabase cloud storage notice:', storageErr);
+          }
+        })();
+      }
     }
   };
 
