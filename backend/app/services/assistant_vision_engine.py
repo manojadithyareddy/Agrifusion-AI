@@ -96,6 +96,28 @@ class AssistantVisionEngine:
         self.model_version = "opencv-pathology-v5.0"
         self.yolo_status = "STANDALONE_YOLO_WEIGHTS_NOT_FOUND"
         self.classifier_status = "OPENCV_MORPHOMETRIC_PATHOLOGY_ACTIVE"
+        self.yolo_model = None
+        self.yolo_weights_path = None
+
+        # Check for deployed YOLO weights
+        possible_weights = [
+            os.path.join(os.path.dirname(__file__), "..", "ml", "models", "vision", "yolov8_crop_pest.pt"),
+            os.path.join(os.path.dirname(__file__), "..", "ml", "models", "vision", "yolov8_crop_pest.onnx"),
+            "backend/app/ml/models/vision/yolov8_crop_pest.pt",
+            "app/ml/models/vision/yolov8_crop_pest.pt",
+        ]
+        for w_path in possible_weights:
+            norm_path = os.path.abspath(w_path)
+            if os.path.exists(norm_path):
+                try:
+                    from ultralytics import YOLO
+                    self.yolo_model = YOLO(norm_path)
+                    self.yolo_weights_path = norm_path
+                    self.yolo_status = "ACTIVE_YOLO_WEIGHTS_LOADED"
+                    logger.info(f"Loaded trained YOLO model from: {norm_path}")
+                    break
+                except Exception as e:
+                    logger.warning(f"Found YOLO weights at {norm_path} but failed to initialize: {e}")
 
     def get_capability_report(self) -> Dict[str, Any]:
         """
@@ -106,8 +128,13 @@ class AssistantVisionEngine:
             "engine_version": self.model_version,
             "yolo_detector": {
                 "status": self.yolo_status,
-                "note": "Standalone YOLO weights (.pt/.onnx) not found on disk. Real OpenCV contour segmentation active.",
-                "action_for_dev": "Place trained yolov8n-crop-pest.pt in backend/app/ml/models/vision/ to enable external YOLO inference."
+                "weights_path": self.yolo_weights_path if self.yolo_weights_path else None,
+                "note": (
+                    "Active trained YOLO weights loaded and executing."
+                    if self.yolo_status == "ACTIVE_YOLO_WEIGHTS_LOADED"
+                    else "Standalone YOLO weights (.pt/.onnx) not found on disk. Real OpenCV contour segmentation active."
+                ),
+                "action_for_dev": "Run backend/scripts/train_yolo_crops_diseases_pests.py to train 10,000 images/crop model."
             },
             "pathology_classifier": {
                 "status": self.classifier_status,
@@ -281,6 +308,30 @@ class AssistantVisionEngine:
                 "box": [round(cy / 512, 4), round(cx / 512, 4), round((cy + ch) / 512, 4), round((cx + cw) / 512, 4)],
                 "pixel_box": [cy, cx, cy + ch, cx + cw]
             })
+
+        # (d) If trained YOLO model is loaded, run real YOLO inference and prepend authentic detections
+        if self.yolo_model is not None:
+            try:
+                results = self.yolo_model.predict(img_bgr, conf=0.30, iou=0.45, verbose=False)
+                for r in results:
+                    for box in r.boxes:
+                        cls_id = int(box.cls[0])
+                        conf_val = float(box.conf[0])
+                        cls_name = self.yolo_model.names.get(cls_id, f"class_{cls_id}")
+                        xyxyn = box.xyxyn[0].tolist()  # [xmin, ymin, xmax, ymax]
+                        ymin = round(float(xyxyn[1]), 4)
+                        xmin = round(float(xyxyn[0]), 4)
+                        ymax = round(float(xyxyn[3]), 4)
+                        xmax = round(float(xyxyn[2]), 4)
+                        bounding_boxes.insert(0, {
+                            "label": f"YOLO: {cls_name}",
+                            "category": "yolo_detection",
+                            "confidence": round(conf_val, 3),
+                            "box": [ymin, xmin, ymax, xmax],
+                            "pixel_box": [int(ymin * h_orig), int(xmin * w_orig), int(ymax * h_orig), int(xmax * w_orig)]
+                        })
+            except Exception as e:
+                logger.warning(f"YOLO inference error in extract_opencv_pathology: {e}")
 
         return {
             "image_resolution": f"{w_orig}x{h_orig}",
@@ -506,6 +557,29 @@ class AssistantVisionEngine:
                 confidence = 0.92
                 severity = "None"
                 symptoms = ["Glossy green mature leaves without shot-holes"]
+
+        # Check if authentic YOLO detections are present from trained model
+        yolo_detections = [b for b in metrics.get("bounding_boxes", []) if b.get("category") == "yolo_detection"]
+        if yolo_detections:
+            for yd in yolo_detections:
+                lbl = yd.get("label", "").lower()
+                c_val = yd.get("confidence", 0.0)
+                if "whitefly" in lbl and "Whitefly (Bemisia tabaci)" not in pests:
+                    pests.append("Whitefly (Bemisia tabaci)")
+                elif "aphid" in lbl and "Aphid Colony (Aphis gossypii)" not in pests:
+                    pests.append("Aphid Colony (Aphis gossypii)")
+                elif "stem_borer" in lbl and "Yellow Stem Borer (Scirpophaga incertulas)" not in pests:
+                    pests.append("Yellow Stem Borer (Scirpophaga incertulas)")
+                elif "fall_armyworm" in lbl and "Fall Armyworm Larvae (Spodoptera frugiperda)" not in pests:
+                    pests.append("Fall Armyworm Larvae (Spodoptera frugiperda)")
+                elif "thrips" in lbl and "Chilli Thrips (Scirtothrips dorsalis)" not in pests:
+                    pests.append("Chilli Thrips (Scirtothrips dorsalis)")
+                elif "spider_mite" in lbl and "Red Spider Mite (Tetranychus urticae)" not in pests:
+                    pests.append("Red Spider Mite (Tetranychus urticae)")
+                # If YOLO detected a specific disease with high confidence, align confidence
+                if "lesion" in lbl or "pustule" in lbl or "blight" in lbl or "blast" in lbl or "rust" in lbl:
+                    if c_val > confidence:
+                        confidence = round(c_val, 3)
 
         # Confidence Calibration Guard
         if confidence < 0.60:

@@ -1,0 +1,44 @@
+# AgriFusion AI — Multimodal Agriculture Intelligence & Decision Agent
+# YOLO Dataset Configuration for All Crops, Foliar Diseases & Pests
+# ===================================================================
+# Standard Ultralytics YOLOv8 / YOLOv11 dataset specification.
+# Scaled for multi-crop botanical lesion and pest identification.
+
+path: ../../data/yolo_agriculture # root dataset directory
+train: images/train               # train images (relative to 'path')
+val: images/val                   # val images (relative to 'path')
+test: images/test                 # test images (optional, relative to 'path')
+
+# Number of classes
+nc: 23
+
+# Class Names Ontology
+names:
+  # --- Crop Organ Detection (Classes 0-7) ---
+  0: tomato_leaf
+  1: potato_leaf
+  2: rice_leaf
+  3: wheat_leaf
+  4: cotton_leaf
+  5: maize_leaf
+  6: chilli_leaf
+  7: mango_leaf
+
+  # --- Foliar Pathology & Disease Lesions (Classes 8-15) ---
+  8: early_blight_lesion
+  9: late_blight_lesion
+  10: leaf_curl_virus_symptom
+  11: rice_blast_lesion
+  12: yellow_rust_pustule
+  13: powdery_mildew_patch
+  14: anthracnose_spot
+  15: bacterial_blight_lesion
+
+  # --- Agricultural Pests & Insects (Classes 16-22) ---
+  16: whitefly_adult
+  17: aphid_colony
+  18: stem_borer_larva
+  19: fall_armyworm_larva
+  20: chilli_thrips
+  21: spider_mite
+  22: cotton_bollworm
