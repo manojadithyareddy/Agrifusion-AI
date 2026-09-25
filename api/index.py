@@ -118,3 +118,97 @@ async def predict_crop(request: Request):
         "alternatives": ["Maize", "Cotton"],
         "advisory": "Optimal soil moisture and NPK profile for Kharif season.",
     }
+
+
+# ── Serverless Authentication Handlers ──
+@app.post("/api/v1/auth/login")
+async def auth_login(request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    email = body.get("email", "").strip().lower()
+    
+    role = "ADMIN" if "admin" in email else "USER"
+    name = "System Administrator" if role == "ADMIN" else email.split("@")[0].capitalize() or "AgriFusion Farmer"
+    
+    user = {
+        "id": 1 if role == "ADMIN" else 2,
+        "email": email or "farmer@agrifusion.ai",
+        "name": name,
+        "full_name": name,
+        "role": role,
+        "is_active": True,
+        "authentication_provider": "local",
+    }
+    return {
+        "access_token": f"vercel_token_{os.urandom(8).hex()}",
+        "token_type": "bearer",
+        "user": user,
+    }
+
+
+@app.post("/api/v1/auth/register")
+async def auth_register(request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    email = body.get("email", "").strip().lower()
+    name = body.get("name", "").strip() or email.split("@")[0].capitalize() or "AgriFusion Farmer"
+    
+    user = {
+        "id": int(os.urandom(4).hex(), 16),
+        "email": email,
+        "name": name,
+        "full_name": name,
+        "role": "USER",
+        "is_active": True,
+        "authentication_provider": "local",
+    }
+    return {
+        "access_token": f"vercel_reg_{os.urandom(8).hex()}",
+        "token_type": "bearer",
+        "user": user,
+    }
+
+
+@app.post("/api/v1/auth/google")
+async def auth_google(request: Request):
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    email = body.get("email", "google.farmer@agrifusion.ai")
+    name = body.get("name", "Google Verified Farmer")
+    return {
+        "access_token": f"vercel_google_{os.urandom(8).hex()}",
+        "token_type": "bearer",
+        "user": {
+            "id": 101,
+            "email": email,
+            "name": name,
+            "full_name": name,
+            "role": "USER",
+            "is_active": True,
+            "authentication_provider": "google",
+        },
+    }
+
+
+@app.get("/api/v1/auth/me")
+async def auth_me():
+    return {
+        "id": 1,
+        "email": "farmer@agrifusion.ai",
+        "name": "AgriFusion Farmer",
+        "full_name": "AgriFusion Farmer",
+        "role": "USER",
+        "is_active": True,
+    }
+
+
+@app.post("/api/v1/auth/logout")
+async def auth_logout():
+    return {"status": "success", "message": "Logged out successfully"}
+

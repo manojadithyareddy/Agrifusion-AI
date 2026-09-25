@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useUndoRedo } from '../hooks/useUndoRedo';
 import {
   PRESET_CROP_SAMPLES,
@@ -57,8 +56,6 @@ function createMsgId(prefix: string) {
 }
 
 export default function Assistant() {
-  const { role } = useAuth();
-  const isAdmin = role === 'ADMIN';
   const defaultSample = PRESET_CROP_SAMPLES[0];
 
   // Initial State for Undo/Redo
@@ -68,9 +65,8 @@ export default function Assistant() {
         id: 'msg-welcome',
         sender: 'assistant',
         timestamp: 'Just now',
-        text: isAdmin
-          ? 'Hello Admin! 👋 I am your AgriFusion AI Crop Doctor.\n\nUse the **+** button or 📸 camera icon on the left to **Upload an Image** or **Scan with Camera**. I will give you a complete crop diagnosis: crop name, disease, pests, confidence, symptoms, and exact treatment!'
-          : 'Hello Farmer Friend! 👋 I am your AgriFusion AI Crop Doctor.\n\nAsk me any question about crops, diseases, pests, or farming below. Type your question and I will give you a simple answer anyone can easily understand! 🌾\n\n*(Image upload is available for Admins only)*',
+        text:
+          'Hello! 👋 I am your AgriFusion AI Multimodal Agriculture Intelligence Agent.\n\nUse the **+** button or 📸 **camera icon** on the left to **Upload an Image** or **Scan with Live Camera**. I will give you a complete autonomous diagnosis: crop identification, foliar disease, pests, confidence metrics, and targeted treatment protocols!',
       },
     ],
     currentAnalysis: defaultSample.analysis,
@@ -1252,143 +1248,121 @@ export default function Assistant() {
             boxShadow: '0 10px 35px rgba(0, 0, 0, 0.6)',
           }}
         >
-          {/* ── LEFT SIDE: ATTACHMENT MENU (+) & INSTANT CAMERA (Admin only) ── */}
-          {isAdmin ? (
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} ref={menuRef}>
-              {/* Attachment Button (+) */}
-              <button
-                onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
-                title="Attach Image (Upload or Scan)"
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: showAttachmentMenu ? '#10b981' : 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: showAttachmentMenu ? '#042f1a' : '#fff',
-                  fontSize: '1.25rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                +
-              </button>
-
-              {/* Instant Camera Shortcut */}
-              <button
-                onClick={startCamera}
-                title="Quick Camera Scan"
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: 'rgba(56, 189, 248, 0.12)',
-                  border: '1px solid rgba(56, 189, 248, 0.25)',
-                  color: '#38bdf8',
-                  fontSize: '1.1rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                📸
-              </button>
-
-              {/* Left Attachment Dropdown Popover */}
-              {showAttachmentMenu && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '50px',
-                    left: 0,
-                    background: '#161c28',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: '16px',
-                    padding: '8px',
-                    width: '210px',
-                    boxShadow: '0 12px 35px rgba(0,0,0,0.7)',
-                    zIndex: 60,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                  }}
-                >
-                  {/* 1. Upload Image */}
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    style={{
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      fontSize: '0.85rem',
-                      color: '#f8fafc',
-                      fontWeight: 600,
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
-                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <span style={{ fontSize: '1.2rem' }}>📤</span>
-                    <div>
-                      <div>Upload Image</div>
-                      <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>JPG, PNG, WEBP</div>
-                    </div>
-                  </div>
-
-                  {/* 2. Scan Image (Live Camera) */}
-                  <div
-                    onClick={startCamera}
-                    style={{
-                      padding: '10px 12px',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      fontSize: '0.85rem',
-                      color: '#38bdf8',
-                      fontWeight: 600,
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.12)')}
-                    onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <span style={{ fontSize: '1.2rem' }}>📸</span>
-                    <div>
-                      <div>Scan Image</div>
-                      <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Live Camera Leaf Scan</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Farmer placeholder: show a locked icon instead */
-            <div
-              title="Image upload is available for Admin only"
+          {/* ── LEFT SIDE: ATTACHMENT MENU (+) & INSTANT CAMERA (Available to all users) ── */}
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }} ref={menuRef}>
+            {/* Attachment Button (+) */}
+            <button
+              onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
+              title="Attach Image (Upload or Scan)"
               style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                color: '#475569',
-                fontSize: '1rem',
+                background: showAttachmentMenu ? '#10b981' : 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: showAttachmentMenu ? '#042f1a' : '#fff',
+                fontSize: '1.25rem',
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'not-allowed',
+                transition: 'all 0.15s ease',
               }}
             >
-              🔒
-            </div>
-          )}
+              +
+            </button>
+
+            {/* Instant Camera Shortcut */}
+            <button
+              onClick={startCamera}
+              title="Quick Camera Scan"
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'rgba(56, 189, 248, 0.12)',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                color: '#38bdf8',
+                fontSize: '1.1rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              📸
+            </button>
+
+            {/* Left Attachment Dropdown Popover */}
+            {showAttachmentMenu && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '50px',
+                  left: 0,
+                  background: '#161c28',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '8px',
+                  width: '210px',
+                  boxShadow: '0 12px 35px rgba(0,0,0,0.7)',
+                  zIndex: 60,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                }}
+              >
+                {/* 1. Upload Image */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.85rem',
+                    color: '#f8fafc',
+                    fontWeight: 600,
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)')}
+                  onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>📤</span>
+                  <div>
+                    <div>Upload Image</div>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>JPG, PNG, WEBP</div>
+                  </div>
+                </div>
+
+                {/* 2. Scan Image (Live Camera) */}
+                <div
+                  onClick={startCamera}
+                  style={{
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.85rem',
+                    color: '#38bdf8',
+                    fontWeight: 600,
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(56, 189, 248, 0.12)')}
+                  onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>📸</span>
+                  <div>
+                    <div>Scan Image</div>
+                    <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Live Camera Leaf Scan</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* ── MIDDLE: PROMPT TEXT INPUT ── */}
           <input
@@ -1471,8 +1445,8 @@ export default function Assistant() {
         </div>
       </div>
 
-      {/* ── CAMERA SCANNER MODAL (Admin only) ── */}
-      {isAdmin && showCameraModal && (
+      {/* ── CAMERA SCANNER MODAL (Available to all users) ── */}
+      {showCameraModal && (
         <div
           style={{
             position: 'fixed',

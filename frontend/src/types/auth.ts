@@ -1,6 +1,6 @@
 export type UserRole = 'USER' | 'ADMIN';
 
-export type AuthProvider = 'email' | 'google' | 'supabase';
+export type AuthProvider = 'email' | 'google' | 'supabase' | 'local';
 
 export interface User {
   id: number | string;
