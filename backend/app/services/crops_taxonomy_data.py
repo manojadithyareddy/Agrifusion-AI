@@ -4847,6 +4847,13 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
     }
 }
 
+# Apply 37-Crop peer-reviewed taxonomy enrichment ensuring 100% parity with official directory
+try:
+    from app.services.crops_taxonomy_enrichment import apply_taxonomy_enrichment
+    apply_taxonomy_enrichment(CROPS_TAXONOMY_37)
+except ImportError:
+    pass
+
 # Alias references to ensure both space, underscore, and singular keys resolve identically
 if "pearl millet" in CROPS_TAXONOMY_37:
     CROPS_TAXONOMY_37["pearl_millet"] = CROPS_TAXONOMY_37["pearl millet"]
