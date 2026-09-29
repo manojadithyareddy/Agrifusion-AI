@@ -52,7 +52,7 @@ class ImageAnalysisResponse(BaseModel):
     disease_confidence: float = 0.0
     pests: List[Any] = []
     pest_confidence: Optional[float] = None
-    pest_status: str = "No visible pest detected"
+    pest_status: str = "No active insect infestation"
     symptoms: List[str] = []
     pest_damage: List[str] = []
     severity: str = "None"
@@ -226,7 +226,7 @@ async def analyze_assistant_image(
         disease_confidence=diag.get("disease_confidence", 0.0),
         pests=diag.get("pests", []),
         pest_confidence=diag.get("pest_confidence"),
-        pest_status=diag.get("pest_status", "No visible pest detected"),
+        pest_status=diag.get("pest_status", "No active insect infestation"),
         symptoms=diag.get("symptoms", []),
         pest_damage=pest_damage,
         severity=diag.get("disease", {}).get("severity", diag.get("severity", "None")),

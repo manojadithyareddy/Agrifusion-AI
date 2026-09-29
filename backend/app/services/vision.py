@@ -1050,7 +1050,8 @@ class VisionService:
                                 "name": disease_name,
                                 "disease": disease_name,
                                 "confidence": round(conf, 1),
-                                "severity": d_data.get("severity", "Moderate"),
+                                "pests": gemini_res.get("pests", []),
+                                "pest_status": gemini_res.get("pest_status"),
                                 "symptoms": " / ".join(gemini_res.get("symptoms", [])),
                                 "chemical_treatment": " / ".join(gemini_res.get("treatment", [])),
                                 "organic_treatment": " / ".join(gemini_res.get("pest_control", [])),
@@ -1058,6 +1059,9 @@ class VisionService:
                                 "farmer_advice": " / ".join(gemini_res.get("prevention", [])[:2]),
                             }
                         ],
+                        "pests": gemini_res.get("pests", []),
+                        "pest_status": gemini_res.get("pest_status"),
+                        "pest_confidence": gemini_res.get("pest_confidence"),
                         "recommendations": gemini_res.get("treatment", []) + gemini_res.get("prevention", []),
                         "safety_notice": "AI image analysis is an assistive tool with verified agronomic validation.",
                     }

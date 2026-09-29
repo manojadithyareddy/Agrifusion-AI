@@ -1383,7 +1383,7 @@ export default function Assistant() {
               disease_confidence: typeof apiRes.disease_confidence === 'number' ? apiRes.disease_confidence : 0,
               pests: apiRes.pests || [],
               pest_confidence: typeof apiRes.pest_confidence === 'number' ? apiRes.pest_confidence : null,
-              pest_status: apiRes.pest_status || 'No visible pest detected',
+              pest_status: apiRes.pest_status || 'No active insect infestation',
               symptoms: apiRes.symptoms || [],
               pest_damage: apiRes.pest_damage || [],
               treatment: apiRes.treatment || [],
@@ -1976,27 +1976,42 @@ export default function Assistant() {
             const diseaseConfidencePct = isUnable ? 0 : Math.round((msg.diagnosis.disease_confidence ?? msg.diagnosis.disease.confidence ?? 0) * 100);
             const confidencePct = isUnable ? 0 : (diseaseConfidencePct || cropConfidencePct || Math.round((msg.diagnosis.disease.confidence || msg.diagnosis.crop.confidence || 0) * 100));
 
+            // Check if condition is healthy
+            const isHealthy = !isUnable && (
+              (msg.diagnosis.disease.key || '').toLowerCase().includes('healthy') ||
+              (msg.diagnosis.disease.name || '').toLowerCase().includes('healthy') ||
+              (msg.diagnosis.disease.severity || '').toLowerCase() === 'none'
+            );
+
             // Extract pest details
-            const pestsList: Array<{ name: string; scientific: string; confidence?: number }> = [];
+            const pestsList: Array<{ name: string; scientific: string; confidence?: number; isVector?: boolean }> = [];
             const rawPests = msg.diagnosis.pests || [];
             if (Array.isArray(rawPests)) {
               for (const p of rawPests) {
                 if (typeof p === 'string' && p.trim()) {
                   const parsed = parseDiseaseName(p);
-                  pestsList.push({ name: parsed.common, scientific: parsed.scientific });
+                  const isVec = p.toLowerCase().includes('vector');
+                  pestsList.push({ name: parsed.common, scientific: parsed.scientific, isVector: isVec });
                 } else if (p && typeof p === 'object') {
-                  const name = p.name || 'Unknown Pest';
+                  const pObj = p as any;
+                  const name = pObj.name || 'Unknown Pest';
                   const parsed = parseDiseaseName(name);
+                  const isVec = name.toLowerCase().includes('vector') || (pObj.type && String(pObj.type).toLowerCase().includes('vector'));
                   pestsList.push({
                     name: parsed.common,
-                    scientific: p.scientific_name || parsed.scientific || '',
-                    confidence: typeof p.confidence === 'number' ? Math.round(p.confidence * 100) : undefined,
+                    scientific: pObj.scientific_name || pObj.scientific || parsed.scientific || '',
+                    confidence: typeof pObj.confidence === 'number' ? (pObj.confidence <= 1 ? Math.round(pObj.confidence * 100) : Math.round(pObj.confidence)) : undefined,
+                    isVector: isVec,
                   });
                 }
               }
             }
 
-            const pestStatus = msg.diagnosis.pest_status || (pestsList.length > 0 ? 'Detected' : 'No visible pest detected');
+            const pestStatus = msg.diagnosis.pest_status || (
+              pestsList.length > 0
+                ? 'Detected'
+                : (isHealthy ? 'Clear Foliage — No Pest Infestation' : 'Foliar Pathogen Active — No Live Insect Infestation Observed')
+            );
             const isPestModelUnavailable = !isUnable && pestStatus.toLowerCase().includes('unavailable');
             const hasPests = !isUnable && pestsList.length > 0;
 
@@ -2506,12 +2521,18 @@ export default function Assistant() {
                           </span>
                         ) : isPestModelUnavailable ? (
                           <span style={{ color: '#64748b', fontSize: '0.88rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span>ℹ️</span> Pest detection model unavailable
+                            <span>ℹ️</span> {isCardHindi ? 'कीट पहचान मॉडल उपलब्ध नहीं' : 'Pest detection model unavailable'}
                           </span>
                         ) : !hasPests ? (
-                          <span style={{ color: '#16a34a', fontSize: '0.88rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span>✅</span> No visible pest detected
-                          </span>
+                          isHealthy ? (
+                            <span style={{ color: '#16a34a', fontSize: '0.86rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '3px 10px', borderRadius: '14px' }}>
+                              <span>🌿</span> {isCardHindi ? 'स्वच्छ पत्ती — कोई कीट प्रकोप नहीं' : 'Clear Foliage — No Pest Infestation Observed'}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#0369a1', fontSize: '0.86rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f0f9ff', border: '1px solid #bae6fd', padding: '3px 10px', borderRadius: '14px' }}>
+                              <span>🔬</span> {isCardHindi ? 'पर्ण रोगजनक सक्रिय — कोई जीवित कीट नहीं' : (pestStatus && !pestStatus.toLowerCase().includes('no visible pest detected') ? pestStatus : 'Foliar Pathogen Active — No Live Insect Infestation Observed')}
+                            </span>
+                          )
                         ) : (
                           pestsList.map((pest, pIdx) => (
                             <div
@@ -2520,26 +2541,33 @@ export default function Assistant() {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '6px',
-                                background: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
+                                background: pest.isVector ? '#fff7ed' : '#fef2f2',
+                                border: `1px solid ${pest.isVector ? '#fed7aa' : '#fecaca'}`,
                                 padding: '3px 10px',
                                 borderRadius: '16px',
-                                fontSize: '0.88rem',
+                                fontSize: '0.86rem',
                               }}
                             >
                               <span style={{ fontSize: '1rem' }}>🐛</span>
-                              <span style={{ color: '#166534', fontWeight: 700 }}>{pest.name}</span>
+                              <span style={{ color: pest.isVector ? '#c2410c' : '#b91c1c', fontWeight: 700 }}>
+                                {pest.name}
+                              </span>
+                              {pest.isVector && (
+                                <span style={{ background: '#ffedd5', color: '#9a3412', border: '1px solid #fdba74', padding: '1px 6px', borderRadius: '10px', fontSize: '0.70rem', fontWeight: 800 }}>
+                                  VECTOR
+                                </span>
+                              )}
                               {pest.scientific && (
-                                <span style={{ color: '#475569', fontStyle: 'italic', fontSize: '0.82rem' }}>
+                                <span style={{ color: '#475569', fontStyle: 'italic', fontSize: '0.80rem' }}>
                                   ({pest.scientific})
                                 </span>
                               )}
                               {typeof pest.confidence === 'number' && (
                                 <span
                                   style={{
-                                    background: '#dcfce7',
-                                    color: '#166534',
-                                    border: '1px solid #86efac',
+                                    background: pest.isVector ? '#fed7aa' : '#fee2e2',
+                                    color: pest.isVector ? '#9a3412' : '#991b1b',
+                                    border: `1px solid ${pest.isVector ? '#fdba74' : '#fca5a5'}`,
                                     padding: '1px 6px',
                                     borderRadius: '10px',
                                     fontSize: '0.72rem',
@@ -2842,7 +2870,13 @@ export default function Assistant() {
                       {/* Audio TTS button */}
                       <button
                         onClick={() => {
-                          const pestSpeech = isUnable ? '' : (hasPests ? `Detected pests: ${pestsList.map(p => p.name).join(', ')}.` : (isPestModelUnavailable ? 'Pest detection unavailable.' : 'No visible pest detected.'));
+                          const pestSpeech = isUnable
+                            ? ''
+                            : (hasPests
+                                ? `Detected pests: ${pestsList.map(p => p.name).join(', ')}.`
+                                : (isPestModelUnavailable
+                                    ? 'Pest detection unavailable.'
+                                    : (isHealthy ? 'Clear foliage with no insect pests detected.' : 'Foliar pathogen active, no live insect infestation observed.')));
                           const readText = `${cropName}. Condition: ${diseaseParsed.common}. ${pestSpeech} Calibrated confidence ${confidencePct} percent. Symptoms: ${symptomsList.join('. ')}. Recommended treatment: ${treatmentList[0] || ''}`;
                           speakDiagnosis(readText);
                         }}

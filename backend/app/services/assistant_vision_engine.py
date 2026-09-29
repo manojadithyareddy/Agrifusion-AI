@@ -608,7 +608,7 @@ class AssistantVisionEngine:
                 "disease_confidence": 0.0,
                 "pests": [],
                 "pest_confidence": None,
-                "pest_status": "No visible pest detected",
+                "pest_status": "No plant foliage detected",
                 "symptoms": ["No agricultural crop foliage, leaf, or fruit tissue detected in the image."],
                 "pest_damage": [],
                 "treatment": [],
@@ -852,6 +852,7 @@ class AssistantVisionEngine:
         chewing_flag = metrics.get("chewing_damage", False)
         insect_cluster_flag = metrics.get("insect_clusters", False)
 
+        disease_lower = disease_condition_key.lower()
         for p_key, p_data in supported_pests.items():
             p_kws = p_data.get("keywords", [p_key, p_data.get("name", "").lower()])
 
@@ -868,21 +869,31 @@ class AssistantVisionEngine:
             elif insect_cluster_flag and (chlorosis_pct > 6.0 or necrotic_pct > 3.0) and any(w in p_key for w in ["aphid", "whitefly", "thrips", "mite", "mealybug", "hopper", "planthopper"]):
                 is_cv_match = True
 
-            if is_yolo_match or is_cv_match:
+            # Vector association check: viral & phytoplasma conditions linked to insect vectors
+            is_vector_match = False
+            if any(vk in disease_lower for vk in ["curl", "mosaic", "virus", "yellow_vein", "murda", "ringspot", "little_leaf", "greening", "stunt", "miner"]):
+                if any(w in p_key for w in ["whitefly", "aphid", "thrips", "mite", "hopper", "psyllid", "jassid", "miner"]):
+                    is_vector_match = True
+
+            if is_yolo_match or is_cv_match or is_vector_match:
                 if is_yolo_match:
                     y_conf = max(
                         [yd.get("confidence", 0.90) for yd in yolo_pest_detections if any(kw in yd.get("label", "").lower() for kw in p_kws)],
                         default=0.91
                     )
                     p_conf = round(float(y_conf), 2)
+                elif is_vector_match:
+                    p_conf = round(max(0.85, disease_conf - 0.04), 2)
                 else:
                     p_conf = 0.88
 
+                is_vec = is_vector_match and not (is_yolo_match or is_cv_match)
                 detected_pests.append({
-                    "name": p_data["name"],
+                    "name": p_data["name"] + (" (Primary Vector)" if is_vec else ""),
                     "scientific_name": p_data["scientific_name"],
                     "confidence": p_conf,
-                    "damage_signs": p_data["damage_signs"][0] if p_data.get("damage_signs") else "Visible insect feeding marks on foliage."
+                    "type": "Primary Disease Vector" if is_vec else "Active Foliar Pest",
+                    "damage_signs": p_data["damage_signs"][0] if p_data.get("damage_signs") else "Visible insect feeding marks or transmission of viral pathogen on foliage."
                 })
                 pest_damage_list.extend(p_data.get("damage_signs", []))
                 pest_control_list.extend(p_data.get("pest_control", []))
@@ -891,11 +902,16 @@ class AssistantVisionEngine:
         if detected_pests:
             max_pest_conf = max(p["confidence"] for p in detected_pests)
             pest_names = ", ".join(p["name"] for p in detected_pests)
-            pest_status = f"Supported pest detected: {pest_names}"
+            pest_status = f"Pests identified: {pest_names}"
         else:
-            pest_status = "No visible pest detected"
-            pest_damage_list = ["No visible insect pest damage, feeding holes, or larvae detected on the foliage."]
-            pest_control_list = ["No chemical or biological insecticide required at this time. Continue routine field scouting."]
+            if disease_condition_key == "healthy":
+                pest_status = "No pest infestation (Healthy Foliage)"
+                pest_damage_list = ["No insect feeding damage, webbing, or frass observed."]
+                pest_control_list = ["Routine preventive monitoring with yellow sticky traps."]
+            else:
+                pest_status = f"No active insect infestation (Foliar Pathogen: {disease_name})"
+                pest_damage_list = [f"Foliar necrotic lesions and symptoms caused by {disease_name}; no active insect chewing damage observed."]
+                pest_control_list = ["No insecticide required. Follow recommended foliar disease management."]
 
         # ── Step 3f: Combined Prevention Guidance ──
         combined_prevention: List[str] = []
@@ -975,7 +991,7 @@ class AssistantVisionEngine:
                 "disease_confidence": 0.0,
                 "pests": [],
                 "pest_confidence": None,
-                "pest_status": "No visible pest detected",
+                "pest_status": "No plant foliage detected",
                 "symptoms": ["No agricultural crop foliage or fruit tissue detected in the image."],
                 "pest_damage": [],
                 "treatment": [],

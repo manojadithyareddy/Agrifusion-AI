@@ -1578,9 +1578,10 @@ export async function analyzeImageWithLocalVisionEngine(
   });
 
   const hasPests = pestDetails.length > 0;
+  const isHealthyCrop = matchedKey.toLowerCase().includes('healthy') || (ragRecord.condition && ragRecord.condition.toLowerCase().includes('healthy'));
   const pestStatus = hasPests
     ? `Supported pest detected: ${pestDetails.map(p => p.name).join(', ')}`
-    : 'No visible pest detected';
+    : (isHealthyCrop ? 'No pest infestation (Healthy Foliage)' : `No active insect infestation (Foliar Pathogen: ${ragRecord.condition})`);
 
   const pestDamage = hasPests
     ? pestDetails.map(p => p.damage_signs || `Visible feeding damage caused by ${p.name}.`)

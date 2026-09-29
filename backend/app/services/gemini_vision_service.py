@@ -23,6 +23,7 @@ from PIL import Image
 import httpx
 
 from app.config import settings
+from app.services.crops_taxonomy_data import CROPS_TAXONOMY_37
 
 logger = logging.getLogger(__name__)
 
@@ -77,8 +78,13 @@ def _build_payload(image_bytes: bytes, crop_hint: Optional[str], language: str) 
         "set 'status' to 'UNABLE_TO_IDENTIFY_CROP' and 'crop' to 'Unable to identify crop'.\n"
         "2. DISEASE & CONDITION: Identify the exact disease, fungal/bacterial pathogen, or physiological disorder "
         "(e.g. Early Blight, Late Blight, Black Sigatoka, Rice Blast, Bacterial Blight, Healthy Crop).\n"
-        "3. PEST STATUS: State clearly if any visible insect pests, aphids, whiteflies, caterpillars, borers, or mites are present, "
-        "or 'No visible pest detected'.\n"
+        "3. PEST & INSECT INSPECTION (HIGH RESOLUTION):\n"
+        "- Thoroughly check the leaf tissue, leaf margins, undersides, veins, stems, and fruits for any:\n"
+        "  * Active insect pests: Whiteflies, Aphids, Thrips, Mites, Caterpillars, Borers, Leafminers, Mealybugs, Jassids/Hoppers, Beetles, Weevils, Scale insects.\n"
+        "  * Insect feeding damage: Leaf-miner serpentine silvery trails, shot-holes, notched leaf margins, skeletonized foliage, honeydew/sooty mold, chlorotic stippling, mite webbing, or frass.\n"
+        "  * Vector pest association: If the condition is an insect-vectored disease (such as Leaf Curl Virus, Mosaic Virus, Little Leaf, Ringspot, Murda), explicitly identify and list the transmitting insect vector species (e.g. Whitefly / Bemisia tabaci, Aphids / Aphis gossypii, Thrips / Scirtothrips dorsalis) in 'pests'.\n"
+        "- For 'pests', return an array of all detected pests, feeding damage signs, or active vector risks: [{'name': string, 'scientific': string, 'type': 'Live Insect' | 'Feeding Damage' | 'Disease Vector', 'confidence': number}].\n"
+        "- Set 'pest_status' to a precise agronomic summary (e.g. 'Active Vector: Whitefly (Bemisia tabaci)', 'Foliar feeding damage detected: Leafminer', or 'No active insect infestation observed (Foliar Pathogen Infection)').\n"
         "4. CONFIDENCE: Calibration score between 0.85 and 0.99 for confirmed identification.\n"
         "5. SYMPTOMS: 3 to 4 clear visual observations.\n"
         "6. SEVERITY: One of ['Mild', 'Moderate', 'Severe', 'Critical', 'None'].\n"
@@ -95,7 +101,7 @@ def _build_payload(image_bytes: bytes, crop_hint: Optional[str], language: str) 
         '  "disease_scientific": string,\n'
         '  "disease_confidence": number,\n'
         '  "severity": string,\n'
-        '  "pests": [{"name": string, "type": string, "confidence": number}],\n'
+        '  "pests": [{"name": string, "scientific": string, "type": string, "confidence": number}],\n'
         '  "pest_status": string,\n'
         '  "pest_confidence": number,\n'
         '  "symptoms": [string],\n'
@@ -284,7 +290,7 @@ class GeminiVisionService:
                 "disease_confidence": 0.0,
                 "pests": [],
                 "pest_confidence": None,
-                "pest_status": "No visible pest detected",
+                "pest_status": "No plant foliage detected",
                 "symptoms": ["No agricultural crop foliage or fruit tissue detected in the image."],
                 "pest_damage": [],
                 "treatment": [],
@@ -299,6 +305,16 @@ class GeminiVisionService:
         disease_name = str(parsed.get("disease", "Healthy Foliage")).strip()
         disease_conf = float(parsed.get("disease_confidence", 0.94))
         severity = str(parsed.get("severity", "Moderate")).capitalize()
+        d_lower = disease_name.lower()
+
+        # Match crop in 37-crop botanical taxonomy
+        crop_clean = crop_raw.lower().replace(" ", "_")
+        crop_info = CROPS_TAXONOMY_37.get(crop_clean) or CROPS_TAXONOMY_37.get(crop_raw.lower())
+        if not crop_info:
+            for k, v in CROPS_TAXONOMY_37.items():
+                if k in crop_clean or crop_clean in k or v.get("name", "").lower() == crop_raw.lower():
+                    crop_info = v
+                    break
 
         # Chemical & organic treatments
         chem = parsed.get("chemical_treatment") or ""
@@ -310,12 +326,51 @@ class GeminiVisionService:
             treatments.append(f"Organic Remedy: {org}")
 
         pests = parsed.get("pests") or []
-        pest_status = parsed.get("pest_status") or ("Pests identified" if pests else "No visible pest detected")
-        pest_conf = parsed.get("pest_confidence")
+
+        # Vector pest association: if pests is empty, check if disease is a known vector-vectored viral condition
+        if not pests and crop_info:
+            supported_pests = crop_info.get("supported_pests", {})
+            if any(vk in d_lower for vk in ["curl", "mosaic", "virus", "yellow_vein", "murda", "ringspot", "little_leaf", "greening", "stunt", "miner"]):
+                for p_key, p_data in supported_pests.items():
+                    if any(w in p_key for w in ["whitefly", "aphid", "thrips", "mite", "hopper", "psyllid", "jassid", "miner"]):
+                        pests.append({
+                            "name": f"{p_data['name']} (Vector)",
+                            "scientific": p_data.get("scientific_name", ""),
+                            "confidence": round(max(0.85, disease_conf - 0.04), 2),
+                            "type": "Primary Disease Vector",
+                            "damage_signs": p_data.get("damage_signs", ["Transmits viral pathogen and causes foliar curling/chlorosis"])[0]
+                        })
+
+        if pests:
+            pest_names = ", ".join(p.get("name", "Pest") if isinstance(p, dict) else str(p) for p in pests)
+            pest_status = parsed.get("pest_status") or f"Pests identified: {pest_names}"
+        else:
+            if "healthy" in d_lower:
+                pest_status = "No pest infestation (Healthy Foliage)"
+            else:
+                pest_status = f"No active insect infestation (Foliar Pathogen: {disease_name})"
+
+        pest_conf = parsed.get("pest_confidence") or (max([p.get("confidence", 0.90) for p in pests if isinstance(p, dict)], default=None) if pests else None)
 
         friendly_msg = parsed.get("friendly_message") or (
             f"🌾 Plant Health Diagnosis: Identified {crop_raw} with {disease_name} ({round(disease_conf * 100, 1)}% confidence). "
             f"Severity is {severity}. Recommended action: {treatments[0] if treatments else 'Inspect regularly.'}"
+        )
+
+        pest_damage_list = (
+            [p.get("damage_signs") or p.get("name") for p in pests if isinstance(p, dict)]
+            if pests
+            else (
+                ["No insect feeding holes, frass, or active pest damage observed."]
+                if "healthy" in d_lower
+                else [f"Foliar necrotic lesions and symptoms caused by {disease_name}; no active insect chewing damage observed."]
+            )
+        )
+
+        pest_control_list = parsed.get("pest_control") or (
+            ["Apply bio-insecticide, Neem oil (10,000 ppm), or install yellow sticky traps."]
+            if pests
+            else ["Routine preventive monitoring with sticky traps."]
         )
 
         return {
@@ -340,9 +395,9 @@ class GeminiVisionService:
             "pest_confidence": pest_conf,
             "pest_status": pest_status,
             "symptoms": parsed.get("symptoms") or ["Foliar symptoms visible on plant tissue."],
-            "pest_damage": [p.get("name") for p in pests if isinstance(p, dict)] if pests else [],
+            "pest_damage": pest_damage_list,
             "treatment": treatments,
-            "pest_control": parsed.get("pest_control") or (["Apply bio-control agent or Neem oil spray."] if pests else []),
+            "pest_control": pest_control_list,
             "prevention": parsed.get("prevention") or ["Ensure balanced crop nutrition and avoid waterlogging."],
             "severity": severity,
             "friendly_message": friendly_msg,
