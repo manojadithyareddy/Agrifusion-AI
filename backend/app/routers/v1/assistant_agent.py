@@ -135,9 +135,10 @@ async def analyze_assistant_image(
         candidate_files.append(additional_file_1)
     if additional_file_2:
         candidate_files.append(additional_file_2)
-    if files:
+    # If additionals were not provided separately, fill remaining slots from files list
+    if files and len(candidate_files) < 3:
         for f in files:
-            if f and f not in candidate_files:
+            if f and f not in candidate_files and len(candidate_files) < 3:
                 candidate_files.append(f)
 
     if not candidate_files:

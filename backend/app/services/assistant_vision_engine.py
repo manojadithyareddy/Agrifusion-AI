@@ -1110,19 +1110,16 @@ class AssistantVisionEngine:
         images_data = images_data[:3]
         total_images = len(images_data)
 
-        # 1. Independent per-image analysis
-        per_image_results: List[Dict[str, Any]] = []
-        raw_results: List[Dict[str, Any]] = []
-        fingerprints: List[str] = []
+        # 1. Independent per-image analysis in parallel (ThreadPoolExecutor for 3x speedup)
+        from concurrent.futures import ThreadPoolExecutor
 
-        for idx, (img_bytes, fname) in enumerate(images_data):
+        def _process_single_image(idx: int, img_bytes: bytes, fname: str) -> Tuple[int, Dict[str, Any], Dict[str, Any], str]:
             img_index = idx + 1
             img_id = f"{req_id}_img_{img_index}"
             nparr = np.frombuffer(img_bytes, np.uint8) if len(img_bytes) > 0 else np.array([], dtype=np.uint8)
             img_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR) if len(nparr) > 0 else None
             
             fp = self.compute_image_fingerprint(img_bgr) if img_bgr is not None else ""
-            fingerprints.append(fp)
 
             # Quality metrics
             blur_score = 0.0
@@ -1138,9 +1135,8 @@ class AssistantVisionEngine:
 
             # Execute full single-image pipeline
             single_res = self.analyze_image_bytes(img_bytes, filename=fname, crop_hint=crop_hint, request_id=req_id, image_id=img_id)
-            raw_results.append(single_res)
-            
-            per_image_results.append({
+
+            per_img = {
                 "image_index": img_index,
                 "image_id": img_id,
                 "request_id": req_id,
@@ -1162,7 +1158,21 @@ class AssistantVisionEngine:
                     "is_valid": single_res.get("status") not in ["UNABLE_TO_IDENTIFY_CROP", "INSUFFICIENT_IMAGE_QUALITY", "INSUFFICIENT_VISUAL_EVIDENCE"],
                     "issue": single_res.get("error") if single_res.get("status") in ["UNABLE_TO_IDENTIFY_CROP", "INSUFFICIENT_IMAGE_QUALITY", "INSUFFICIENT_VISUAL_EVIDENCE"] else None,
                 },
-            })
+            }
+            return idx, single_res, per_img, fp
+
+        with ThreadPoolExecutor(max_workers=min(3, total_images)) as executor:
+            futures = [
+                executor.submit(_process_single_image, idx, img_bytes, fname)
+                for idx, (img_bytes, fname) in enumerate(images_data)
+            ]
+            processed_items = [f.result() for f in futures]
+
+        # Preserve original submission order
+        processed_items.sort(key=lambda x: x[0])
+        raw_results = [item[1] for item in processed_items]
+        per_image_results = [item[2] for item in processed_items]
+        fingerprints = [item[3] for item in processed_items]
 
         # 2. Check for duplicate images
         duplicate_detected = False

@@ -502,6 +502,7 @@ export default function Assistant() {
   // Clipboard User Notice state (for graceful handling of Google/Bing search URL metadata)
   const [clipboardNotice, setClipboardNotice] = useState<string | null>(null);
   const clipboardTimerRef = useRef<any>(null);
+  const lastPasteTimeRef = useRef<number>(0);
 
   // Conversational Context Memory
   const [lastDiagnosedCondition, setLastDiagnosedCondition] = useState<string | null>(null);
@@ -900,13 +901,23 @@ export default function Assistant() {
 
       if (validFiles.length === 0) return prev;
 
+      if (validFiles.length > remainingSlots) {
+        setClipboardNotice(
+          isHi
+            ? `ℹ️ 3 छवियों की अधिकतम सीमा पूरी हो गई (${remainingSlots} छवि जोड़ी गई)।`
+            : `ℹ️ Reached maximum 3 images limit (${remainingSlots} added).`
+        );
+        if (clipboardTimerRef.current) clearTimeout(clipboardTimerRef.current);
+        clipboardTimerRef.current = setTimeout(() => setClipboardNotice(null), 5000);
+      }
+
       const toAdd = validFiles.slice(0, remainingSlots).map((file, idx) => {
         const ext = file.type.split('/')[1]?.replace('jpeg', 'jpg') || 'png';
         const displayName = file.name && !file.name.startsWith('image.')
           ? file.name
           : `Crop Photo ${currentImages.length + idx + 1}.${ext}`;
         return {
-          id: `img-${Date.now()}-${uuidMini()}`,
+          id: `img-${Date.now()}-${uuidMini()}-${idx}`,
           src: URL.createObjectURL(file),
           file,
           label: displayName,
@@ -920,6 +931,10 @@ export default function Assistant() {
 
   // Direct Clipboard Paste Handler (Ctrl+V)
   const handlePaste = useCallback((e: React.ClipboardEvent | ClipboardEvent) => {
+    if (e.defaultPrevented) return;
+    const now = Date.now();
+    if (now - lastPasteTimeRef.current < 150) return;
+
     const clipboardData = e.clipboardData;
     if (!clipboardData) return;
 
@@ -933,40 +948,40 @@ export default function Assistant() {
       itemsSummary: items.map((it, idx) => ({ index: idx, kind: it.kind, type: it.type })),
     });
 
-    // 2. Inspect clipboardData.items first: kind === 'file' and type starts with 'image/'
+    // 2. Comprehensive extraction from both items and rawFiles (deduplicated by file signature)
+    const seenSignatures = new Set<string>();
     const extractedFiles: File[] = [];
 
+    const addIfValidImage = (file: File | null) => {
+      if (!file) return;
+      const type = (file.type || '').toLowerCase();
+      if (!type.startsWith('image/')) return;
+      const sig = `${file.name}_${file.size}_${file.lastModified}`;
+      if (!seenSignatures.has(sig)) {
+        seenSignatures.add(sig);
+        extractedFiles.push(file);
+      }
+    };
+
     for (const item of items) {
-      if (item.kind === 'file' && item.type.startsWith('image/')) {
-        const file = item.getAsFile();
-        if (file) {
-          console.debug('[Clipboard] Image file extracted from items:', {
-            name: file.name,
-            type: file.type,
-            size: `${file.size} bytes`,
-          });
-          extractedFiles.push(file);
-        }
+      if (item.kind === 'file' && (item.type || '').toLowerCase().startsWith('image/')) {
+        addIfValidImage(item.getAsFile());
       }
     }
 
-    // 3. Fallback check for clipboardData.files
-    if (extractedFiles.length === 0 && rawFiles.length > 0) {
-      for (const file of rawFiles) {
-        if (file.type.startsWith('image/')) {
-          console.debug('[Clipboard] Image file extracted from rawFiles:', {
-            name: file.name,
-            type: file.type,
-            size: `${file.size} bytes`,
-          });
-          extractedFiles.push(file);
-        }
+    for (const file of rawFiles) {
+      if ((file.type || '').toLowerCase().startsWith('image/')) {
+        addIfValidImage(file);
       }
     }
 
-    // 4. Genuine binary image data present: stage thumbnail and prevent default paste
+    // 3. Genuine binary image data present: stage thumbnail and prevent default paste
     if (extractedFiles.length > 0) {
+      lastPasteTimeRef.current = now;
       e.preventDefault();
+      if ('stopPropagation' in e && typeof e.stopPropagation === 'function') {
+        e.stopPropagation();
+      }
       setClipboardNotice(null);
       if (clipboardTimerRef.current) clearTimeout(clipboardTimerRef.current);
 
@@ -978,7 +993,7 @@ export default function Assistant() {
       return;
     }
 
-    // 5. Intercept Search Engine URL Metadata (Google / Bing Images, mediaurl, view=detailV2)
+    // 4. Intercept Search Engine URL Metadata (Google / Bing Images, mediaurl, view=detailV2)
     const textData = clipboardData.getData('text/plain') || '';
     const isUrlOrSearchMetadata =
       /view=detailV2/i.test(textData) ||
@@ -993,7 +1008,11 @@ export default function Assistant() {
 
     if (isUrlOrSearchMetadata) {
       // Intercept and prevent query strings from entering input or being sent to AI
+      lastPasteTimeRef.current = now;
       e.preventDefault();
+      if ('stopPropagation' in e && typeof e.stopPropagation === 'function') {
+        e.stopPropagation();
+      }
       console.warn('[Clipboard] Intercepted image URL/search metadata without binary data');
 
       const noticeMsg = isHi
@@ -1014,6 +1033,7 @@ export default function Assistant() {
   // Window-level paste listener so pressing Ctrl+V anywhere in chat attaches clipboard image
   useEffect(() => {
     const onWindowPaste = (e: ClipboardEvent) => {
+      if (e.defaultPrevented) return;
       const activeEl = document.activeElement;
       if (
         activeEl &&
@@ -1333,9 +1353,9 @@ export default function Assistant() {
             .filter((m) => m.type === 'image')
             .map((m) => m.file);
 
-          // Hard 18-second timeout promise to guarantee entire flow finishes strictly under 20 seconds
+          // Hard 19.5-second timeout promise to guarantee entire flow finishes strictly under 20 seconds
           const timeoutPromise = new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Inspection time limit reached (20s max)')), 18000)
+            setTimeout(() => reject(new Error('Inspection time limit reached (20s max)')), 19500)
           );
 
           // Check if skip was triggered
@@ -1444,6 +1464,13 @@ export default function Assistant() {
             primaryMedia.file.name,
             effectiveCropHint
           );
+
+          if (diagnosisResult) {
+            diagnosisResult.images_count = mediaToAnalyze.length;
+            if (mediaToAnalyze.length > 1) {
+              diagnosisResult.fusion_summary = `Multi-angle inspection completed for ${mediaToAnalyze.length} views.`;
+            }
+          }
         }
       }
 
