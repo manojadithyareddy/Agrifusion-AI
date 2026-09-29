@@ -24,15 +24,115 @@ export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY,
   },
 });
 
+// ── Provider Configuration & Settings Diagnostics ──
+export interface SupabaseAuthProvidersConfig {
+  email: boolean;
+  google: boolean;
+  mailerAutoconfirm: boolean;
+}
+
+let cachedProvidersConfig: SupabaseAuthProvidersConfig | null = null;
+
+export async function getAuthProvidersConfig(): Promise<SupabaseAuthProvidersConfig> {
+  if (cachedProvidersConfig) return cachedProvidersConfig;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+      },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      cachedProvidersConfig = {
+        email: Boolean(data?.external?.email ?? true),
+        google: Boolean(data?.external?.google ?? false),
+        mailerAutoconfirm: Boolean(data?.mailer_autoconfirm ?? false),
+      };
+      return cachedProvidersConfig;
+    }
+  } catch (err) {
+    console.warn('[AgriFusion] Could not query Supabase auth settings:', err);
+  }
+  // Safe defaults based on current Supabase project diagnostics
+  return {
+    email: true,
+    google: false,
+    mailerAutoconfirm: false,
+  };
+}
+
+export function formatSupabaseError(error: any): string {
+  if (!error) return 'An unexpected authentication error occurred.';
+  const msg = typeof error === 'string' ? error : error.message || error.msg || '';
+  const code = (error.code || error.error_code || '').toString().toLowerCase();
+  const lowerMsg = msg.toLowerCase();
+
+  // Unsupported provider / provider disabled
+  if (
+    code === 'validation_failed' ||
+    lowerMsg.includes('unsupported provider') ||
+    lowerMsg.includes('provider is not enabled')
+  ) {
+    return 'Google OAuth is currently disabled in your Supabase project settings. Please sign in with Email & Password, or enable the Google provider in Supabase Dashboard → Authentication → Providers.';
+  }
+
+  // Email not confirmed
+  if (code === 'email_not_confirmed' || lowerMsg.includes('email not confirmed')) {
+    return 'Your email address has not been confirmed yet. A verification email was sent to your inbox upon registration. Please click the link to confirm your account before signing in.';
+  }
+
+  // Invalid login credentials
+  if (
+    code === 'invalid_credentials' ||
+    lowerMsg.includes('invalid login credentials') ||
+    lowerMsg.includes('invalid grant')
+  ) {
+    return 'Incorrect email or password. Please verify your credentials or register a new account.';
+  }
+
+  // User not found
+  if (code === 'user_not_found' || lowerMsg.includes('user not found')) {
+    return 'No account was found with this email address. Please check your spelling or register a new account.';
+  }
+
+  // User already exists
+  if (
+    code === 'user_already_exists' ||
+    lowerMsg.includes('user already registered') ||
+    lowerMsg.includes('already exists')
+  ) {
+    return 'An account with this email already exists. Please sign in or reset your password.';
+  }
+
+  // Weak password
+  if (lowerMsg.includes('password should be at least')) {
+    return 'Password must be at least 6 characters long.';
+  }
+
+  // Network error
+  if (lowerMsg.includes('fetch') || lowerMsg.includes('networkerror')) {
+    return 'Unable to reach the authentication service. Please check your internet connection.';
+  }
+
+  return msg || 'Authentication request failed. Please check your credentials.';
+}
+
 // ─────────────────────────────────────────────────────────────
 //  Helper Authentication Functions
 // ─────────────────────────────────────────────────────────────
 
 /**
  * Sign in with Google using Supabase OAuth.
- * Initiates standard Google authentication flow.
+ * Validates whether Google provider is enabled before attempting redirect.
  */
 export async function signInWithGoogle(): Promise<{ user?: SupabaseUser | null }> {
+  const config = await getAuthProvidersConfig();
+  if (!config.google) {
+    throw new Error(
+      'Google OAuth is not currently enabled in the Supabase authentication dashboard. Please sign in with Email & Password, or configure Google credentials in Supabase Dashboard → Authentication → Providers.'
+    );
+  }
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -45,7 +145,7 @@ export async function signInWithGoogle(): Promise<{ user?: SupabaseUser | null }
   });
 
   if (error) {
-    throw error;
+    throw new Error(formatSupabaseError(error));
   }
 
   // Get current user if available in session
@@ -63,7 +163,7 @@ export async function signInWithEmail(email: string, password: string) {
   });
 
   if (error) {
-    throw error;
+    throw new Error(formatSupabaseError(error));
   }
 
   return { session: data.session, user: data.user };
@@ -92,10 +192,16 @@ export async function registerWithEmail(
   });
 
   if (error) {
-    throw error;
+    throw new Error(formatSupabaseError(error));
   }
 
-  return { session: data.session, user: data.user };
+  const requiresEmailVerification = Boolean(data.user && !data.session);
+
+  return {
+    session: data.session,
+    user: data.user,
+    requiresEmailVerification,
+  };
 }
 
 /**
@@ -107,7 +213,7 @@ export async function sendPasswordReset(email: string) {
   });
 
   if (error) {
-    throw error;
+    throw new Error(formatSupabaseError(error));
   }
 }
 

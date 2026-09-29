@@ -47,27 +47,28 @@ CLASS_MAPPING = {
     "maize_leaf": 5,
     "chilli_leaf": 6,
     "mango_leaf": 7,
+    "banana_leaf": 8,
     # Disease Lesions
-    "early_blight_lesion": 8,
-    "late_blight_lesion": 9,
-    "leaf_curl_virus_symptom": 10,
-    "rice_blast_lesion": 11,
-    "yellow_rust_pustule": 12,
-    "powdery_mildew_patch": 13,
-    "anthracnose_spot": 14,
-    "bacterial_blight_lesion": 15,
+    "early_blight_lesion": 9,
+    "late_blight_lesion": 10,
+    "leaf_curl_virus_symptom": 11,
+    "rice_blast_lesion": 12,
+    "yellow_rust_pustule": 13,
+    "powdery_mildew_patch": 14,
+    "anthracnose_spot": 15,
+    "bacterial_blight_lesion": 16,
     # Pests
-    "whitefly_adult": 16,
-    "aphid_colony": 17,
-    "stem_borer_larva": 18,
-    "fall_armyworm_larva": 19,
-    "chilli_thrips": 20,
-    "spider_mite": 21,
-    "cotton_bollworm": 22,
+    "whitefly_adult": 17,
+    "aphid_colony": 18,
+    "stem_borer_larva": 19,
+    "fall_armyworm_larva": 20,
+    "chilli_thrips": 21,
+    "spider_mite": 22,
+    "cotton_bollworm": 23,
 }
 
 SUPPORTED_CROPS = [
-    "tomato", "potato", "rice", "wheat", "cotton", "maize", "chilli", "mango"
+    "tomato", "potato", "rice", "wheat", "cotton", "maize", "chilli", "mango", "banana"
 ]
 
 

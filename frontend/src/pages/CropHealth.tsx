@@ -92,8 +92,11 @@ export default function CropHealth() {
       });
       setResult(data);
     } catch (err: unknown) {
-      console.warn('Backend vision API offline, executing client-side pathology diagnosis:', err);
-      const cropName = selectedCrop !== 'auto' ? selectedCrop : 'Tomato';
+      if (selectedCrop === 'auto') {
+        setError('Server is currently unreachable for automatic vision detection. Please select your crop from the dropdown above or check the backend connection.');
+        return;
+      }
+      const cropName = selectedCrop;
       const risk = getCropRiskProfile(cropName);
       
       const fallbackResult: AnalysisResult = {

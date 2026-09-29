@@ -1,8 +1,15 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
-    ? ''
-    : 'http://localhost:8000');
+const isBrowser = typeof window !== 'undefined';
+const isLocalhost = isBrowser && (
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === '0.0.0.0' ||
+  window.location.hostname === ''
+);
+
+// If running in browser on localhost or same-origin unified server, use relative path '' so requests hit the local FastAPI backend
+const API_BASE_URL = isLocalhost
+  ? ''
+  : (import.meta.env.VITE_API_URL || (isBrowser ? '' : 'http://localhost:8000'));
 
 interface RequestOptions {
   method?: string;
@@ -74,8 +81,8 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   try {
     const response = await fetch(url, fetchOptions);
 
-    if (response.status === 401) {
-      // Token is expired or invalid
+    if (response.status === 401 && (endpoint.includes('/auth/profile') || endpoint.includes('/auth/me'))) {
+      // Token is explicitly rejected on profile verification
       setStoredAuth(null, null);
       window.dispatchEvent(new CustomEvent('agrifusion_auth_expired'));
     }
@@ -138,10 +145,67 @@ export const api = {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      if (response.status === 401) {
-        setStoredAuth(null, null);
-        window.dispatchEvent(new CustomEvent('agrifusion_auth_expired'));
+
+      if (!response.ok) {
+        let errDetail = `Upload failed with status ${response.status}`;
+        try {
+          const errorJson = await response.json();
+          if (errorJson.detail) errDetail = errorJson.detail;
+        } catch {
+          // fallback
+        }
+        throw new Error(errDetail);
       }
+
+      return (await response.json()) as T;
+    } catch (error: any) {
+      if (
+        error?.name === 'TypeError' &&
+        (error?.message === 'Failed to fetch' ||
+          error?.message?.toLowerCase().includes('fetch') ||
+          error?.message?.toLowerCase().includes('networkerror'))
+      ) {
+        throw new Error('Server connection offline. Please verify backend service.');
+      }
+      throw error;
+    }
+  },
+
+  uploadFiles: async <T>(
+    endpoint: string,
+    primaryFile: File,
+    additionalFiles?: File[],
+    extraFields?: Record<string, string | undefined>
+  ): Promise<T> => {
+    const formData = new FormData();
+    formData.append('file', primaryFile);
+    formData.append('files', primaryFile);
+    if (additionalFiles && additionalFiles.length > 0) {
+      if (additionalFiles[0]) {
+        formData.append('additional_file_1', additionalFiles[0]);
+        formData.append('files', additionalFiles[0]);
+      }
+      if (additionalFiles[1]) {
+        formData.append('additional_file_2', additionalFiles[1]);
+        formData.append('files', additionalFiles[1]);
+      }
+    }
+    if (extraFields) {
+      Object.entries(extraFields).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          formData.append(k, v);
+        }
+      });
+    }
+    const token = getStoredToken();
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
 
       if (!response.ok) {
         let errDetail = `Upload failed with status ${response.status}`;

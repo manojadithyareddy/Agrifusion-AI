@@ -4,10 +4,21 @@ from datetime import datetime
 
 class CropRecommendationInput(BaseModel):
     """Input schema for crop recommendation prediction."""
-    location: str = Field(..., description="State or location string")
+    location: Optional[str] = Field(None, description="State or location string")
+    state: Optional[str] = Field(None, description="State name")
+    district: Optional[str] = Field(None, description="District name")
+    village: Optional[str] = Field(None, description="Village or Taluk name")
     soilType: str = Field(..., description="Soil type string")
     season: str = Field(..., description="Season string")
     targetCrop: Optional[str] = Field(None, description="Optional target crop to analyze specific risk")
+    request_id: Optional[str] = Field(None, description="Unique client request ID")
+    n: Optional[float] = None
+    p: Optional[float] = None
+    k: Optional[float] = None
+    temperature: Optional[float] = None
+    humidity: Optional[float] = None
+    ph: Optional[float] = None
+    rainfall: Optional[float] = None
 
 class CropRecommendationResult(BaseModel):
     """Single crop recommendation with reasoning."""
@@ -18,6 +29,13 @@ class CropRecommendationResult(BaseModel):
     expected_yield_range: Optional[str] = None
     water_requirement: Optional[str] = None
     climate_risk: Optional[str] = None
+    suitability_pct: Optional[float] = None
+    yield_potential_pct: Optional[float] = None
+    climate_safety_pct: Optional[float] = None
+    climate_risk_pct: Optional[float] = None
+    irrigation_fit_pct: Optional[float] = None
+    market_profitability_pct: Optional[float] = None
+    market_premium_pct: Optional[float] = None
 
 class CropRecommendationOutput(BaseModel):
     """Output schema for crop recommendation."""
@@ -27,6 +45,8 @@ class CropRecommendationOutput(BaseModel):
     data_version: str
     timestamp: datetime
     input_summary: str
+    request_id: Optional[str] = None
+    extracted_features: Optional[dict] = None
 
 class YieldPredictionInput(BaseModel):
     """Input schema for yield prediction."""

@@ -10,6 +10,11 @@ if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
     SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 elif SQLALCHEMY_DATABASE_URL.startswith("postgresql://") and "+asyncpg" not in SQLALCHEMY_DATABASE_URL:
     SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif "sqlite" in SQLALCHEMY_DATABASE_URL:
+    from pathlib import Path as _P
+    _backend_db = _P(__file__).resolve().parent.parent / "agri.db"
+    if _backend_db.exists():
+        SQLALCHEMY_DATABASE_URL = f"sqlite+aiosqlite:///{_backend_db.as_posix()}"
 
 _engine_kwargs: dict = {
     "echo": False,

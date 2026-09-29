@@ -23,7 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<{ user: User; role: UserRole }>;
-  register: (credentials: RegisterCredentials) => Promise<{ user: User; role: UserRole }>;
+  register: (credentials: RegisterCredentials) => Promise<{ user?: User; role: UserRole; requiresEmailVerification?: boolean; email?: string }>;
   loginWithGoogle: (credentials?: GoogleCredentials) => Promise<{ user: User; role: UserRole }>;
   demoLogin: (role: 'ADMIN' | 'USER') => Promise<{ user: User; role: UserRole }>;
   logout: () => Promise<void>;
@@ -65,12 +65,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const refreshUser = useCallback(async (): Promise<User | null> => {
     const currentToken = localStorage.getItem('agrifusion_token');
+    const storedUser = getStoredUser<User>();
     if (!currentToken) {
       setUser(null);
       setIsLoading(false);
       return null;
     }
 
+    // 1. If user is authenticated via Supabase, verify via Supabase session
+    if (storedUser?.authentication_provider === 'supabase') {
+      try {
+        const { data: supaSession } = await supabase.auth.getSession();
+        if (supaSession?.session?.user) {
+          const supaUser = supaSession.session.user;
+          const cleanUser: User = {
+            id: supaUser.id,
+            email: supaUser.email || storedUser.email,
+            name: supaUser.user_metadata?.full_name || storedUser.name || 'AgriFusion Farmer',
+            full_name: supaUser.user_metadata?.full_name || storedUser.full_name || 'AgriFusion Farmer',
+            role: normalizeRole(supaUser.user_metadata?.role || storedUser.role),
+            is_active: true,
+            phone: supaUser.user_metadata?.phone,
+            authentication_provider: 'supabase',
+          };
+          setUser(cleanUser);
+          setStoredAuth(supaSession.session.access_token, cleanUser);
+          setIsLoading(false);
+          return cleanUser;
+        }
+      } catch (e) {
+        console.warn('Supabase session check error:', e);
+      }
+    }
+
+    // 2. Try refreshing via backend profile
     try {
       const freshProfile = await authService.getProfile();
       const cleanUser = {
@@ -82,8 +110,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setStoredAuth(currentToken, cleanUser);
       return cleanUser;
     } catch (err) {
-      console.warn('Could not refresh profile, token may be invalid:', err);
-      // If error is unauthorized, clear
+      console.warn('Could not refresh backend profile:', err);
+      // If we already have a valid stored user in localStorage, KEEP IT!
+      // Do NOT wipe out the user on temporary network glitch or backend reboot!
+      if (storedUser) {
+        setUser(storedUser);
+        return storedUser;
+      }
       setStoredAuth(null, null);
       setUser(null);
       setToken(null);
@@ -158,9 +191,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       // 2. Authenticate directly via Supabase Auth
+      let supaError: any = null;
       try {
         const { session, user: supaUser } = await signInWithEmail(credentials.email, credentials.password);
-        if (supaUser) {
+        if (supaUser && session?.access_token) {
           const role: UserRole = normalizeRole(
             supaUser.user_metadata?.role || (emailLower.includes('admin') ? 'ADMIN' : 'USER')
           );
@@ -176,35 +210,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           };
           // Background sync with backend if online
           authService.login(credentials).catch(() => {});
-          return handleAuthSuccess(session?.access_token || `supa_token_${Date.now()}`, cleanUser);
+          return handleAuthSuccess(session.access_token, cleanUser);
         }
-      } catch (supaErr: any) {
-        console.warn('[AgriFusion] Supabase login notice:', supaErr?.message || supaErr);
+      } catch (err: any) {
+        supaError = err;
+      }
 
-        // Check if user exists in backend database
-        try {
-          const response = await authService.login(credentials);
-          return handleAuthSuccess(response.access_token, response.user);
-        } catch (backendErr: any) {
-          // If Supabase returned an explicit credential error
-          if (supaErr?.message && !supaErr.message.toLowerCase().includes('fetch')) {
-            throw new Error(supaErr.message);
-          }
-          // If backend gave a specific error
-          if (
-            backendErr?.message &&
-            !backendErr.message.toLowerCase().includes('fetch') &&
-            !backendErr.message.toLowerCase().includes('unreachable')
-          ) {
-            throw new Error(backendErr.message);
-          }
-          throw new Error('Invalid email or password. You can also sign in instantly using the 1-Click Demo accounts below.');
+      // If Supabase returned an explicit non-credential error (e.g. email not confirmed, provider disabled), throw it directly
+      if (supaError) {
+        const errLower = (supaError.message || '').toLowerCase();
+        if (
+          errLower.includes('email not confirmed') ||
+          errLower.includes('unsupported provider') ||
+          errLower.includes('disabled')
+        ) {
+          throw supaError;
         }
       }
 
-      // 3. Fallback to backend API
-      const response = await authService.login(credentials);
-      return handleAuthSuccess(response.access_token, response.user);
+      // 3. Fallback / verify with backend database API
+      try {
+        const response = await authService.login(credentials);
+        return handleAuthSuccess(response.access_token, response.user);
+      } catch (backendErr: any) {
+        if (supaError?.message && !supaError.message.toLowerCase().includes('fetch')) {
+          throw supaError;
+        }
+        if (backendErr?.detail) {
+          throw new Error(backendErr.detail);
+        }
+        if (backendErr?.message && !backendErr.message.toLowerCase().includes('fetch')) {
+          throw new Error(backendErr.message);
+        }
+        throw new Error('Incorrect email or password. Please verify your credentials or register a new account.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -214,59 +253,65 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(true);
     try {
       // 1. Try Supabase Registration
+      let supaRegistered = false;
+      let requiresVerification = false;
+
       try {
-        const { session, user: supaUser } = await registerWithEmail(
+        const res = await registerWithEmail(
           credentials.email,
           credentials.password,
           { name: credentials.name, role: 'USER', phone: credentials.phone }
         );
 
-        if (supaUser) {
-          const cleanUser: User = {
-            id: supaUser.id,
-            email: supaUser.email || credentials.email,
-            name: credentials.name,
-            full_name: credentials.name,
-            role: 'USER',
-            is_active: true,
-            phone: credentials.phone,
-            authentication_provider: 'supabase',
-          };
-          // Sync with backend if online
-          authService.register(credentials).catch(() => {});
-          const token = session?.access_token || `supa_reg_${Date.now()}`;
-          return handleAuthSuccess(token, cleanUser);
+        if (res.user) {
+          supaRegistered = true;
+          if (res.requiresEmailVerification) {
+            requiresVerification = true;
+          } else if (res.session?.access_token) {
+            const cleanUser: User = {
+              id: res.user.id,
+              email: res.user.email || credentials.email,
+              name: credentials.name,
+              full_name: credentials.name,
+              role: 'USER',
+              is_active: true,
+              phone: credentials.phone,
+              authentication_provider: 'supabase',
+            };
+            authService.register(credentials).catch(() => {});
+            return handleAuthSuccess(res.session.access_token, cleanUser);
+          }
         }
       } catch (supaErr: any) {
-        console.warn('[AgriFusion] Supabase register notice:', supaErr?.message || supaErr);
-        if (supaErr?.message && !supaErr.message.toLowerCase().includes('fetch')) {
-          throw new Error(supaErr.message);
+        const msg = supaErr?.message || '';
+        if (msg.includes('already exists') || msg.includes('at least 6 characters')) {
+          throw supaErr;
+        }
+        console.warn('[AgriFusion] Supabase register notice:', msg);
+      }
+
+      // 2. Also register in backend database to keep databases synchronized
+      try {
+        const response = await authService.register(credentials);
+        if (!requiresVerification) {
+          return handleAuthSuccess(response.access_token, response.user);
+        }
+      } catch (backendErr: any) {
+        if (!supaRegistered) {
+          if (backendErr?.detail) throw new Error(backendErr.detail);
+          throw backendErr;
         }
       }
 
-      // 2. Fallback to backend registration if Supabase had network issue
-      try {
-        const response = await authService.register(credentials);
-        return handleAuthSuccess(response.access_token, response.user);
-      } catch (backendErr: any) {
-        if (
-          backendErr?.message?.toLowerCase().includes('fetch') ||
-          backendErr?.message?.toLowerCase().includes('unreachable')
-        ) {
-          const fallbackUser: User = {
-            id: Date.now(),
-            email: credentials.email,
-            name: credentials.name,
-            full_name: credentials.name,
-            role: 'USER',
-            is_active: true,
-            phone: credentials.phone,
-            authentication_provider: 'supabase',
-          };
-          return handleAuthSuccess(`offline_reg_${Date.now()}`, fallbackUser);
-        }
-        throw backendErr;
+      if (requiresVerification) {
+        return {
+          role: 'USER' as UserRole,
+          requiresEmailVerification: true,
+          email: credentials.email,
+        };
       }
+
+      throw new Error('Registration could not be completed. Please try again or use the demo accounts.');
     } finally {
       setIsLoading(false);
     }
@@ -275,59 +320,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loginWithGoogle = async (googleCreds?: GoogleCredentials) => {
     setIsLoading(true);
     try {
-      // 1. If explicit credentials provided (or native OAuth payload)
+      // 1. If explicit credentials provided (e.g. Google One Tap or callback token)
       if (googleCreds?.email) {
-        try {
-          const response = await authService.googleAuth(googleCreds);
-          return handleAuthSuccess(response.access_token, response.user);
-        } catch {
-          // Offline fallback
-          const googleUser: User = {
-            id: 101,
-            email: googleCreds.email,
-            name: googleCreds.name || 'Google User',
-            full_name: googleCreds.name || 'Google User',
-            role: 'USER',
-            is_active: true,
-            profile_image: googleCreds.profile_image,
-            authentication_provider: 'google',
-          };
-          return handleAuthSuccess(`google_oauth_${Date.now()}`, googleUser);
-        }
+        const response = await authService.googleAuth(googleCreds);
+        return handleAuthSuccess(response.access_token, response.user);
       }
 
-      // 2. Try Supabase Google OAuth
-      try {
-        const { user: supaUser } = await supabaseGoogleSignIn();
-        if (supaUser) {
-          const cleanUser: User = {
-            id: supaUser.id,
-            email: supaUser.email || 'google.farmer@agrifusion.ai',
-            name: supaUser.user_metadata?.full_name || 'Google Verified Farmer',
-            full_name: supaUser.user_metadata?.full_name || 'Google Verified Farmer',
-            role: 'USER',
-            is_active: true,
-            profile_image: supaUser.user_metadata?.avatar_url,
-            authentication_provider: 'google',
-          };
-          return handleAuthSuccess(`supa_oauth_${Date.now()}`, cleanUser);
-        }
-      } catch (oauthErr: any) {
-        console.warn('[AgriFusion] Supabase Google OAuth provider notice:', oauthErr?.message || oauthErr);
+      // 2. Supabase Google OAuth
+      // signInWithGoogle checks provider settings and throws a clear message if disabled
+      const { user: supaUser } = await supabaseGoogleSignIn();
+      if (supaUser) {
+        const cleanUser: User = {
+          id: supaUser.id,
+          email: supaUser.email || 'google.user@agrifusion.ai',
+          name: supaUser.user_metadata?.full_name || 'Google Verified Farmer',
+          full_name: supaUser.user_metadata?.full_name || 'Google Verified Farmer',
+          role: 'USER',
+          is_active: true,
+          profile_image: supaUser.user_metadata?.avatar_url,
+          authentication_provider: 'google',
+        };
+        const { data: sessionData } = await supabase.auth.getSession();
+        return handleAuthSuccess(sessionData?.session?.access_token || '', cleanUser);
       }
 
-      // 3. Instant Google Verified Farmer session fallback
-      const verifiedGoogleUser: User = {
-        id: 101,
-        email: 'google.farmer@agrifusion.ai',
-        name: 'Google Verified Farmer',
-        full_name: 'Google Verified Farmer',
-        role: 'USER',
-        is_active: true,
-        profile_image: 'https://api.dicebear.com/7.x/initials/svg?seed=GoogleFarmer',
-        authentication_provider: 'google',
-      };
-      return handleAuthSuccess(`google_session_${Date.now()}`, verifiedGoogleUser);
+      throw new Error('Google authentication could not be completed.');
     } finally {
       setIsLoading(false);
     }

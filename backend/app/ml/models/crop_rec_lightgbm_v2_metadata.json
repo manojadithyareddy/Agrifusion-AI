@@ -1,0 +1,60 @@
+{
+  "model_name": "crop_recommendation",
+  "version": "crop_rec_lightgbm_v2",
+  "algorithm": "lightgbm",
+  "framework": "LightGBM 4.7.0",
+  "data_version": "v2.0.0 (ICAR & Agmarknet Aligned)",
+  "feature_columns": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "num_classes": 22,
+  "classes": [
+    "apple",
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "jute",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "muskmelon",
+    "orange",
+    "papaya",
+    "pigeonpeas",
+    "pomegranate",
+    "rice",
+    "watermelon"
+  ],
+  "metrics": {
+    "accuracy": 0.9955,
+    "cv_mean": 0.9927,
+    "cv_std": 0.006,
+    "precision": 0.995,
+    "recall": 0.994,
+    "f1": 0.9945
+  },
+  "feature_importance": {
+    "N": 0.13,
+    "P": 0.1813,
+    "K": 0.128,
+    "temperature": 0.033,
+    "humidity": 0.254,
+    "ph": 0.0285,
+    "rainfall": 0.2451
+  },
+  "timestamp": "2026-09-27T02:15:53.321890",
+  "production_ready": true
+}

@@ -128,3 +128,5 @@ backend/fix_*.py
 backend/patch_*.py
 backend/migrate_*.py
 backend/check_*.py
+scratch/
+

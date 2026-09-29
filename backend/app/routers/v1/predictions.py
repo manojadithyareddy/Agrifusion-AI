@@ -1,4 +1,5 @@
-from app.auth.security import get_current_user
+from typing import Optional
+from app.auth.security import get_optional_current_user
 from app.models.user import User
 from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.prediction import (
@@ -15,7 +16,10 @@ router = APIRouter(prefix="/api/v1/predictions", tags=["Predictions"])
 
 
 @router.post("/crop-recommendation")
-async def predict_crop_recommendation(input_data: CropRecommendationInput, current_user: User = Depends(get_current_user)):
+async def predict_crop_recommendation(
+    input_data: CropRecommendationInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Get AI-powered crop recommendations based on soil, weather, and location.
     Returns ranked crops with suitability scores and explanations.
@@ -23,15 +27,22 @@ async def predict_crop_recommendation(input_data: CropRecommendationInput, curre
     service = get_prediction_service()
     result = await service.get_crop_recommendation(
         location=input_data.location,
+        state=input_data.state,
+        district=input_data.district,
+        village=input_data.village,
         soilType=input_data.soilType,
         season=input_data.season,
         targetCrop=input_data.targetCrop,
+        request_id=input_data.request_id,
     )
     return result
 
 
 @router.post("/yield")
-async def predict_yield(input_data: YieldPredictionInput, current_user: User = Depends(get_current_user)):
+async def predict_yield(
+    input_data: YieldPredictionInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Predict expected crop yield in kg/hectare.
     Returns yield range, confidence, and key contributing factors.
@@ -52,7 +63,10 @@ async def predict_yield(input_data: YieldPredictionInput, current_user: User = D
 
 
 @router.post("/climate-risk")
-async def predict_climate_risk(input_data: ClimateRiskInput, current_user: User = Depends(get_current_user)):
+async def predict_climate_risk(
+    input_data: ClimateRiskInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Assess climate risks (drought, flood, heatwave, etc.) for a location and crop.
     Returns risk levels, probabilities, and recommended actions.
@@ -71,7 +85,10 @@ async def predict_climate_risk(input_data: ClimateRiskInput, current_user: User 
 
 
 @router.post("/irrigation")
-async def predict_irrigation(input_data: IrrigationInput, current_user: User = Depends(get_current_user)):
+async def predict_irrigation(
+    input_data: IrrigationInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Get irrigation recommendation based on crop, weather, and soil conditions.
     Returns whether to irrigate, timing, frequency, and reasoning.
@@ -91,7 +108,10 @@ async def predict_irrigation(input_data: IrrigationInput, current_user: User = D
 
 
 @router.post("/market-price")
-async def predict_market_price(input_data: MarketPriceInput, current_user: User = Depends(get_current_user)):
+async def predict_market_price(
+    input_data: MarketPriceInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Predict market price for a crop using historical data.
     """
@@ -106,7 +126,10 @@ async def predict_market_price(input_data: MarketPriceInput, current_user: User 
 
 
 @router.post("/revenue")
-async def predict_revenue_profit(input_data: RevenueProfitInput, current_user: User = Depends(get_current_user)):
+async def predict_revenue_profit(
+    input_data: RevenueProfitInput,
+    current_user: Optional[User] = Depends(get_optional_current_user)
+):
     """
     Calculate expected revenue and profit from yield and price data.
     Includes cost breakdown and risk disclaimer.

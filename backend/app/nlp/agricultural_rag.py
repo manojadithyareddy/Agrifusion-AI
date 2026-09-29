@@ -326,6 +326,92 @@ VERIFIED_AGRICULTURAL_KNOWLEDGE: Dict[str, Dict[str, Any]] = {
         ]
     },
 
+    "rice_zinc_deficiency": {
+        "crop": "Rice",
+        "scientific_crop": "Oryza sativa",
+        "condition": "Zinc Deficiency (Khaira Disease)",
+        "scientific_pathogen": "Physiological Micronutrient (Zn) Deficiency",
+        "category": "Nutrient Deficiency",
+        "supported_pests": [],
+        "symptoms": [
+            "Yellowing and chlorosis of younger and middle leaves starting 2-3 weeks after transplanting",
+            "Reddish-brown or bronze pigmentation spots coalescing on leaf blades",
+            "Stunted crop growth, poor tillering, and delayed maturity in submerged paddy soils"
+        ],
+        "favorable_conditions": "Calcareous, alkaline soils with high pH (>7.5) and continuously submerged waterlogged conditions",
+        "cultural_management": [
+            "Drain standing water for 2-3 days to aerate the root zone and oxidize rhizosphere",
+            "Apply Farm Yard Manure (FYM) or green manure (Dhaincha) prior to puddling to improve micronutrient uptake"
+        ],
+        "biological_management": [
+            "Inoculate soil with zinc solubilizing bacteria (ZSB) @ 2 kg/acre mixed in enriched compost"
+        ],
+        "chemical_management": [
+            "Foliar spray: 5 g Zinc Sulphate (ZnSO4 21%) + 10 g Urea per liter of water (spray 2 times at 10-day intervals)",
+            "Basal dose: Apply Zinc Sulphate @ 20-25 kg/ha at final puddling"
+        ],
+        "safety_warnings": [
+            "Never mix Zinc Sulphate directly with phosphatic fertilizers (DAP/SSP) to avoid insoluble zinc phosphate precipitation",
+            "Ensure foliar spray is applied during early morning or late afternoon to prevent leaf scorching"
+        ],
+        "mistakes_to_avoid": [
+            "Do NOT apply excessive phosphatic fertilizer without checking zinc levels"
+        ],
+        "sources": [
+            {
+                "authority": "ICAR - Indian Institute of Rice Research (IIRR), Hyderabad",
+                "document": "Diagnosis and Remediation of Nutrient Deficiencies in Rice",
+                "year": "2023"
+            },
+            {
+                "authority": "ANGRAU - Agricultural Research Station, Maruteru",
+                "document": "Rice Production Guidelines for Godavari Delta",
+                "year": "2023"
+            }
+        ]
+    },
+
+    "rice_bacterial_leaf_blight": {
+        "crop": "Rice",
+        "scientific_crop": "Oryza sativa",
+        "condition": "Bacterial Leaf Blight (BLB)",
+        "scientific_pathogen": "Xanthomonas oryzae pv. oryzae",
+        "category": "Bacterial",
+        "supported_pests": [],
+        "symptoms": [
+            "Water-soaked to yellowish-white wavy stripes starting from leaf tips and margins",
+            "Leaves turn straw-yellow, dry up rapidly and curl inward ('Kresek' seedling wilt phase)",
+            "Tiny amber-colored bacterial exudate beads visible on young lesions in humid mornings"
+        ],
+        "favorable_conditions": "Heavy rainfall, high humidity (>85%), temperatures 25°C - 34°C, and cyclonic weather",
+        "cultural_management": [
+            "Immediately stop top-dressing with nitrogen/urea until disease spread is arrested",
+            "Drain excess water from the infected field to avoid waterborne bacterial dispersion",
+            "Maintain balanced N-P-K fertilizer ratio with adequate potassium (MOP)"
+        ],
+        "biological_management": [
+            "Seed treatment with Pseudomonas fluorescens @ 10 g/kg seed",
+            "Foliar spray of fresh cow dung slurry supernatant (20%) as an antagonistic bio-agent"
+        ],
+        "chemical_management": [
+            "Foliar spray of Streptocycline @ 0.1 g/L + Copper Oxychloride 50% WP @ 2.0 g/L water (2 sprays at 10-day intervals)"
+        ],
+        "safety_warnings": [
+            "Do NOT work in wet diseased fields as clothing and tools will physically transmit the bacterium to healthy plots",
+            "Observe safety protective clothing when spraying antibiotic formulations"
+        ],
+        "mistakes_to_avoid": [
+            "Do NOT apply urea when bacterial leaf blight lesions are active"
+        ],
+        "sources": [
+            {
+                "authority": "ICAR - National Rice Research Institute (NRRI), Cuttack",
+                "document": "Bacterial Leaf Blight of Rice: Integrated Management Protocol",
+                "year": "2023"
+            }
+        ]
+    },
+
     "wheat_yellow_rust": {
         "crop": "Wheat",
         "scientific_crop": "Triticum aestivum",
@@ -524,6 +610,132 @@ VERIFIED_AGRICULTURAL_KNOWLEDGE: Dict[str, Dict[str, Any]] = {
                 "year": "2023"
             }
         ]
+    },
+
+    "banana_sigatoka": {
+        "crop": "Banana",
+        "scientific_crop": "Musa acuminata",
+        "condition": "Banana Sigatoka Leaf Spot",
+        "scientific_pathogen": "Mycosphaerella musicola / Pseudocercospora fijiensis",
+        "category": "Fungal",
+        "supported_pests": [],
+        "symptoms": [
+            "Small pale yellow linear streaks running strictly parallel to lateral leaf veins",
+            "Streaks enlarge into dark reddish-brown elliptical spots with sunken ash-gray centers and yellow halos",
+            "Extensive marginal foliar scorching causing premature death of canopy and small unmarketable fruit fingers"
+        ],
+        "favorable_conditions": "High relative humidity (>85%), warm temperatures (23°C - 28°C), and continuous leaf surface wetness",
+        "cultural_management": [
+            "De-leaf and burn or deeply bury severely infected older foliage to reduce ascospore inocula",
+            "Maintain wide trench drainage between banana rows to prevent root waterlogging",
+            "Ensure optimum plant density and desuckering to allow aeration through orchard"
+        ],
+        "biological_management": [
+            "Foliar spray of agricultural mineral spray oil (1%) mixed with neem formulation (3 ml/L)",
+            "Bio-fungicide spray with Trichoderma harzianum or Bacillus subtilis @ 5 g/L"
+        ],
+        "chemical_management": [
+            "Foliar spray: Propiconazole 25% EC @ 1.0 ml/L or Difenoconazole 25% EC @ 0.5 ml/L mixed with agricultural mineral oil",
+            "Alternate systemic spray: Carbendazim 50% WP @ 1.0 g/L or Azoxystrobin 23% SC @ 1.0 ml/L"
+        ],
+        "safety_warnings": [
+            "Never spray chemical fungicides directly onto developing fruit bunches",
+            "Observe a strict 14-day Pre-Harvest Interval (PHI) before harvesting bunches"
+        ],
+        "mistakes_to_avoid": [
+            "Do NOT leave pruned diseased leaves lying open in the orchard rows as spores continuously disperse via wind and rain"
+        ],
+        "sources": [
+            {
+                "authority": "ICAR - National Research Centre for Banana (NRCB), Tiruchirappalli",
+                "document": "Standard Operating Protocols for Yellow and Black Sigatoka Management",
+                "year": "2023"
+            }
+        ]
+    },
+
+    "banana_anthracnose": {
+        "crop": "Banana",
+        "scientific_crop": "Musa acuminata",
+        "condition": "Banana Anthracnose",
+        "scientific_pathogen": "Colletotrichum musae (Berk. & M.A. Curtis) Arx",
+        "category": "Fungal",
+        "supported_pests": [],
+        "symptoms": [
+            "Small, circular dark brown or black sunken lesions on banana fruit peel and fingers",
+            "Lesions coalesce into large necrotic black patches with premature fruit softening and peel decay",
+            "Characteristic salmon-pink or orange gelatinous spore masses under humid ripening conditions"
+        ],
+        "favorable_conditions": "High humidity (>90%), storage temperatures 22°C - 28°C, and peel skin abrasions",
+        "cultural_management": [
+            "De-hand bunches carefully using clean sharp curved knives to avoid latex stains and peel cuts",
+            "Install protective perforated polyethylene sleeves over emerging fruit bunches in the plantation",
+            "Wash harvested hands in clean potable water with food-grade alum (1%) to remove field dirt and sap"
+        ],
+        "biological_management": [
+            "Post-harvest hot water fruit dip at 48°C - 50°C for 5 minutes",
+            "Bio-protective wash with Bacillus subtilis or Trichoderma harzianum @ 5 g/L"
+        ],
+        "chemical_management": [
+            "Pre-harvest field spray: Azoxystrobin 23% SC @ 1.0 ml/L or Carbendazim 50% WP @ 1.0 g/L at bunch emergence",
+            "Post-harvest fruit dip: Prochloraz 45% EC @ 0.55 ml/L or Thiabendazole @ 1.0 g/L"
+        ],
+        "safety_warnings": [
+            "Strictly observe 14 days pre-harvest interval for chemical field sprays",
+            "Use only food-grade post-harvest fungicides approved for domestic and export consumption"
+        ],
+        "mistakes_to_avoid": [
+            "Do NOT drop or bump harvested bunches during field-to-packhouse transit as wounds trigger fungal entry"
+        ],
+        "sources": [
+            {
+                "authority": "ICAR - National Research Centre for Banana (NRCB), Tiruchirappalli",
+                "document": "Banana Post-Harvest Pathology and Export Quality Guidelines",
+                "year": "2023"
+            }
+        ]
+    },
+
+    "banana_panama_wilt": {
+        "crop": "Banana",
+        "scientific_crop": "Musa acuminata",
+        "condition": "Panama Disease / Fusarium Wilt",
+        "scientific_pathogen": "Fusarium oxysporum f. sp. cubense (Foc)",
+        "category": "Fungal (Soil-borne)",
+        "supported_pests": [],
+        "symptoms": [
+            "Prominent bright yellow chlorosis along the margins of older lower leaves progressing inward",
+            "Buckling and skirt-like collapse of leaf petioles hanging around pseudostem",
+            "Longitudinal splitting of pseudostem base and reddish-brown vascular discolouration inside corm"
+        ],
+        "favorable_conditions": "Warm soil temperatures (25°C - 30°C), acidic sandy-loam soils, and furrow irrigation",
+        "cultural_management": [
+            "Plant certified disease-free tissue-culture plantlets of wilt-tolerant varieties (Grand Naine, GCTCV-218)",
+            "Isolate and incinerate wilt-affected mats; dig deep boundary trenches around infected blocks",
+            "Avoid furrow flood irrigation from infected plots to clean blocks"
+        ],
+        "biological_management": [
+            "Soil application of Trichoderma viride / harzianum @ 50 g/plant enriched in Farm Yard Manure",
+            "Root zone drenching with Pseudomonas fluorescens @ 10 g/L"
+        ],
+        "chemical_management": [
+            "Corm injection with Carbendazim 2% solution (20 ml/mat) in early disease emergence",
+            "Soil capsule application of Carbendazim 50 mg per sucker at planting"
+        ],
+        "safety_warnings": [
+            "Disinfect machetes and pruning implements in 5% sodium hypochlorite between mats",
+            "Never transfer soil or sucker propagules from known Fusarium wilt containment zones"
+        ],
+        "mistakes_to_avoid": [
+            "Do NOT take suckers or planting material from fields showing any vascular wilt symptoms"
+        ],
+        "sources": [
+            {
+                "authority": "ICAR - National Research Centre for Banana (NRCB), Tiruchirappalli",
+                "document": "National Comprehensive Management Strategy for Fusarium Wilt (Tropical Race 4)",
+                "year": "2024"
+            }
+        ]
     }
 }
 
@@ -564,24 +776,62 @@ class AgriculturalRAG:
     def query_rag(self, query_text: str, crop_hint: Optional[str] = None) -> Dict[str, Any]:
         """
         Semantic/keyword hybrid search over verified agronomic knowledge base.
+        Supports multilingual terminology (Telugu, Hindi, Tamil, English).
         """
         query_lower = query_text.lower()
         matched_records = []
 
+        # Multilingual alias normalization for search
+        crop_aliases = {
+            "Rice": ["వరి", "వరిపంట", "धान", "चावल", "paddy", "oryza", "chawal", "dhan", "rice"],
+            "Wheat": ["గోధుమ", "గోధుమలు", "गेहूं", "wheat", "triticum", "gehun", "godhumai"],
+            "Tomato": ["టమాట", "టమాటా", "टमाटर", "tomato", "tamatar"],
+            "Cotton": ["ప్రత్తి", "పత్తి", "कपास", "रुई", "cotton", "kapas"],
+            "Maize": ["మొక్కజొన్న", "मक्का", "maize", "corn", "makka"],
+            "Potato": ["బంగాళాదుంప", "आलू", "potato", "aloo"],
+            "Chilli": ["మిరప", "మిర్చి", "मिर्च", "chilli", "chili", "mirchi"],
+            "Mango": ["మామిడి", "आम", "mango", "aam"],
+            "Banana": ["అరటి", "కేలా", "केला", "केळी", "ಬಾಳೆ", "வாழை", "வாழ", "banana", "kela", "arati", "vazhai", "bale", "sigatoka", "panama"],
+        }
+
+        symptom_aliases = {
+            "Zinc Deficiency (Khaira Disease)": ["ఆకులు పసుపు", "పసుపు రంగు", "పసుపుగా", "పత్తियां पीली", "पीलापन", "yellow leaves", "chlorosis", "ఖైరా", "खैरा"],
+            "Bacterial Leaf Blight (BLB)": ["బ్లైట్", "ఎండిపోవడం", "झुलसा", "blight", "bacterial"],
+            "Rice Blast": ["అగ్గి తెగులు", "మచ్చలు", "ब्लास्ट", "blast"],
+            "Yellow Stem Borer Damage": ["కాండం తొలుచు", "పురుగు", "కీటకం", "कीट", "इल्ली", "stem borer", "dead heart"],
+            "Early Blight": ["early blight", "target spot", "రింగ్ మచ్చలు"],
+            "Late Blight": ["late blight", "లెట్ బ్లైట్", "పచేతి"],
+            "Yellow / Stripe Rust": ["rust", "రస్ట్", "తుప్పు తెగులు", "रस्ट"],
+        }
+
+        # Resolve crop from query if not provided
+        resolved_crop = crop_hint
+        if not resolved_crop:
+            for crop_name, aliases in crop_aliases.items():
+                if any(alias in query_lower for alias in aliases):
+                    resolved_crop = crop_name
+                    break
+
         for key, record in self.knowledge_base.items():
             score = 0
-            if crop_hint and crop_hint.lower() in record["crop"].lower():
-                score += 5
+            if resolved_crop and resolved_crop.lower() in record["crop"].lower():
+                score += 8
             if record["crop"].lower() in query_lower:
-                score += 4
-            if record["condition"].lower() in query_lower:
                 score += 5
+            if record["condition"].lower() in query_lower:
+                score += 6
+
+            # Symptom alias matching
+            for cond_name, aliases in symptom_aliases.items():
+                if record["condition"] == cond_name and any(a in query_lower for a in aliases):
+                    score += 7
+
             for sym in record["symptoms"]:
                 if any(w in query_lower for w in sym.lower().split() if len(w) > 4):
                     score += 1
             for p in record.get("supported_pests", []):
                 if any(w in query_lower for w in p.lower().split() if len(w) > 4):
-                    score += 3
+                    score += 4
 
             if score > 0:
                 matched_records.append((score, record))

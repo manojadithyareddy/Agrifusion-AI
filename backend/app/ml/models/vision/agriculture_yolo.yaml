@@ -10,11 +10,11 @@ val: images/val                   # val images (relative to 'path')
 test: images/test                 # test images (optional, relative to 'path')
 
 # Number of classes
-nc: 23
+nc: 24
 
 # Class Names Ontology
 names:
-  # --- Crop Organ Detection (Classes 0-7) ---
+  # --- Crop Organ Detection (Classes 0-8) ---
   0: tomato_leaf
   1: potato_leaf
   2: rice_leaf
@@ -23,22 +23,23 @@ names:
   5: maize_leaf
   6: chilli_leaf
   7: mango_leaf
+  8: banana_leaf
 
-  # --- Foliar Pathology & Disease Lesions (Classes 8-15) ---
-  8: early_blight_lesion
-  9: late_blight_lesion
-  10: leaf_curl_virus_symptom
-  11: rice_blast_lesion
-  12: yellow_rust_pustule
-  13: powdery_mildew_patch
-  14: anthracnose_spot
-  15: bacterial_blight_lesion
+  # --- Foliar Pathology & Disease Lesions (Classes 9-16) ---
+  9: early_blight_lesion
+  10: late_blight_lesion
+  11: leaf_curl_virus_symptom
+  12: rice_blast_lesion
+  13: yellow_rust_pustule
+  14: powdery_mildew_patch
+  15: anthracnose_spot
+  16: bacterial_blight_lesion
 
-  # --- Agricultural Pests & Insects (Classes 16-22) ---
-  16: whitefly_adult
-  17: aphid_colony
-  18: stem_borer_larva
-  19: fall_armyworm_larva
-  20: chilli_thrips
-  21: spider_mite
-  22: cotton_bollworm
+  # --- Agricultural Pests & Insects (Classes 17-23) ---
+  17: whitefly_adult
+  18: aphid_colony
+  19: stem_borer_larva
+  20: fall_armyworm_larva
+  21: chilli_thrips
+  22: spider_mite
+  23: cotton_bollworm

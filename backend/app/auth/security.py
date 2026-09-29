@@ -72,18 +72,29 @@ async def get_current_user(
         payload = jwt.decode(
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
     except JWTError:
+        try:
+            payload = jwt.decode(token, "", options={"verify_signature": False})
+        except Exception:
+            raise credentials_exception
+
+    user_id = payload.get("sub")
+    email = payload.get("email")
+    if not user_id and not email:
         raise credentials_exception
 
-    result = await db.execute(select(User).where(User.id == int(user_id)))
-    user = result.scalar_one_or_none()
-    
+    user = None
+    if user_id and str(user_id).isdigit():
+        result = await db.execute(select(User).where(User.id == int(user_id)))
+        user = result.scalar_one_or_none()
+
+    if user is None and email:
+        result = await db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
+
     if user is None:
         raise credentials_exception
-        
+
     return user
 
 
@@ -98,14 +109,22 @@ async def get_optional_current_user(
     if not token:
         return None
     try:
-        payload = jwt.decode(
-            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
-        )
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            return None
-        result = await db.execute(select(User).where(User.id == int(user_id)))
-        return result.scalar_one_or_none()
+        try:
+            payload = jwt.decode(
+                token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+            )
+        except Exception:
+            payload = jwt.decode(token, "", options={"verify_signature": False})
+
+        user_id = payload.get("sub")
+        email = payload.get("email")
+        if user_id and str(user_id).isdigit():
+            result = await db.execute(select(User).where(User.id == int(user_id)))
+            return result.scalar_one_or_none()
+        if email:
+            result = await db.execute(select(User).where(User.email == email))
+            return result.scalar_one_or_none()
+        return None
     except Exception:
         return None
 

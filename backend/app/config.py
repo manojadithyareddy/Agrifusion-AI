@@ -55,7 +55,10 @@ class Settings(BaseSettings):
     ALLOWED_IMAGE_EXTENSIONS: list[str] = [".jpg", ".jpeg", ".png", ".webp"]
     
     class Config:
-        env_file = ".env"
+        from pathlib import Path as _P
+        _b_env = _P(__file__).resolve().parent.parent / ".env"
+        _r_env = _P(__file__).resolve().parent.parent.parent / ".env"
+        env_file = [str(p) for p in [_b_env, _r_env] if p.exists()] or ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
         extra = "ignore"

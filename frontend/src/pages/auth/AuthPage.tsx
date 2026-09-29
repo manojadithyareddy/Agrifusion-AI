@@ -105,7 +105,7 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
     setLoading(true);
     try {
       // NOTE: Default role is strictly USER; admin can never be self-assigned.
-      const { role } = await register({
+      const res = await register({
         name: fullName.trim(),
         email: email.trim(),
         password,
@@ -113,7 +113,16 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
         phone: phone.trim() || undefined,
         terms_accepted: termsAccepted,
       });
-      handleRoleRedirect(role);
+
+      if (res.requiresEmailVerification) {
+        setSuccessMsg(
+          `Registration successful! A verification email has been sent to ${email.trim()}. Please check your inbox and verify your email before signing in.`
+        );
+        setMode('signin');
+        return;
+      }
+
+      handleRoleRedirect(res.role || 'USER');
     } catch (err: any) {
       const msg = err.message || '';
       if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('unreachable')) {
@@ -131,8 +140,10 @@ export default function AuthPage({ initialMode = 'signin' }: AuthPageProps) {
     setErrorMsg(null);
     setLoading(true);
     try {
-      const { role } = await loginWithGoogle();
-      handleRoleRedirect(role);
+      const res = await loginWithGoogle();
+      if (res?.role) {
+        handleRoleRedirect(res.role);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || 'Google authentication could not be completed.');
     } finally {

@@ -840,43 +840,76 @@ class VisionService:
             yellow_rust = (r > 140) & (g > 140) & (b < 95)
             yr_pct = float(np.mean(yellow_rust) * 100)
 
+            total_tissue = dg_pct + yg_pct + yr_pct + min(necrotic_pct, 4.0)
+
             logger.info(
-                f"Visual Leaf Classification for '{os.path.basename(image_path)}': "
+                f"[Vision Service] Leaf Classification for '{os.path.basename(image_path)}': "
                 f"MeanRGB=({mean_r:.1f}, {mean_g:.1f}, {mean_b:.1f}), "
                 f"Necrotic={necrotic_pct:.2f}%, YellowGreen={yg_pct:.2f}%, "
-                f"DeepGreen={dg_pct:.2f}%, YellowRust={yr_pct:.2f}%"
+                f"DeepGreen={dg_pct:.2f}%, YellowRust={yr_pct:.2f}%, TotalTissue={total_tissue:.2f}%"
             )
 
-            # 1. Mango Anthracnose:
-            # Broad foliage with prominent yellow-green tint (yg_pct > 20% or mean_b < 95) and circular necrotic lesions (necrotic_pct >= 1.2%)
-            if (yg_pct > 20.0 or yr_pct > 10.0 or (mean_g > 95 and mean_b < 95)) and necrotic_pct >= 1.2:
+            # Reject non-crop images
+            if total_tissue < 3.0:
+                logger.info(f"[Vision Service] Non-crop image rejected (tissue: {total_tissue:.2f}% < 3.0%).")
+                return "Unable to identify crop", "Unable to identify crop"
+
+            # Parallel venation gradient anisotropy (linear monocot leaf blades vs broadleaf dicots)
+            gray = 0.299 * r + 0.587 * g + 0.114 * b
+            gx = np.abs(gray[:, 1:] - gray[:, :-1])
+            gy = np.abs(gray[1:, :] - gray[:-1, :])
+            mean_gx = float(np.mean(gx))
+            mean_gy = float(np.mean(gy))
+            anisotropy = max(mean_gx, mean_gy) / max(0.001, min(mean_gx, mean_gy))
+
+            # 0. Yellow Fruit (Banana Fruit / Fingers / Bunch):
+            if yr_pct > 15.0 and mean_r > 120 and mean_g > 115 and mean_b < 105:
+                if necrotic_pct >= 1.2:
+                    return "banana", "sigatoka"
+                return "banana", "healthy"
+
+            # 1. Monocot Leaf Blades (Banana Leaf vs Rice / Wheat):
+            if anisotropy > 1.30:
+                # Banana leaf has broad lush foliar lamina with high deep green or substantial yellow-green margins
+                if dg_pct > 18.0 or (necrotic_pct >= 1.0 and yg_pct > 6.0) or (mean_g > 65 and yg_pct > 6.0):
+                    return "banana", "sigatoka" if necrotic_pct >= 1.5 else "healthy"
+                if yr_pct > 18.0 and mean_r > 130 and mean_g > 130:
+                    return "wheat", "yellow_rust"
+                # Rice Blast / Paddy foliar spindle lesions on slender ribbon blades
+                if (necrotic_pct > 2.0 or yg_pct > 8.0) and dg_pct < 18.0:
+                    return "rice", "blast"
+                return "rice", "healthy"
+
+            # 2. Mango Anthracnose:
+            if (yg_pct > 18.0 or (mean_g > 95 and mean_b < 95)) and necrotic_pct >= 1.5:
                 return "mango", "anthracnose"
 
-            # 2. Banana Sigatoka:
-            # Broad lush foliage with high deep green (dg_pct > 30%) and necrotic streaks (necrotic_pct >= 1.5%)
-            if dg_pct > 30.0 and necrotic_pct >= 1.5:
+            # 3. Banana Sigatoka (General Broad leaf):
+            if dg_pct > 25.0 and necrotic_pct >= 1.5:
                 return "banana", "sigatoka"
 
-            # 3. Wheat Yellow Rust:
+            # 4. Wheat Yellow Rust:
             if yr_pct > 18.0 and mean_r > 130 and mean_g > 130:
                 return "wheat", "yellow_rust"
 
-            # 4. Tomato Early Blight / Late Blight:
+            # 5. Tomato Early Blight:
             if necrotic_pct > 6.0 and yg_pct > 15.0:
                 return "tomato", "early_blight"
 
-            # 5. General fruit / broadleaf diagnosis
-            if yg_pct > 15.0 or necrotic_pct > 1.0:
-                return "mango", "anthracnose"
+            # 6. Cotton Leaf Curl:
+            if yg_pct > 15.0 and necrotic_pct < 4.0:
+                return "cotton", "leaf_curl"
 
-            # Default healthy or standard crop
-            if dg_pct > 35.0:
+            # Healthy states
+            if dg_pct > 25.0:
+                return "banana", "healthy"
+            elif dg_pct > 15.0:
                 return "mango", "healthy"
 
-            return "mango", "anthracnose"
+            return "Unable to identify crop", "Unable to identify crop"
         except Exception as e:
             logger.warning(f"Error classifying leaf image {image_path}: {e}")
-            return "mango", "anthracnose"
+            return "Unable to identify crop", "Unable to identify crop"
     
     def _detect_crop_and_disease_key(
         self,
@@ -903,7 +936,7 @@ class VisionService:
             ("groundnut", ["groundnut", "peanut", "mungfali", "verusanaga"]),
             ("gram", ["gram", "chana", "chickpea"]),
             ("apple", ["apple", "seb"]),
-            ("banana", ["banana", "kela", "arati", "sigatoka"]),
+            ("banana", ["banana", "kela", "arati", "ariti", "vazhai", "bale", "sigatoka", "panama", "plantain", "musa", "అరటి", "కేలా", "केला", "केळी", "ಬಾಳೆ", "வாழை", "வாഴ"]),
             ("mango", ["mango", "aam", "mamidi", "mangifera", "alphonso", "kesar", "dasheri", "chausa", "langra", "totapuri", "himsagar", "banganapalli", "badami", "amrapali", "mallika", "neelum", "anthracnose"]),
             ("rice", ["rice", "paddy", "dhan", "chawal", "blast"]),
         ]
@@ -919,7 +952,7 @@ class VisionService:
             if image_path and os.path.exists(image_path):
                 detected_crop, visual_disease = self._classify_leaf_image(image_path)
                 return detected_crop, visual_disease
-            detected_crop = "mango"
+            return "Unable to identify crop", "Unable to identify crop"
 
         # Check specific disease subkeys
         disease_key = "default"
@@ -977,6 +1010,8 @@ class VisionService:
         engine = get_deep_vision_engine()
         explainer = get_plain_language_explainer()
 
+        logger.info(f"[Vision Service] Received image: path='{image_path}', filename='{original_filename or os.path.basename(image_path)}', crop_hint='{crop or 'None'}'")
+
         # Step 1: Deep Vision Analysis (OpenCV + CNN)
         deep_result = None
         try:
@@ -993,11 +1028,33 @@ class VisionService:
         if deep_result:
             detected_crop = deep_result["detected_crop"]
             disease_info = deep_result["disease_info"]
-            confidence = max(96.0, float(deep_result["confidence"]))
+            confidence = float(deep_result["confidence"])
             opencv_metrics = deep_result["opencv_metrics"]
+            logger.info(
+                f"[Vision Service] Selected model='{self.model_version}', detected crop='{detected_crop}', "
+                f"disease='{disease_info.get('name')}', confidence={confidence}%"
+            )
         else:
             filename_to_inspect = f"{original_filename or ''} {os.path.basename(image_path)}"
             detected_crop, disease_key = self._detect_crop_and_disease_key(filename_to_inspect, crop, image_path=image_path)
+            if detected_crop == "Unable to identify crop":
+                return {
+                    "analysis_id": uuid.uuid4().hex,
+                    "status": "UNABLE_TO_IDENTIFY_CROP",
+                    "media_type": "image",
+                    "model_version": "agrifusion-cnn-opencv-v5.0-high-accuracy",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "crop": "Unable to identify crop",
+                    "language": language or "en",
+                    "confidence": 0.0,
+                    "summary": "Unable to identify crop: No agricultural crop foliage, leaf, or fruit tissue detected in this image.",
+                    "detections": [],
+                    "recommendations": [
+                        "Please upload a clear, well-focused photo of Banana, Rice, Mango, Cotton or other supported crop leaves or fruits.",
+                        "Ensure adequate natural daylight without harsh glare or heavy shadows."
+                    ],
+                    "safety_notice": "Crop could not be confirmed. Please upload a clear photo of supported crop tissue."
+                }
             crop_data = CROPS_PATHOLOGY_DB.get(detected_crop, CROPS_PATHOLOGY_DB["tomato"])
             diagnosis = crop_data.get(disease_key, crop_data.get("default", list(crop_data.values())[0]))
             confidence = max(96.0, float(diagnosis.get("confidence", 96.5)))
@@ -1015,6 +1072,25 @@ class VisionService:
             }
             opencv_metrics = {"aspect_ratio": 1.2, "necrotic_lesion_pct": 2.5, "spot_count": 4}
 
+        if detected_crop == "Unable to identify crop":
+            return {
+                "analysis_id": uuid.uuid4().hex,
+                "status": "UNABLE_TO_IDENTIFY_CROP",
+                "media_type": "image",
+                "model_version": "agrifusion-cnn-opencv-v5.0-high-accuracy",
+                "timestamp": datetime.utcnow().isoformat(),
+                "crop": "Unable to identify crop",
+                "language": language or "en",
+                "confidence": 0.0,
+                "summary": "Unable to identify crop: No agricultural crop foliage, leaf, or fruit tissue detected in this image.",
+                "detections": [],
+                "recommendations": [
+                    "Please upload a clear, well-focused photo of Banana, Rice, Mango, Cotton or other supported crop leaves or fruits.",
+                    "Ensure adequate natural daylight without harsh glare or heavy shadows."
+                ],
+                "safety_notice": "Crop could not be confirmed. Please upload a clear photo of supported crop tissue."
+            }
+
         # Step 2: Generate NLP & GenAI Plain Language Explanation
         plain_explanation = await explainer.generate_explanation(
             crop=detected_crop,
@@ -1028,6 +1104,21 @@ class VisionService:
         meta = LOCALIZED_METADATA.get(lang, LOCALIZED_METADATA["en"])
         crop_display = detected_crop.capitalize()
 
+        # Structured pest extraction
+        detected_pests = []
+        pest_damage_list = []
+        pest_control_list = []
+        if disease_info.get("pest_involved"):
+            p_name = disease_info["pest_involved"]
+            detected_pests.append({
+                "name": p_name,
+                "scientific_name": p_name,
+                "confidence": round(confidence / 100.0, 3) if confidence > 1.0 else round(confidence, 3),
+                "damage_signs": disease_info.get("pest_explanation", "Visible pest feeding damage.")
+            })
+            pest_damage_list.append(disease_info.get("pest_explanation", "Visible pest damage."))
+            pest_control_list.append(f"Targeted pest control for {p_name}: {disease_info.get('store_medicine', 'Apply recommended insecticide.')}")
+
         return {
             "analysis_id": uuid.uuid4().hex,
             "status": "success",
@@ -1035,6 +1126,16 @@ class VisionService:
             "model_version": "agrifusion-cnn-opencv-v5.0-high-accuracy",
             "timestamp": datetime.utcnow().isoformat(),
             "crop": crop_display,
+            "crop_confidence": round(confidence / 100.0, 3) if confidence > 1.0 else round(confidence, 3),
+            "disease": disease_info.get("name", "Pathology Detected"),
+            "disease_confidence": round(confidence / 100.0, 3) if confidence > 1.0 else round(confidence, 3),
+            "pests": detected_pests,
+            "pest_confidence": (round(confidence / 100.0, 3) if confidence > 1.0 else round(confidence, 3)) if detected_pests else None,
+            "symptoms": [disease_info.get("simple_explanation", "Visible foliar symptoms detected.")],
+            "pest_damage": pest_damage_list if pest_damage_list else ["No visible pest damage detected on plant tissue."],
+            "treatment": [disease_info.get("store_medicine", ""), disease_info.get("home_remedy", "")],
+            "pest_control": pest_control_list if pest_control_list else ["No insecticide or pest intervention currently required. Continue routine field scouting."],
+            "prevention": [f"Preventive Measure: {disease_info.get('home_remedy', '')}", *(disease_info.get("avoid_mistakes") or [])],
             "language": lang,
             "confidence": round(confidence, 1),
             "plain_language_explanation": plain_explanation,
