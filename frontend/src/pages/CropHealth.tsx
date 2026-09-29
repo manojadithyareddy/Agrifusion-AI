@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { api } from '../api/client';
-import { useAuth } from '../context/AuthContext';
 import { CROPS_LIST, getCropRiskProfile } from '../utils/geoCropData';
 import { SAMPLE_LEAF_PRESETS, generateSampleLeafFile } from '../utils/sampleLeafImages';
 
@@ -22,9 +21,6 @@ interface AnalysisResult {
 }
 
 export default function CropHealth() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
-
   const [selectedCrop, setSelectedCrop] = useState('Tomato');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -222,21 +218,17 @@ export default function CropHealth() {
                 transition: 'all 0.2s', background: 'rgba(255,255,255,0.02)',
               }}
               onClick={() => {
-                if (!isAdmin) {
-                  setError('ℹ️ Custom image file upload is available for Admin only. Please select any of the disease presets above to run instant automated AI diagnosis!');
-                  return;
-                }
                 fileInputRef.current?.click();
               }}
-              onDragOver={isAdmin ? handleDragOver : undefined}
-              onDrop={isAdmin ? handleDrop : undefined}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
             >
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>{isAdmin ? '📷' : '🔒'}</div>
+              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📷</div>
               <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '6px' }}>
-                {isAdmin ? 'Click to browse photo or drag & drop here' : 'Custom Image Upload (Admin Only)'}
+                Click to browse photo or drag & drop here
               </div>
               <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                {isAdmin ? 'Supports JPG, PNG, WEBP (Max 10MB)' : 'Select any verified crop leaf preset above for instant AI diagnosis'}
+                Supports JPG, PNG, WEBP (Max 10MB)
               </div>
             </div>
           ) : (

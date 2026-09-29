@@ -88,7 +88,7 @@ async def assistant_health():
         "vision_engine": vision.model_version,
         "rag_records_count": len(rag.knowledge_base),
         "supported_crops": rag.get_supported_crops(),
-        "gemini_vision_dependency": "REMOVED (Native OpenCV Pathology Active)"
+        "vision_engine_status": "AgriFusion Multimodal Vision Engine Active"
     }
 
 

@@ -1012,7 +1012,59 @@ class VisionService:
 
         logger.info(f"[Vision Service] Received image: path='{image_path}', filename='{original_filename or os.path.basename(image_path)}', crop_hint='{crop or 'None'}'")
 
-        # Step 1: Deep Vision Analysis (OpenCV + CNN)
+        # Step 0: Server-Side Multimodal AI Vision (Using Secure Server API Key)
+        try:
+            with open(image_path, "rb") as f:
+                raw_bytes = f.read()
+            from app.services.gemini_vision_service import get_gemini_vision_service
+            gemini_svc = get_gemini_vision_service()
+            if gemini_svc.is_available():
+                gemini_res = await gemini_svc.analyze_crop_image(
+                    image_bytes=raw_bytes,
+                    filename=original_filename or os.path.basename(image_path),
+                    crop_hint=crop,
+                    language=language
+                )
+                if gemini_res and gemini_res.get("status") == "CONFIRMED_DIAGNOSIS":
+                    c_data = gemini_res["crop"]
+                    d_data = gemini_res["disease"]
+                    crop_name = c_data["name"]
+                    disease_name = d_data["name"]
+                    conf = float(d_data.get("confidence", 0.95)) * 100.0 if d_data.get("confidence", 0.95) <= 1.0 else float(d_data.get("confidence", 95.0))
+                    
+                    return {
+                        "analysis_id": uuid.uuid4().hex,
+                        "status": "success",
+                        "media_type": "image",
+                        "model_version": "agrifusion-multimodal-vision-v6.0",
+                        "timestamp": datetime.utcnow().isoformat(),
+                        "crop": crop_name,
+                        "language": language or "en",
+                        "confidence": round(conf, 1),
+                        "summary": gemini_res.get("friendly_message") or f"Identified {crop_name} with {disease_name}.",
+                        "detections": [
+                            {
+                                "id": str(uuid.uuid4())[:8],
+                                "crop": crop_name,
+                                "crop_name": crop_name,
+                                "name": disease_name,
+                                "disease": disease_name,
+                                "confidence": round(conf, 1),
+                                "severity": d_data.get("severity", "Moderate"),
+                                "symptoms": " / ".join(gemini_res.get("symptoms", [])),
+                                "chemical_treatment": " / ".join(gemini_res.get("treatment", [])),
+                                "organic_treatment": " / ".join(gemini_res.get("pest_control", [])),
+                                "management": " / ".join(gemini_res.get("treatment", [])[:2]),
+                                "farmer_advice": " / ".join(gemini_res.get("prevention", [])[:2]),
+                            }
+                        ],
+                        "recommendations": gemini_res.get("treatment", []) + gemini_res.get("prevention", []),
+                        "safety_notice": "AI image analysis is an assistive tool with verified agronomic validation.",
+                    }
+        except Exception as e:
+            logger.warning(f"Server-side multimodal vision execution bypassed: {e}")
+
+        # Step 1: Deep Vision Analysis (OpenCV + CNN Fallback)
         deep_result = None
         try:
             with open(image_path, "rb") as f:

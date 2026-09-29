@@ -996,8 +996,20 @@ class AssistantVisionEngine:
         # Step 2: OpenCV Preprocessing & Contours
         metrics = self.extract_opencv_pathology(img_bgr)
 
-        # Step 3: Classification
-        diag = self.diagnose_crop_and_disease(metrics, filename, crop_hint)
+        # Step 3: Multimodal Vision using Secure Server API Key (with Seamless OpenCV Fallback)
+        diag = None
+        try:
+            from app.services.gemini_vision_service import get_gemini_vision_service
+            gemini_svc = get_gemini_vision_service()
+            if gemini_svc.is_available():
+                diag = gemini_svc.analyze_crop_image_sync(image_bytes, filename=filename, crop_hint=crop_hint)
+        except Exception as e:
+            logger.warning(f"[Vision Pipeline] Gemini multimodal vision execution error: {e}")
+            diag = None
+
+        # Step 4: Native OpenCV Botanical Morphometric Classification Fallback
+        if not diag:
+            diag = self.diagnose_crop_and_disease(metrics, filename, crop_hint)
 
         logger.info(
             f"[Vision Pipeline] Final response: req_id='{req_id}', img_id='{img_id}', status={diag['status']}, "

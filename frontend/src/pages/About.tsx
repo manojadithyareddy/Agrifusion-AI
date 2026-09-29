@@ -143,7 +143,7 @@ export default function About() {
             {[
               { title: 'Async First', desc: 'FastAPI with async SQLAlchemy for non-blocking I/O.' },
               { title: 'Separation of Concerns', desc: 'Router → Service → ML Engine layered architecture.' },
-              { title: 'Graceful Degradation', desc: 'Features degrade to placeholder mode when API keys are missing.' },
+              { title: 'Graceful Degradation', desc: 'Features seamlessly fall back to local computer vision models when external services are unavailable.' },
               { title: 'Honest AI', desc: 'No fabricated statistics. Placeholder models return explicit status.' },
               { title: 'Multilingual', desc: 'Custom i18n provider with fallback to English.' },
               { title: 'Docker-ready', desc: 'Full Docker Compose stack for one-command deployment.' },
