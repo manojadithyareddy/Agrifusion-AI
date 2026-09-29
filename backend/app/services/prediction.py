@@ -220,66 +220,109 @@ DISTRICT_AGRO_ZONES: Dict[str, Dict[str, Any]] = {
     "mysore": {"zone": "Southern Transition Zone", "rainfall_mult": 1.15, "humidity_delta": 0.0, "temp_delta": 0.0, "n_target": 100.0, "p_target": 70.0, "k_target": 45.0, "ph_target": 6.6},
     "mysuru": {"zone": "Southern Transition Zone", "rainfall_mult": 1.15, "humidity_delta": 0.0, "temp_delta": 0.0, "n_target": 100.0, "p_target": 70.0, "k_target": 45.0, "ph_target": 6.6},
     "chamarajanagar": {"zone": "Southern Dry Zone", "rainfall_mult": 0.85, "humidity_delta": -12.0, "temp_delta": 1.0, "n_target": 38.0, "p_target": 35.0, "k_target": 28.0, "ph_target": 6.7},
-    "hassan": {"zone": "Southern Transition / Malnad", "rainfall_mult": 1.4, "humidity_delta": 6.0, "temp_delta": -2.0, "n_target": 95.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3},
-    "chikmagalur": {"zone": "Hilly Malnad Coffee Zone", "rainfall_mult": 1.8, "humidity_delta": 12.0, "temp_delta": -3.5, "n_target": 100.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3},
-    "chikkamagaluru": {"zone": "Hilly Malnad Coffee Zone", "rainfall_mult": 1.8, "humidity_delta": 12.0, "temp_delta": -3.5, "n_target": 100.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3},
-    "kodagu": {"zone": "Western Ghats High Rainfall", "rainfall_mult": 2.0, "humidity_delta": 14.0, "temp_delta": -4.0, "n_target": 98.0, "p_target": 26.0, "k_target": 30.0, "ph_target": 6.1},
-    "shimoga": {"zone": "Central Malnad Zone", "rainfall_mult": 1.6, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 95.0, "p_target": 30.0, "k_target": 32.0, "ph_target": 6.3},
-    "shivamogga": {"zone": "Central Malnad Zone", "rainfall_mult": 1.6, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 95.0, "p_target": 30.0, "k_target": 32.0, "ph_target": 6.3},
-    "chitradurga": {"zone": "Central Dry Zone", "rainfall_mult": 0.72, "humidity_delta": -14.0, "temp_delta": 2.0, "n_target": 38.0, "p_target": 38.0, "k_target": 28.0, "ph_target": 7.0},
-    "davanagere": {"zone": "Central Transition Zone", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 45.0, "k_target": 30.0, "ph_target": 6.8},
+    "hassan": {"zone": "Southern Transition / Malnad", "rainfall_mult": 1.4, "humidity_delta": 6.0, "temp_delta": -2.0, "n_target": 95.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3, "priority_crops": ["Potato", "Maize", "Coconut", "Coffee", "Pigeonpeas"], "unsuitable_crops": ["Cotton", "Wheat", "Apple", "Jute", "Barley"]},
+    "chikmagalur": {"zone": "Hilly Malnad Coffee Zone", "rainfall_mult": 1.8, "humidity_delta": 12.0, "temp_delta": -3.5, "n_target": 100.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3, "priority_crops": ["Coffee", "Black Pepper", "Arecanut", "Cardamom", "Ginger"], "unsuitable_crops": ["Cotton", "Wheat", "Jute"]},
+    "chikkamagaluru": {"zone": "Hilly Malnad Coffee Zone", "rainfall_mult": 1.8, "humidity_delta": 12.0, "temp_delta": -3.5, "n_target": 100.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 6.3, "priority_crops": ["Coffee", "Black Pepper", "Arecanut", "Cardamom", "Ginger"], "unsuitable_crops": ["Cotton", "Wheat", "Jute"]},
+    "kodagu": {"zone": "Western Ghats High Rainfall", "rainfall_mult": 2.0, "humidity_delta": 14.0, "temp_delta": -4.0, "n_target": 98.0, "p_target": 26.0, "k_target": 30.0, "ph_target": 6.1, "priority_crops": ["Coffee", "Black Pepper", "Rice", "Cardamom", "Ginger"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "shimoga": {"zone": "Central Malnad Zone", "rainfall_mult": 1.6, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 95.0, "p_target": 30.0, "k_target": 32.0, "ph_target": 6.3, "priority_crops": ["Rice", "Arecanut", "Maize", "Ginger", "Sugarcane"], "unsuitable_crops": ["Apple", "Wheat"]},
+    "shivamogga": {"zone": "Central Malnad Zone", "rainfall_mult": 1.6, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 95.0, "p_target": 30.0, "k_target": 32.0, "ph_target": 6.3, "priority_crops": ["Rice", "Arecanut", "Maize", "Ginger", "Sugarcane"], "unsuitable_crops": ["Apple", "Wheat"]},
+    "chitradurga": {"zone": "Central Dry Zone", "rainfall_mult": 0.72, "humidity_delta": -14.0, "temp_delta": 2.0, "n_target": 38.0, "p_target": 38.0, "k_target": 28.0, "ph_target": 7.0, "priority_crops": ["Groundnut", "Pomegranate", "Onion", "Maize", "Cotton"], "unsuitable_crops": ["Coffee", "Apple", "Rice"]},
+    "davanagere": {"zone": "Central Transition Zone", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 45.0, "k_target": 30.0, "ph_target": 6.8, "priority_crops": ["Maize", "Rice", "Sugarcane", "Arecanut", "Cotton"], "unsuitable_crops": ["Apple", "Coffee"]},
 
     # ── Maharashtra ──
-    "ratnagiri": {"zone": "Konkan Coastal Humid", "rainfall_mult": 2.3, "humidity_delta": 16.0, "temp_delta": 1.0, "n_target": 68.0, "p_target": 28.0, "k_target": 34.0, "ph_target": 5.7},
-    "sindhudurg": {"zone": "Konkan Coastal Humid", "rainfall_mult": 2.3, "humidity_delta": 16.0, "temp_delta": 1.0, "n_target": 68.0, "p_target": 28.0, "k_target": 34.0, "ph_target": 5.7},
-    "raigad": {"zone": "Konkan Coastal", "rainfall_mult": 2.1, "humidity_delta": 14.0, "temp_delta": 1.0, "n_target": 70.0, "p_target": 32.0, "k_target": 35.0, "ph_target": 5.9},
-    "thane": {"zone": "North Konkan Coastal", "rainfall_mult": 2.0, "humidity_delta": 12.0, "temp_delta": 1.5, "n_target": 72.0, "p_target": 35.0, "k_target": 35.0, "ph_target": 6.0},
-    "palghar": {"zone": "North Konkan", "rainfall_mult": 1.9, "humidity_delta": 12.0, "temp_delta": 1.5, "n_target": 70.0, "p_target": 34.0, "k_target": 35.0, "ph_target": 6.0},
-    "pune": {"zone": "Western Ghats Rain Shadow / Irrigated", "rainfall_mult": 0.85, "humidity_delta": -12.0, "temp_delta": 0.0, "n_target": 28.0, "p_target": 132.0, "k_target": 200.0, "ph_target": 6.6},
-    "nashik": {"zone": "Ghats Transition / Horticulture", "rainfall_mult": 0.82, "humidity_delta": -14.0, "temp_delta": -0.5, "n_target": 28.0, "p_target": 130.0, "k_target": 198.0, "ph_target": 6.7},
-    "sangli": {"zone": "Southern Western Ghats Irrigated", "rainfall_mult": 0.78, "humidity_delta": -15.0, "temp_delta": 1.0, "n_target": 26.0, "p_target": 134.0, "k_target": 202.0, "ph_target": 6.8},
-    "satara": {"zone": "Western Transition Zone", "rainfall_mult": 0.95, "humidity_delta": -8.0, "temp_delta": -0.5, "n_target": 32.0, "p_target": 120.0, "k_target": 180.0, "ph_target": 6.6},
-    "kolhapur": {"zone": "Sub-Montane Heavy Irrigated", "rainfall_mult": 1.3, "humidity_delta": 4.0, "temp_delta": -0.5, "n_target": 105.0, "p_target": 60.0, "k_target": 40.0, "ph_target": 6.5},
-    "nagpur": {"zone": "Eastern Vidarbha Orange Belt", "rainfall_mult": 1.15, "humidity_delta": 2.0, "temp_delta": 2.0, "n_target": 25.0, "p_target": 18.0, "k_target": 12.0, "ph_target": 6.8},
-    "wardha": {"zone": "Vidarbha Cotton-Soybean", "rainfall_mult": 0.95, "humidity_delta": -5.0, "temp_delta": 2.2, "n_target": 115.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.3},
-    "amravati": {"zone": "Vidarbha Orange & Cotton", "rainfall_mult": 0.98, "humidity_delta": -4.0, "temp_delta": 2.0, "n_target": 28.0, "p_target": 20.0, "k_target": 14.0, "ph_target": 7.0},
-    "akola": {"zone": "Central Vidarbha Cotton Belt", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 2.5, "n_target": 116.0, "p_target": 50.0, "k_target": 22.0, "ph_target": 7.5},
-    "yavatmal": {"zone": "Southern Vidarbha Cotton Bowl", "rainfall_mult": 0.95, "humidity_delta": -6.0, "temp_delta": 2.2, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.4},
-    "latur": {"zone": "Marathwada Pulse Bowl", "rainfall_mult": 0.75, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 25.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.3},
-    "nanded": {"zone": "Marathwada Cotton & Pulses", "rainfall_mult": 0.82, "humidity_delta": -14.0, "temp_delta": 2.2, "n_target": 110.0, "p_target": 55.0, "k_target": 22.0, "ph_target": 7.4},
-    "aurangabad": {"zone": "Marathwada Semi-Arid", "rainfall_mult": 0.72, "humidity_delta": -16.0, "temp_delta": 2.0, "n_target": 105.0, "p_target": 45.0, "k_target": 22.0, "ph_target": 7.4},
-    "solapur": {"zone": "Scarcity / Dry Pomegranate Zone", "rainfall_mult": 0.65, "humidity_delta": -20.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 22.0, "k_target": 38.0, "ph_target": 7.2},
-    "jalgaon": {"zone": "Khandesh Banana Belt", "rainfall_mult": 0.85, "humidity_delta": -10.0, "temp_delta": 2.0, "n_target": 105.0, "p_target": 78.0, "k_target": 50.0, "ph_target": 7.1},
-    "ahmednagar": {"zone": "Central Maharashtra Dry Zone", "rainfall_mult": 0.68, "humidity_delta": -18.0, "temp_delta": 2.0, "n_target": 24.0, "p_target": 22.0, "k_target": 38.0, "ph_target": 7.3},
+    "ratnagiri": {"zone": "Konkan Coastal Humid", "rainfall_mult": 2.3, "humidity_delta": 16.0, "temp_delta": 1.0, "n_target": 68.0, "p_target": 28.0, "k_target": 34.0, "ph_target": 5.7, "priority_crops": ["Mango", "Cashew", "Rice", "Coconut", "Finger Millet"], "unsuitable_crops": ["Wheat", "Cotton", "Apple"]},
+    "sindhudurg": {"zone": "Konkan Coastal Humid", "rainfall_mult": 2.3, "humidity_delta": 16.0, "temp_delta": 1.0, "n_target": 68.0, "p_target": 28.0, "k_target": 34.0, "ph_target": 5.7, "priority_crops": ["Mango", "Cashew", "Rice", "Coconut", "Banana"], "unsuitable_crops": ["Wheat", "Cotton", "Apple"]},
+    "raigad": {"zone": "Konkan Coastal", "rainfall_mult": 2.1, "humidity_delta": 14.0, "temp_delta": 1.0, "n_target": 70.0, "p_target": 32.0, "k_target": 35.0, "ph_target": 5.9, "priority_crops": ["Rice", "Vegetables", "Coconut", "Mango"], "unsuitable_crops": ["Wheat", "Cotton"]},
+    "thane": {"zone": "North Konkan Coastal", "rainfall_mult": 2.0, "humidity_delta": 12.0, "temp_delta": 1.5, "n_target": 72.0, "p_target": 35.0, "k_target": 35.0, "ph_target": 6.0, "priority_crops": ["Rice", "Vegetables", "Sapota", "Finger Millet"], "unsuitable_crops": ["Wheat", "Cotton"]},
+    "palghar": {"zone": "North Konkan", "rainfall_mult": 1.9, "humidity_delta": 12.0, "temp_delta": 1.5, "n_target": 70.0, "p_target": 34.0, "k_target": 35.0, "ph_target": 6.0, "priority_crops": ["Sapota", "Rice", "Vegetables", "Finger Millet"], "unsuitable_crops": ["Wheat", "Cotton"]},
+    "pune": {"zone": "Western Ghats Rain Shadow / Irrigated", "rainfall_mult": 0.85, "humidity_delta": -12.0, "temp_delta": 0.0, "n_target": 28.0, "p_target": 132.0, "k_target": 200.0, "ph_target": 6.6, "priority_crops": ["Grapes", "Sugarcane", "Soybean", "Pomegranate", "Tomato"], "unsuitable_crops": ["Apple", "Jute", "Coconut", "Coffee"]},
+    "nashik": {"zone": "Ghats Transition / Horticulture", "rainfall_mult": 0.82, "humidity_delta": -14.0, "temp_delta": -0.5, "n_target": 28.0, "p_target": 130.0, "k_target": 198.0, "ph_target": 6.7, "priority_crops": ["Grapes", "Onion", "Tomato", "Soybean", "Pomegranate"], "unsuitable_crops": ["Apple", "Coconut", "Coffee"]},
+    "sangli": {"zone": "Southern Western Ghats Irrigated", "rainfall_mult": 0.78, "humidity_delta": -15.0, "temp_delta": 1.0, "n_target": 26.0, "p_target": 134.0, "k_target": 202.0, "ph_target": 6.8, "priority_crops": ["Grapes", "Sugarcane", "Turmeric", "Soybean", "Pomegranate"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "satara": {"zone": "Western Transition Zone", "rainfall_mult": 0.95, "humidity_delta": -8.0, "temp_delta": -0.5, "n_target": 32.0, "p_target": 120.0, "k_target": 180.0, "ph_target": 6.6, "priority_crops": ["Sugarcane", "Strawberry", "Soybean", "Ginger", "Turmeric"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "kolhapur": {"zone": "Sub-Montane Heavy Irrigated", "rainfall_mult": 1.3, "humidity_delta": 4.0, "temp_delta": -0.5, "n_target": 105.0, "p_target": 60.0, "k_target": 40.0, "ph_target": 6.5, "priority_crops": ["Sugarcane", "Soybean", "Rice", "Groundnut", "Ginger"], "unsuitable_crops": ["Apple", "Wheat"]},
+    "nagpur": {"zone": "Eastern Vidarbha Orange Belt", "rainfall_mult": 1.15, "humidity_delta": 2.0, "temp_delta": 2.0, "n_target": 25.0, "p_target": 18.0, "k_target": 12.0, "ph_target": 6.8, "priority_crops": ["Orange", "Cotton", "Soybean", "Pigeonpeas", "Wheat"], "unsuitable_crops": ["Apple", "Coffee", "Coconut"]},
+    "wardha": {"zone": "Vidarbha Cotton-Soybean", "rainfall_mult": 0.95, "humidity_delta": -5.0, "temp_delta": 2.2, "n_target": 115.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.3, "priority_crops": ["Cotton", "Soybean", "Pigeonpeas", "Chickpea"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "amravati": {"zone": "Vidarbha Orange & Cotton", "rainfall_mult": 0.98, "humidity_delta": -4.0, "temp_delta": 2.0, "n_target": 28.0, "p_target": 20.0, "k_target": 14.0, "ph_target": 7.0, "priority_crops": ["Orange", "Cotton", "Soybean", "Pigeonpeas"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "akola": {"zone": "Central Vidarbha Cotton Belt", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 2.5, "n_target": 116.0, "p_target": 50.0, "k_target": 22.0, "ph_target": 7.5, "priority_crops": ["Cotton", "Soybean", "Pigeonpeas", "Chickpea"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "yavatmal": {"zone": "Southern Vidarbha Cotton Bowl", "rainfall_mult": 0.95, "humidity_delta": -6.0, "temp_delta": 2.2, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.4, "priority_crops": ["Cotton", "Soybean", "Pigeonpeas", "Sorghum"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "latur": {"zone": "Marathwada Pulse Bowl", "rainfall_mult": 0.75, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 25.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.3, "priority_crops": ["Soybean", "Pigeonpeas", "Chickpea", "Sorghum", "Sugarcane"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "nanded": {"zone": "Marathwada Cotton & Pulses", "rainfall_mult": 0.82, "humidity_delta": -14.0, "temp_delta": 2.2, "n_target": 110.0, "p_target": 55.0, "k_target": 22.0, "ph_target": 7.4, "priority_crops": ["Cotton", "Soybean", "Turmeric", "Banana", "Pigeonpeas"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "aurangabad": {"zone": "Marathwada Semi-Arid", "rainfall_mult": 0.72, "humidity_delta": -16.0, "temp_delta": 2.0, "n_target": 105.0, "p_target": 45.0, "k_target": 22.0, "ph_target": 7.4, "priority_crops": ["Cotton", "Maize", "Sweet Lime", "Pigeonpeas", "Pearl Millet"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "solapur": {"zone": "Scarcity / Dry Pomegranate Zone", "rainfall_mult": 0.65, "humidity_delta": -20.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 22.0, "k_target": 38.0, "ph_target": 7.2, "priority_crops": ["Pomegranate", "Sugarcane", "Sorghum", "Grape", "Soybean"], "unsuitable_crops": ["Apple", "Coffee", "Jute"]},
+    "jalgaon": {"zone": "Khandesh Banana Belt", "rainfall_mult": 0.85, "humidity_delta": -10.0, "temp_delta": 2.0, "n_target": 105.0, "p_target": 78.0, "k_target": 50.0, "ph_target": 7.1, "priority_crops": ["Banana", "Cotton", "Maize", "Soybean", "Pigeonpeas"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "ahmednagar": {"zone": "Central Maharashtra Dry Zone", "rainfall_mult": 0.68, "humidity_delta": -18.0, "temp_delta": 2.0, "n_target": 24.0, "p_target": 22.0, "k_target": 38.0, "ph_target": 7.3, "priority_crops": ["Sugarcane", "Pomegranate", "Onion", "Soybean", "Bajra"], "unsuitable_crops": ["Apple", "Coffee"]},
 
     # ── Uttar Pradesh ──
-    "varanasi": {"zone": "Eastern Alluvial Plains", "rainfall_mult": 1.45, "humidity_delta": 8.0, "temp_delta": 0.0, "n_target": 75.0, "p_target": 42.0, "k_target": 40.0, "ph_target": 6.6},
-    "gorakhpur": {"zone": "North-Eastern Terai Basin", "rainfall_mult": 1.6, "humidity_delta": 10.0, "temp_delta": -0.5, "n_target": 78.0, "p_target": 40.0, "k_target": 40.0, "ph_target": 6.5},
-    "lucknow": {"zone": "Central Awadh Mango Belt", "rainfall_mult": 1.0, "humidity_delta": -6.0, "temp_delta": 1.0, "n_target": 25.0, "p_target": 25.0, "k_target": 32.0, "ph_target": 6.8},
-    "meerut": {"zone": "Western Doab Sugarcane Belt", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 55.0, "k_target": 26.0, "ph_target": 7.0},
-    "muzaffarnagar": {"zone": "Western Doab Sugarcane Belt", "rainfall_mult": 0.90, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 112.0, "p_target": 55.0, "k_target": 26.0, "ph_target": 7.0},
-    "agra": {"zone": "South-Western Semi-Arid", "rainfall_mult": 0.65, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 40.0, "p_target": 60.0, "k_target": 35.0, "ph_target": 7.5},
-    "jhansi": {"zone": "Bundelkhand Dry Pulses", "rainfall_mult": 0.62, "humidity_delta": -22.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.4},
-    "banda": {"zone": "Bundelkhand Pulses", "rainfall_mult": 0.62, "humidity_delta": -22.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.4},
+    "varanasi": {"zone": "Eastern Alluvial Plains", "rainfall_mult": 1.45, "humidity_delta": 8.0, "temp_delta": 0.0, "n_target": 75.0, "p_target": 42.0, "k_target": 40.0, "ph_target": 6.6, "priority_crops": ["Rice", "Wheat", "Vegetables", "Mustard", "Potato"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+    "gorakhpur": {"zone": "North-Eastern Terai Basin", "rainfall_mult": 1.6, "humidity_delta": 10.0, "temp_delta": -0.5, "n_target": 78.0, "p_target": 40.0, "k_target": 40.0, "ph_target": 6.5, "priority_crops": ["Rice", "Sugarcane", "Wheat", "Lentil", "Mustard"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+    "lucknow": {"zone": "Central Awadh Mango Belt", "rainfall_mult": 1.0, "humidity_delta": -6.0, "temp_delta": 1.0, "n_target": 25.0, "p_target": 25.0, "k_target": 32.0, "ph_target": 6.8, "priority_crops": ["Mango", "Wheat", "Rice", "Sugarcane", "Mustard"], "unsuitable_crops": ["Apple", "Coffee", "Cotton", "Coconut"]},
+    "meerut": {"zone": "Western Doab Sugarcane Belt", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 55.0, "k_target": 26.0, "ph_target": 7.0, "priority_crops": ["Sugarcane", "Wheat", "Mustard", "Potato", "Maize"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+    "muzaffarnagar": {"zone": "Western Doab Sugarcane Belt", "rainfall_mult": 0.90, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 112.0, "p_target": 55.0, "k_target": 26.0, "ph_target": 7.0, "priority_crops": ["Sugarcane", "Wheat", "Mustard", "Potato", "Maize"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+    "agra": {"zone": "South-Western Semi-Arid", "rainfall_mult": 0.65, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 40.0, "p_target": 60.0, "k_target": 35.0, "ph_target": 7.5, "priority_crops": ["Potato", "Mustard", "Wheat", "Pearl Millet"], "unsuitable_crops": ["Rice", "Coffee", "Apple"]},
+    "jhansi": {"zone": "Bundelkhand Dry Pulses", "rainfall_mult": 0.62, "humidity_delta": -22.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.4, "priority_crops": ["Chickpea", "Lentil", "Wheat", "Mustard", "Sesame"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "banda": {"zone": "Bundelkhand Pulses", "rainfall_mult": 0.62, "humidity_delta": -22.0, "temp_delta": 3.0, "n_target": 24.0, "p_target": 68.0, "k_target": 20.0, "ph_target": 7.4, "priority_crops": ["Chickpea", "Lentil", "Pigeonpeas", "Mustard"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
 
     # ── Punjab & Haryana ──
-    "ludhiana": {"zone": "Central Alluvial Agricultural Basin", "rainfall_mult": 1.1, "humidity_delta": 6.0, "temp_delta": 0.0, "n_target": 80.0, "p_target": 45.0, "k_target": 40.0, "ph_target": 6.8},
-    "amritsar": {"zone": "Upper Bari Doab", "rainfall_mult": 1.05, "humidity_delta": 5.0, "temp_delta": 0.0, "n_target": 78.0, "p_target": 46.0, "k_target": 38.0, "ph_target": 6.8},
-    "bathinda": {"zone": "South-Western Cotton Belt", "rainfall_mult": 0.68, "humidity_delta": -16.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6},
-    "fazilka": {"zone": "South-Western Cotton Belt", "rainfall_mult": 0.65, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6},
-    "hoshiarpur": {"zone": "Sub-Mountainous Horticultural", "rainfall_mult": 1.35, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 28.0, "p_target": 20.0, "k_target": 14.0, "ph_target": 6.6},
-    "karnal": {"zone": "Eastern Alluvial Basin", "rainfall_mult": 1.1, "humidity_delta": 6.0, "temp_delta": 0.0, "n_target": 78.0, "p_target": 46.0, "k_target": 38.0, "ph_target": 6.9},
-    "sirsa": {"zone": "Western Semi-Arid Cotton", "rainfall_mult": 0.62, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6},
-    "hisar": {"zone": "Western Semi-Arid", "rainfall_mult": 0.65, "humidity_delta": -16.0, "temp_delta": 2.5, "n_target": 115.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.5},
+    "ludhiana": {"zone": "Central Alluvial Agricultural Basin", "rainfall_mult": 1.1, "humidity_delta": 6.0, "temp_delta": 0.0, "n_target": 80.0, "p_target": 45.0, "k_target": 40.0, "ph_target": 6.8, "priority_crops": ["Wheat", "Rice", "Maize", "Cotton", "Mustard"], "unsuitable_crops": ["Coffee", "Coconut", "Apple"]},
+    "amritsar": {"zone": "Upper Bari Doab", "rainfall_mult": 1.05, "humidity_delta": 5.0, "temp_delta": 0.0, "n_target": 78.0, "p_target": 46.0, "k_target": 38.0, "ph_target": 6.8, "priority_crops": ["Wheat", "Rice", "Vegetables", "Mustard"], "unsuitable_crops": ["Coffee", "Coconut", "Apple"]},
+    "bathinda": {"zone": "South-Western Cotton Belt", "rainfall_mult": 0.68, "humidity_delta": -16.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6, "priority_crops": ["Cotton", "Wheat", "Mustard", "Kinnow", "Chickpea"], "unsuitable_crops": ["Rice", "Coffee", "Apple"]},
+    "fazilka": {"zone": "South-Western Cotton Belt", "rainfall_mult": 0.65, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6, "priority_crops": ["Cotton", "Wheat", "Kinnow", "Mustard"], "unsuitable_crops": ["Rice", "Coffee", "Apple"]},
+    "hoshiarpur": {"zone": "Sub-Mountainous Horticultural", "rainfall_mult": 1.35, "humidity_delta": 8.0, "temp_delta": -1.5, "n_target": 28.0, "p_target": 20.0, "k_target": 14.0, "ph_target": 6.6, "priority_crops": ["Kinnow", "Mango", "Maize", "Wheat"], "unsuitable_crops": ["Cotton", "Apple"]},
+    "karnal": {"zone": "Eastern Alluvial Basin", "rainfall_mult": 1.1, "humidity_delta": 6.0, "temp_delta": 0.0, "n_target": 78.0, "p_target": 46.0, "k_target": 38.0, "ph_target": 6.9, "priority_crops": ["Rice", "Wheat", "Sugarcane", "Mustard"], "unsuitable_crops": ["Coffee", "Apple"]},
+    "sirsa": {"zone": "Western Semi-Arid Cotton", "rainfall_mult": 0.62, "humidity_delta": -18.0, "temp_delta": 2.5, "n_target": 118.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.6, "priority_crops": ["Cotton", "Wheat", "Mustard", "Chickpea"], "unsuitable_crops": ["Rice", "Coffee", "Apple"]},
+    "hisar": {"zone": "Western Semi-Arid", "rainfall_mult": 0.65, "humidity_delta": -16.0, "temp_delta": 2.5, "n_target": 115.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.5, "priority_crops": ["Cotton", "Wheat", "Mustard", "Pearl Millet"], "unsuitable_crops": ["Rice", "Coffee", "Apple"]},
 
     # ── Rajasthan ──
-    "jaisalmer": {"zone": "Hyper-Arid Thar Desert", "rainfall_mult": 0.50, "humidity_delta": -25.0, "temp_delta": 4.0, "n_target": 22.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8},
-    "barmer": {"zone": "Hyper-Arid Thar Desert", "rainfall_mult": 0.52, "humidity_delta": -24.0, "temp_delta": 4.0, "n_target": 22.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8},
-    "bikaner": {"zone": "Hyper-Arid Desert", "rainfall_mult": 0.55, "humidity_delta": -22.0, "temp_delta": 3.8, "n_target": 24.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8},
-    "jaipur": {"zone": "Semi-Arid Eastern Plains", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 0.5, "n_target": 35.0, "p_target": 65.0, "k_target": 78.0, "ph_target": 7.2},
-    "alwar": {"zone": "Flood-Prone Eastern Plains", "rainfall_mult": 1.2, "humidity_delta": 4.0, "temp_delta": 0.0, "n_target": 38.0, "p_target": 65.0, "k_target": 78.0, "ph_target": 7.1},
-    "jhalawar": {"zone": "Humid South-Eastern Orange Belt", "rainfall_mult": 1.7, "humidity_delta": 10.0, "temp_delta": -0.5, "n_target": 25.0, "p_target": 18.0, "k_target": 12.0, "ph_target": 6.8},
-    "kota": {"zone": "South-Eastern Chambal Basin", "rainfall_mult": 1.5, "humidity_delta": 8.0, "temp_delta": 0.0, "n_target": 80.0, "p_target": 45.0, "k_target": 30.0, "ph_target": 7.0},
+    "jaisalmer": {"zone": "Hyper-Arid Thar Desert", "rainfall_mult": 0.50, "humidity_delta": -25.0, "temp_delta": 4.0, "n_target": 22.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8, "priority_crops": ["Pearl Millet", "Mothbeans", "Cluster Bean", "Cumin"], "unsuitable_crops": ["Rice", "Apple", "Coffee", "Wheat"]},
+    "barmer": {"zone": "Hyper-Arid Thar Desert", "rainfall_mult": 0.52, "humidity_delta": -24.0, "temp_delta": 4.0, "n_target": 22.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8, "priority_crops": ["Pearl Millet", "Mothbeans", "Castor", "Cumin"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "bikaner": {"zone": "Hyper-Arid Desert", "rainfall_mult": 0.55, "humidity_delta": -22.0, "temp_delta": 3.8, "n_target": 24.0, "p_target": 45.0, "k_target": 20.0, "ph_target": 7.8, "priority_crops": ["Mothbeans", "Groundnut", "Gram", "Mustard"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "jaipur": {"zone": "Semi-Arid Eastern Plains", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 0.5, "n_target": 35.0, "p_target": 65.0, "k_target": 78.0, "ph_target": 7.2, "priority_crops": ["Mustard", "Wheat", "Pearl Millet", "Barley", "Chickpea"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "alwar": {"zone": "Flood-Prone Eastern Plains", "rainfall_mult": 1.2, "humidity_delta": 4.0, "temp_delta": 0.0, "n_target": 38.0, "p_target": 65.0, "k_target": 78.0, "ph_target": 7.1, "priority_crops": ["Mustard", "Wheat", "Pearl Millet", "Onion"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "jhalawar": {"zone": "Humid South-Eastern Orange Belt", "rainfall_mult": 1.7, "humidity_delta": 10.0, "temp_delta": -0.5, "n_target": 25.0, "p_target": 18.0, "k_target": 12.0, "ph_target": 6.8, "priority_crops": ["Orange", "Soybean", "Wheat", "Coriander", "Garlic"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "kota": {"zone": "South-Eastern Chambal Basin", "rainfall_mult": 1.5, "humidity_delta": 8.0, "temp_delta": 0.0, "n_target": 80.0, "p_target": 45.0, "k_target": 30.0, "ph_target": 7.0, "priority_crops": ["Soybean", "Wheat", "Mustard", "Paddy", "Garlic"], "unsuitable_crops": ["Apple", "Coffee"]},
+
+    # ── Gujarat ──
+    "ahmedabad": {"zone": "North Gujarat Agro Zone", "rainfall_mult": 0.80, "humidity_delta": -10.0, "temp_delta": 2.0, "n_target": 105.0, "p_target": 45.0, "k_target": 35.0, "ph_target": 7.5, "priority_crops": ["Cotton", "Wheat", "Castor", "Groundnut", "Pigeonpeas"], "unsuitable_crops": ["Coffee", "Apple", "Jute", "Coconut"]},
+    "rajkot": {"zone": "Saurashtra Groundnut-Cotton Belt", "rainfall_mult": 0.75, "humidity_delta": -12.0, "temp_delta": 2.2, "n_target": 110.0, "p_target": 48.0, "k_target": 25.0, "ph_target": 7.6, "priority_crops": ["Groundnut", "Cotton", "Cumin", "Sesame", "Wheat"], "unsuitable_crops": ["Coffee", "Apple", "Rice"]},
+
+    # ── Odisha ──
+    "cuttack": {"zone": "East and South Eastern Coastal Plain", "rainfall_mult": 1.45, "humidity_delta": 12.0, "temp_delta": 1.0, "n_target": 85.0, "p_target": 35.0, "k_target": 40.0, "ph_target": 6.2, "priority_crops": ["Rice", "Jute", "Groundnut", "Blackgram", "Sugarcane"], "unsuitable_crops": ["Apple", "Barley", "Coffee", "Wheat"]},
+    "khurda": {"zone": "East Coast Maritime Plain", "rainfall_mult": 1.40, "humidity_delta": 12.0, "temp_delta": 1.0, "n_target": 82.0, "p_target": 35.0, "k_target": 40.0, "ph_target": 6.3, "priority_crops": ["Rice", "Vegetables", "Blackgram", "Sugarcane", "Coconut"], "unsuitable_crops": ["Apple", "Wheat", "Coffee"]},
+
+    # ── Kerala ──
+    "palakkad": {"zone": "Palakkad Gap Central Wet Zone", "rainfall_mult": 1.9, "humidity_delta": 14.0, "temp_delta": 1.0, "n_target": 70.0, "p_target": 32.0, "k_target": 42.0, "ph_target": 5.8, "priority_crops": ["Rice", "Coconut", "Banana", "Vegetables", "Sugarcane"], "unsuitable_crops": ["Wheat", "Apple", "Cotton"]},
+    "thrissur": {"zone": "Central Wet Humid Zone", "rainfall_mult": 2.2, "humidity_delta": 16.0, "temp_delta": 0.5, "n_target": 65.0, "p_target": 30.0, "k_target": 45.0, "ph_target": 5.7, "priority_crops": ["Coconut", "Banana", "Rice", "Pepper", "Ginger"], "unsuitable_crops": ["Wheat", "Apple", "Barley", "Cotton"]},
+    "wayanad": {"zone": "Highland Malnad Coffee Zone", "rainfall_mult": 2.4, "humidity_delta": 18.0, "temp_delta": -3.5, "n_target": 80.0, "p_target": 28.0, "k_target": 35.0, "ph_target": 5.6, "priority_crops": ["Coffee", "Tea", "Pepper", "Cardamom", "Ginger"], "unsuitable_crops": ["Cotton", "Wheat", "Apple"]},
+
+    # ── Bihar ──
+    "patna": {"zone": "South Bihar Alluvial Plains", "rainfall_mult": 1.15, "humidity_delta": 2.0, "temp_delta": 1.0, "n_target": 100.0, "p_target": 45.0, "k_target": 35.0, "ph_target": 7.0, "priority_crops": ["Rice", "Wheat", "Maize", "Lentil", "Potato"], "unsuitable_crops": ["Apple", "Coffee", "Coconut", "Cotton"]},
+    "muzaffarpur": {"zone": "North-West Alluvial Plain", "rainfall_mult": 1.25, "humidity_delta": 6.0, "temp_delta": 0.5, "n_target": 95.0, "p_target": 42.0, "k_target": 35.0, "ph_target": 7.1, "priority_crops": ["Rice", "Wheat", "Maize", "Lentil", "Sugarcane"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+
+    # ── Madhya Pradesh ──
+    "indore": {"zone": "Malwa Plateau Agro Zone", "rainfall_mult": 0.95, "humidity_delta": -6.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 50.0, "k_target": 25.0, "ph_target": 7.4, "priority_crops": ["Soybean", "Wheat", "Chickpea", "Garlic", "Onion"], "unsuitable_crops": ["Apple", "Coffee", "Coconut", "Jute"]},
+    "bhopal": {"zone": "Central Plateau Agro Zone", "rainfall_mult": 1.05, "humidity_delta": -2.0, "temp_delta": 1.0, "n_target": 105.0, "p_target": 48.0, "k_target": 25.0, "ph_target": 7.3, "priority_crops": ["Wheat", "Soybean", "Chickpea", "Pigeonpeas", "Mustard"], "unsuitable_crops": ["Apple", "Coffee", "Coconut"]},
+
+    # ── West Bengal ──
+    "nadia": {"zone": "New Alluvial Lower Gangetic Plain", "rainfall_mult": 1.45, "humidity_delta": 12.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 38.0, "k_target": 38.0, "ph_target": 6.5, "priority_crops": ["Jute", "Rice", "Vegetables", "Mustard", "Banana"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+    "bardhaman": {"zone": "Old Alluvial Rice Bowl of Bengal", "rainfall_mult": 1.40, "humidity_delta": 10.0, "temp_delta": 1.0, "n_target": 85.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.4, "priority_crops": ["Rice", "Potato", "Mustard", "Jute", "Wheat"], "unsuitable_crops": ["Apple", "Coffee", "Cotton"]},
+
+    # ── Assam ──
+    "kamrup": {"zone": "Lower Brahmaputra Valley Zone", "rainfall_mult": 1.85, "humidity_delta": 14.0, "temp_delta": -0.5, "n_target": 75.0, "p_target": 32.0, "k_target": 35.0, "ph_target": 5.6, "priority_crops": ["Rice", "Jute", "Mustard", "Banana", "Tea"], "unsuitable_crops": ["Apple", "Barley", "Cotton", "Coffee"]},
+
+    # ── Chhattisgarh ──
+    "raipur": {"zone": "Chhattisgarh Plains Zone", "rainfall_mult": 1.30, "humidity_delta": 6.0, "temp_delta": 1.5, "n_target": 80.0, "p_target": 35.0, "k_target": 35.0, "ph_target": 6.4, "priority_crops": ["Rice", "Chickpea", "Lathyrus", "Soybean", "Mustard"], "unsuitable_crops": ["Apple", "Coffee", "Coconut", "Cotton"]},
+
+    # ── Jharkhand ──
+    "ranchi": {"zone": "Central and North-Eastern Plateau", "rainfall_mult": 1.25, "humidity_delta": 4.0, "temp_delta": -0.5, "n_target": 70.0, "p_target": 30.0, "k_target": 30.0, "ph_target": 5.9, "priority_crops": ["Rice", "Maize", "Tomato", "Potato", "Finger Millet"], "unsuitable_crops": ["Apple", "Coffee", "Coconut", "Cotton"]},
+
+    # ── Himachal Pradesh ──
+    "shimla": {"zone": "Mid Hills Sub-Temperate Apple Zone", "rainfall_mult": 1.40, "humidity_delta": 8.0, "temp_delta": -6.0, "n_target": 45.0, "p_target": 40.0, "k_target": 50.0, "ph_target": 6.0, "priority_crops": ["Apple", "Potato", "Maize", "Barley", "Peas"], "unsuitable_crops": ["Cotton", "Rice", "Sugarcane", "Coffee"]},
+
+    # ── Uttarakhand ──
+    "dehradun": {"zone": "Sub-Himalayan Terai Zone", "rainfall_mult": 1.55, "humidity_delta": 10.0, "temp_delta": -2.0, "n_target": 80.0, "p_target": 42.0, "k_target": 38.0, "ph_target": 6.5, "priority_crops": ["Rice", "Wheat", "Sugarcane", "Maize", "Mustard"], "unsuitable_crops": ["Cotton", "Coffee", "Apple"]},
+
+    # ── Goa ──
+    "north goa": {"zone": "West Coast Coastal Humid", "rainfall_mult": 2.3, "humidity_delta": 16.0, "temp_delta": 1.0, "n_target": 65.0, "p_target": 28.0, "k_target": 35.0, "ph_target": 5.7, "priority_crops": ["Coconut", "Cashew", "Rice", "Banana", "Blackgram"], "unsuitable_crops": ["Wheat", "Apple", "Cotton"]},
 
     # ── Telangana & Andhra Pradesh ──
     "warangal": {"zone": "Central Telangana Black Soil", "rainfall_mult": 0.95, "humidity_delta": -4.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 22.0, "ph_target": 7.2, "priority_crops": ["Cotton", "Maize", "Chilli", "Pigeonpeas", "Rice"], "unsuitable_crops": ["Wheat", "Apple", "Barley", "Jute"]},
@@ -307,10 +350,42 @@ DISTRICT_AGRO_ZONES: Dict[str, Dict[str, Any]] = {
     "vizianagaram": {"zone": "North Coastal Transition", "rainfall_mult": 1.4, "humidity_delta": 11.0, "temp_delta": 0.0, "n_target": 72.0, "p_target": 38.0, "k_target": 36.0, "ph_target": 6.5},
 
     # ── Tamil Nadu ──
-    "coimbatore": {"zone": "Western Kongu Semi-Arid", "rainfall_mult": 0.85, "humidity_delta": -10.0, "temp_delta": 0.0, "n_target": 112.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.0},
-    "thanjavur": {"zone": "Cauvery Delta Rice Bowl", "rainfall_mult": 1.8, "humidity_delta": 14.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.4},
-    "madurai": {"zone": "Southern Semi-Arid", "rainfall_mult": 0.80, "humidity_delta": -12.0, "temp_delta": 1.5, "n_target": 105.0, "p_target": 45.0, "k_target": 24.0, "ph_target": 7.1},
-    "nilgiris": {"zone": "Hilly Temperate Mountain", "rainfall_mult": 1.9, "humidity_delta": 14.0, "temp_delta": -6.0, "n_target": 98.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 5.8},
+    "coimbatore": {"zone": "Western Kongu Semi-Arid", "rainfall_mult": 0.85, "humidity_delta": -10.0, "temp_delta": 0.0, "n_target": 112.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.0, "priority_crops": ["Coconut", "Cotton", "Maize", "Banana", "Tomato"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "thanjavur": {"zone": "Cauvery Delta Rice Bowl", "rainfall_mult": 1.8, "humidity_delta": 14.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.4, "priority_crops": ["Rice", "Sugarcane", "Coconut", "Blackgram", "Banana"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "madurai": {"zone": "Southern Semi-Arid", "rainfall_mult": 0.80, "humidity_delta": -12.0, "temp_delta": 1.5, "n_target": 105.0, "p_target": 45.0, "k_target": 24.0, "ph_target": 7.1, "priority_crops": ["Paddy", "Cotton", "Millets", "Pulses", "Jasmine"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "nilgiris": {"zone": "Hilly Temperate Mountain", "rainfall_mult": 1.9, "humidity_delta": 14.0, "temp_delta": -6.0, "n_target": 98.0, "p_target": 28.0, "k_target": 30.0, "ph_target": 5.8, "priority_crops": ["Tea", "Potato", "Carrot", "Cabbage", "Coffee"], "unsuitable_crops": ["Cotton", "Rice", "Sugarcane"]},
+}
+
+# ── Authentic State-Level Fallback Agro-Ecological Zones (Documented Fallback) ──
+STATE_FALLBACK_AGRO_ZONES: Dict[str, Dict[str, Any]] = {
+    "andhra pradesh": {"zone": "Andhra Pradesh Agro-Ecological Zone", "priority_crops": ["Rice", "Chilli", "Cotton", "Blackgram", "Groundnut"], "unsuitable_crops": ["Apple", "Barley", "Coffee"]},
+    "karnataka": {"zone": "Karnataka Agro-Ecological Zone", "priority_crops": ["Maize", "Finger Millet", "Sugarcane", "Cotton", "Soybean"], "unsuitable_crops": ["Apple", "Jute"]},
+    "telangana": {"zone": "Telangana Semi-Arid Zone", "priority_crops": ["Cotton", "Maize", "Chilli", "Rice", "Soybean"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "tamil nadu": {"zone": "Tamil Nadu Agro-Ecological Zone", "priority_crops": ["Rice", "Coconut", "Banana", "Sugarcane", "Cotton"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "maharashtra": {"zone": "Maharashtra Agro-Ecological Zone", "priority_crops": ["Soybean", "Cotton", "Sugarcane", "Pigeonpeas", "Grapes"], "unsuitable_crops": ["Apple", "Jute"]},
+    "punjab": {"zone": "Punjab Indo-Gangetic Basin", "priority_crops": ["Wheat", "Rice", "Maize", "Cotton", "Mustard"], "unsuitable_crops": ["Coffee", "Coconut"]},
+    "haryana": {"zone": "Haryana Alluvial Plain", "priority_crops": ["Wheat", "Mustard", "Rice", "Cotton", "Pearl Millet"], "unsuitable_crops": ["Coffee", "Coconut"]},
+    "gujarat": {"zone": "Gujarat Semi-Arid Plain", "priority_crops": ["Cotton", "Groundnut", "Wheat", "Castor", "Cumin"], "unsuitable_crops": ["Coffee", "Apple"]},
+    "uttar pradesh": {"zone": "Uttar Pradesh Gangetic Plain", "priority_crops": ["Wheat", "Rice", "Sugarcane", "Mustard", "Potato"], "unsuitable_crops": ["Coffee", "Coconut"]},
+    "west bengal": {"zone": "West Bengal Lower Gangetic Plain", "priority_crops": ["Rice", "Jute", "Potato", "Mustard", "Maize"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "kerala": {"zone": "Kerala Coastal Humid Zone", "priority_crops": ["Coconut", "Banana", "Rice", "Coffee", "Blackgram"], "unsuitable_crops": ["Wheat", "Cotton", "Apple"]},
+    "bihar": {"zone": "Bihar Middle Gangetic Plain", "priority_crops": ["Rice", "Wheat", "Maize", "Lentil", "Potato"], "unsuitable_crops": ["Coffee", "Apple"]},
+    "madhya pradesh": {"zone": "Madhya Pradesh Central Plateau", "priority_crops": ["Soybean", "Wheat", "Chickpea", "Mustard", "Maize"], "unsuitable_crops": ["Coffee", "Coconut"]},
+    "rajasthan": {"zone": "Rajasthan Semi-Arid Plain", "priority_crops": ["Mustard", "Pearl Millet", "Barley", "Wheat", "Chickpea"], "unsuitable_crops": ["Rice", "Apple", "Coffee"]},
+    "odisha": {"zone": "Odisha Coastal & Plateau Zone", "priority_crops": ["Rice", "Groundnut", "Blackgram", "Jute", "Sugarcane"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "chhattisgarh": {"zone": "Chhattisgarh Plains Zone", "priority_crops": ["Rice", "Chickpea", "Soybean", "Maize", "Mustard"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "jharkhand": {"zone": "Jharkhand Plateau Zone", "priority_crops": ["Rice", "Maize", "Tomato", "Potato", "Finger Millet"], "unsuitable_crops": ["Apple", "Coffee"]},
+    "assam": {"zone": "Assam Brahmaputra Valley", "priority_crops": ["Rice", "Jute", "Mustard", "Banana", "Tea"], "unsuitable_crops": ["Apple", "Barley", "Cotton"]},
+    "himachal pradesh": {"zone": "Himachal Hill Temperate Zone", "priority_crops": ["Apple", "Potato", "Maize", "Wheat", "Barley"], "unsuitable_crops": ["Cotton", "Rice", "Sugarcane"]},
+    "uttarakhand": {"zone": "Uttarakhand Sub-Himalayan Zone", "priority_crops": ["Wheat", "Rice", "Sugarcane", "Maize", "Mustard"], "unsuitable_crops": ["Coffee", "Cotton"]},
+    "goa": {"zone": "Goa Coastal Zone", "priority_crops": ["Coconut", "Rice", "Cashew", "Banana", "Blackgram"], "unsuitable_crops": ["Wheat", "Apple", "Cotton"]},
+    "arunachal pradesh": {"zone": "Arunachal Eastern Himalayan Zone", "priority_crops": ["Rice", "Maize", "Millet", "Mustard", "Ginger"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "manipur": {"zone": "Manipur Valley & Hills", "priority_crops": ["Rice", "Maize", "Pulses", "Potato", "Mustard"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "meghalaya": {"zone": "Meghalaya Hilly Plateau", "priority_crops": ["Rice", "Maize", "Potato", "Ginger", "Turmeric"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "mizoram": {"zone": "Mizoram Agro-Zone", "priority_crops": ["Rice", "Maize", "Ginger", "Turmeric", "Banana"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "nagaland": {"zone": "Nagaland Agro-Zone", "priority_crops": ["Rice", "Maize", "Pulses", "Oilseeds", "Cardamom"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "sikkim": {"zone": "Sikkim Organic Mountain Zone", "priority_crops": ["Cardamom", "Ginger", "Maize", "Rice", "Buckwheat"], "unsuitable_crops": ["Cotton", "Wheat"]},
+    "tripura": {"zone": "Tripura Sub-Tropical Plain", "priority_crops": ["Rice", "Jute", "Rubber", "Potato", "Sugarcane"], "unsuitable_crops": ["Cotton", "Apple"]},
 }
 
 # Crop Base Yields in kg/hectare (ICAR & Ministry of Agriculture Benchmarks)
@@ -744,6 +819,8 @@ class PredictionService:
                 break
 
         if matched_zone:
+            fallback_level = "District Specific (Verified ICAR Sub-Zone)"
+            zone_name = matched_zone.get("zone", "District Agro-Ecological Zone")
             rainfall = max(20.0, rainfall * matched_zone.get("rainfall_mult", 1.0))
             humidity = max(25.0, min(96.0, humidity + matched_zone.get("humidity_delta", 0.0)))
             temp = max(10.0, min(44.0, temp + matched_zone.get("temp_delta", 0.0)))
@@ -757,6 +834,15 @@ class PredictionService:
             if "ph_target" in matched_zone:
                 ph = 0.70 * matched_zone["ph_target"] + 0.30 * ph
         else:
+            fallback_level = "State Agro-Climatic Zone (Documented Fallback)"
+            matched_fallback = None
+            state_lower = (state or "").lower()
+            for s_name, s_data in STATE_FALLBACK_AGRO_ZONES.items():
+                if s_name in state_lower or state_lower in s_name:
+                    matched_fallback = s_data
+                    break
+            zone_name = matched_fallback.get("zone", f"{state} Agro-Climatic Zone") if matched_fallback else f"{state} Agro-Climatic Zone (Documented Fallback)"
+
             # Fallback regional adjustments for unmapped districts
             coastal_keywords = ["udupi", "dakshina kannada", "uttara kannada", "konkan", "ratnagiri", "goa", "alappuzha", "ernakulam", "kochi", "pune coastal", "thane"]
             if any(kw in district_lower for kw in coastal_keywords) or state == "Kerala":
@@ -806,7 +892,8 @@ class PredictionService:
             "state": state,
             "district": district_clean,
             "village": village_clean,
-            "zone": matched_zone.get("zone", "Regional Agro Zone") if matched_zone else "Regional Agro Zone",
+            "zone": zone_name,
+            "fallback_level": fallback_level,
         }
 
     def _calculate_crop_metrics(
@@ -897,6 +984,7 @@ class PredictionService:
             "expected_yield_range": expected_yield_range,
             "water_requirement": water_req,
             "climate_risk": climate_risk_rating,
+            "fallback_level": params.get("fallback_level", "District Specific (Verified ICAR Sub-Zone)"),
         }
 
     def _assess_single_crop_risk(
@@ -1190,9 +1278,29 @@ class PredictionService:
         else:
             # Auto-Recommend All Crops: dynamically evaluate all 37 crops for this exact location + season + soil
             dist_lower = (params.get("district") or "").lower()
-            dist_data = DISTRICT_AGRO_ZONES.get(dist_lower, {})
-            priority_crops = dist_data.get("priority_crops", [])
-            unsuitable_crops = dist_data.get("unsuitable_crops", [])
+            state_lower = (params.get("state") or "").lower()
+
+            matched_dist_data = None
+            for d_name, z_data in DISTRICT_AGRO_ZONES.items():
+                if d_name in dist_lower or dist_lower in d_name:
+                    matched_dist_data = z_data
+                    break
+
+            if matched_dist_data and matched_dist_data.get("priority_crops"):
+                priority_crops = matched_dist_data.get("priority_crops", [])
+                unsuitable_crops = matched_dist_data.get("unsuitable_crops", [])
+            else:
+                matched_state_data = None
+                for s_name, s_data in STATE_FALLBACK_AGRO_ZONES.items():
+                    if s_name in state_lower or state_lower in s_name:
+                        matched_state_data = s_data
+                        break
+                if matched_state_data:
+                    priority_crops = matched_state_data.get("priority_crops", [])
+                    unsuitable_crops = matched_state_data.get("unsuitable_crops", [])
+                else:
+                    priority_crops = []
+                    unsuitable_crops = []
 
             # Extract LightGBM probabilities for all 22 classes if available
             features = np.array([[params["nitrogen"], params["phosphorus"], params["potassium"], params["temperature"], params["humidity"], params["ph"], params["rainfall"]]])
@@ -1291,6 +1399,7 @@ class PredictionService:
                 f"Temp={params['temperature']}°C, Humidity={params['humidity']}%, pH={params['ph']}, Rain={params['rainfall']}mm)"
             ),
             "request_id": request_id,
+            "fallback_level": params.get("fallback_level", "District Specific (Verified ICAR Sub-Zone)"),
             "extracted_features": params,
         }
 

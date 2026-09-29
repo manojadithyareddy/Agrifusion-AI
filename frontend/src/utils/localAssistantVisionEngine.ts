@@ -1072,7 +1072,7 @@ export function getAssistantModelCapabilities() {
  */
 export async function analyzeImageWithLocalVisionEngine(
   imageElement: HTMLImageElement,
-  fileName: string = 'leaf.jpg',
+  _fileName: string = 'leaf.jpg',
   userCropHint?: string
 ): Promise<AssistantDiagnosisResult> {
   const canvas = document.createElement('canvas');
@@ -1099,8 +1099,10 @@ export async function analyzeImageWithLocalVisionEngine(
   let yellowPeelPixels = 0;
   let redFruitPixels = 0;
   let orangeFruitPixels = 0;
+  let whiteBollPixels = 0;
   let saturatedPixels = 0;
   let luminanceSum = 0;
+  let foregroundPixelCount = 0;
 
   // Track spatial bounding box of foreground agricultural tissues (leaf, fruit, lesions)
   let minFgX = targetDim, maxFgX = 0, minFgY = targetDim, maxFgY = 0;
@@ -1193,8 +1195,14 @@ export async function analyzeImageWithLocalVisionEngine(
         fruitClusters.push({ x, y });
       }
     }
+    // Cotton White Boll (fluffy white fibers)
+    else if (r > 190 && g > 190 && b > 190 && Math.abs(r - g) < 20 && Math.abs(g - b) < 20 && s < 0.18 && v > 0.72) {
+      whiteBollPixels++;
+      isForeground = true;
+    }
 
     if (isForeground) {
+      foregroundPixelCount++;
       if (x < minFgX) minFgX = x;
       if (x > maxFgX) maxFgX = x;
       if (y < minFgY) minFgY = y;
@@ -1249,23 +1257,26 @@ export async function analyzeImageWithLocalVisionEngine(
   const yellowPeelPct = (yellowPeelPixels / totalPixels) * 100;
   const redFruitPct = (redFruitPixels / totalPixels) * 100;
   const orangeFruitPct = (orangeFruitPixels / totalPixels) * 100;
+  const whiteBollPct = (whiteBollPixels / totalPixels) * 100;
   const necroticPct = (brownNecroticPixels / totalPixels) * 100;
   const chlorosisPct = (yellowChlorosisPixels / totalPixels) * 100;
   const rustPct = (rustPixels / totalPixels) * 100;
 
-  const totalTissuePct = foliagePct + yellowPeelPct + redFruitPct + orangeFruitPct + Math.min(necroticPct, 4.0);
+  const totalTissuePct = foliagePct + yellowPeelPct + redFruitPct + orangeFruitPct + whiteBollPct + Math.min(necroticPct, 4.0);
 
   // Multi-crop Matching across all 37 crops
-  // 1. First check explicit keyword matches from user hint or file name
-  const searchCorpus = `${userCropHint || ''} ${fileName}`.toLowerCase();
+  // 1. Only check explicit user crop hint if provided (NEVER infer crop from filename, URL, or clipboard)
+  const searchCorpus = (userCropHint || '').trim().toLowerCase();
   let matchedCrop: string | null = null;
   let matchedKey: string | null = null;
 
-  for (const entry of CROP_KEYWORD_MAP) {
-    if (entry.keywords.some(kw => searchCorpus.includes(kw))) {
-      matchedCrop = entry.crop;
-      matchedKey = entry.key;
-      break;
+  if (searchCorpus.length > 0) {
+    for (const entry of CROP_KEYWORD_MAP) {
+      if (entry.keywords.some(kw => searchCorpus.includes(kw))) {
+        matchedCrop = entry.crop;
+        matchedKey = entry.key;
+        break;
+      }
     }
   }
 
@@ -1314,6 +1325,7 @@ export async function analyzeImageWithLocalVisionEngine(
   const fgWidth = Math.max(1, maxFgX - minFgX);
   const fgHeight = Math.max(1, maxFgY - minFgY);
   const fgAspect = Math.max(fgWidth, fgHeight) / Math.max(1, Math.min(fgWidth, fgHeight));
+  const fgSolidity = foregroundPixelCount / Math.max(1, fgWidth * fgHeight);
 
   // Extract Bounding Boxes
   const boundingBoxes: BoundingBox[] = [];
@@ -1366,23 +1378,24 @@ export async function analyzeImageWithLocalVisionEngine(
   const meanGy = gradYSum / Math.max(1, gradSampleCount);
   const venationAnisotropy = Math.max(meanGx, meanGy) / Math.max(0.001, Math.min(meanGx, meanGy));
 
-  // 2. Crop-First Computer Vision Optical Classification if no keyword match:
+  // 2. Crop-First Computer Vision Optical Classification if no explicit user hint:
   if (!matchedCrop || !matchedKey) {
-    const isFruitCandidate = (yellowPeelPct > 3.5 && yellowPeelPct > foliagePct * 0.6) ||
-                             (redFruitPct > 3.5 && redFruitPct > foliagePct * 0.6) ||
-                             (orangeFruitPct > 3.5 && orangeFruitPct > foliagePct * 0.6);
+    const isFruitCandidate = (yellowPeelPct > 3.5 && yellowPeelPct > foliagePct * 0.5) ||
+                             (redFruitPct > 3.5 && redFruitPct > foliagePct * 0.5) ||
+                             (orangeFruitPct > 3.5 && orangeFruitPct > foliagePct * 0.5);
 
     if (isFruitCandidate) {
       // ── FRUIT MORPHOLOGY ──
-      if (yellowPeelPct > 3.5 && yellowPeelPct > foliagePct * 0.6) {
-        if (fgAspect > 1.35) {
+      if (yellowPeelPct > 3.5 && yellowPeelPct > foliagePct * 0.5) {
+        if (fgAspect > 1.25 || yellowPeelPct > 12.0) {
+          // Banana bunch or elongated fruit fingers
           matchedCrop = 'Banana';
           matchedKey = necroticPct > 2.0 ? 'banana_anthracnose' : 'banana_sigatoka';
         } else {
           matchedCrop = 'Mango';
           matchedKey = 'mango_anthracnose';
         }
-      } else if (redFruitPct > 3.5 && redFruitPct > foliagePct * 0.6) {
+      } else if (redFruitPct > 3.5 && redFruitPct > foliagePct * 0.5) {
         if (fgAspect < 1.35 && (necroticPct > 4.0 || chlorosisPct > 6.0)) {
           matchedCrop = 'Apple';
           matchedKey = 'apple_scab';
@@ -1390,46 +1403,51 @@ export async function analyzeImageWithLocalVisionEngine(
           matchedCrop = 'Tomato';
           matchedKey = 'tomato_early_blight';
         }
-      } else if (orangeFruitPct > 3.5 && orangeFruitPct > foliagePct * 0.6) {
+      } else if (orangeFruitPct > 3.5 && orangeFruitPct > foliagePct * 0.5) {
         matchedCrop = 'Orange';
         matchedKey = 'orange_citrus_canker';
       }
     } else if (foliagePct >= 3.0) {
       // ── FOLIAGE & LEAF MORPHOLOGY (CROP-FIRST) ──
-      // 1. Wheat: Linear monocot blade with powdery rust pustules
-      if (rustPct > 3.8 || (chlorosisPct > 18.0 && fgAspect > 2.2)) {
-        matchedCrop = 'Wheat';
-        matchedKey = 'wheat_yellow_rust';
-      }
-      // 2. Cotton: Palmate lobed leaf (aspect ratio 0.75-1.40, broad width)
-      else if (fgAspect >= 0.75 && fgAspect <= 1.40 && fgWidth >= 80) {
-        matchedCrop = 'Cotton';
-        matchedKey = 'cotton_bacterial_blight';
-      }
-      // 3. Banana Leaf: Massive broad paddle leaf lamina (broad width >= 240px or coverage >= 28%)
-      else if ((fgWidth >= 240 || foliagePct >= 28.0 || (fgAspect <= 2.4 && fgWidth >= 210)) && venationAnisotropy >= 1.12) {
+      // 1. Banana Leaf: Massive broad paddle leaf lamina (broad width >= 140px, high solidity >= 0.70, or foliage >= 28% with parallel venation)
+      if ((fgWidth >= 140 && fgHeight >= 140 && foliagePct >= 18.0 && fgSolidity >= 0.70) || (foliagePct >= 28.0 && venationAnisotropy >= 1.08 && fgAspect <= 2.2)) {
         matchedCrop = 'Banana';
         matchedKey = chlorosisPct > 18.0 ? 'banana_panama_wilt' : (necroticPct > 2.5 ? 'banana_sigatoka' : 'banana_sigatoka');
       }
-      // 4. Mango: Leathery elliptical / lanceolate dicot leaf (aspect ratio 1.45-2.25, width 105-210px, foliage >= 13%)
-      else if (fgAspect >= 1.45 && fgAspect <= 2.25 && fgWidth >= 105 && fgWidth <= 210 && foliagePct >= 13.0) {
-        matchedCrop = 'Mango';
-        matchedKey = necroticPct > 5.0 ? 'mango_anthracnose' : 'mango_anthracnose';
+      // 2. Wheat: Linear monocot blade with powdery rust pustules
+      else if (rustPct > 3.8 || (chlorosisPct > 18.0 && fgAspect > 2.2)) {
+        matchedCrop = 'Wheat';
+        matchedKey = 'wheat_yellow_rust';
       }
-      // 5. Rice Blade: Slender ribbon grass blade with parallel margins (aspect ratio >= 2.25, or aspect ratio >= 1.75 with slender width < 105px)
-      else if (fgAspect >= 2.25 || (fgAspect >= 1.75 && (fgWidth < 105 || foliagePct < 13.0))) {
+      // 3. Rice Blade: Slender ribbon grass blade with parallel margins (aspect ratio >= 2.0, or aspect ratio >= 1.6 with slender width < 120px)
+      else if (fgAspect >= 2.0 || (fgAspect >= 1.6 && (fgWidth < 120 || foliagePct < 15.0))) {
         matchedCrop = 'Rice';
         matchedKey = necroticPct > 2.5 ? 'rice_blast' : (chlorosisPct > 12.0 ? 'rice_sheath_blight' : 'rice_blast');
       }
+      // 4. Cotton: STRICT palmate lobed leaf (sinuses cause solidity 0.40 - 0.74, broad aspect 0.85 - 1.35) OR visible white bolls
+      else if ((whiteBollPct >= 2.5 && foliagePct >= 5.0) || (fgSolidity >= 0.40 && fgSolidity <= 0.74 && fgAspect >= 0.85 && fgAspect <= 1.35 && fgWidth >= 90 && foliagePct >= 12.0)) {
+        matchedCrop = 'Cotton';
+        matchedKey = 'cotton_bacterial_blight';
+      }
+      // 5. Mango: Leathery elliptical / lanceolate dicot leaf (aspect ratio 1.45-2.25, width 95-210px, foliage >= 12%, high solidity)
+      else if (fgAspect >= 1.45 && fgAspect <= 2.25 && fgWidth >= 95 && fgWidth <= 210 && foliagePct >= 12.0 && fgSolidity >= 0.65) {
+        matchedCrop = 'Mango';
+        matchedKey = 'mango_anthracnose';
+      }
       // 6. Potato: Ovate leaflets with necrotic spots
-      else if (necroticPct > 10.0 && foliagePct > 12.0 && fgAspect <= 1.6) {
+      else if (necroticPct > 8.0 && foliagePct > 10.0 && fgAspect <= 1.6) {
         matchedCrop = 'Potato';
         matchedKey = 'potato_late_blight';
       }
-      // 7. Tomato: Compound serrated foliage
-      else if (foliagePct > 12.0) {
+      // 7. Tomato: Compound serrated foliage (serration causes lower solidity < 0.60)
+      else if (foliagePct > 12.0 && fgSolidity < 0.60) {
         matchedCrop = 'Tomato';
         matchedKey = necroticPct > 6.0 ? 'tomato_early_blight' : 'tomato_leaf_curl';
+      }
+      // 8. Maize: Elongated leaf
+      else if (fgAspect > 1.8 && foliagePct >= 15.0) {
+        matchedCrop = 'Maize';
+        matchedKey = 'maize_fall_armyworm';
       }
     }
   }
@@ -1688,27 +1706,29 @@ export async function analyzeVideoFrames(
     }
   }
 
-  // Fallback to keyword matching if frame capture had blur or canvas seek delays
+  // Fallback to explicit user hint matching only if frame capture had blur or canvas seek delays
   if (!baseResult || baseResult.status !== 'CONFIRMED_DIAGNOSIS') {
-    const searchCorpus = `${userCropHint || ''} ${fileName}`.toLowerCase();
-    let matchedCrop = 'Tomato';
-    let matchedKey = 'tomato_early_blight';
+    const searchCorpus = (userCropHint || '').trim().toLowerCase();
+    let matchedCrop: string | null = null;
+    let matchedKey: string | null = null;
 
-    for (const entry of CROP_KEYWORD_MAP) {
-      if (entry.keywords.some(kw => searchCorpus.includes(kw))) {
-        matchedCrop = entry.crop;
-        matchedKey = entry.key;
-        break;
+    if (searchCorpus.length > 0) {
+      for (const entry of CROP_KEYWORD_MAP) {
+        if (entry.keywords.some(kw => searchCorpus.includes(kw))) {
+          matchedCrop = entry.crop;
+          matchedKey = entry.key;
+          break;
+        }
       }
     }
 
-    const ragRecord = VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey];
-    if (!ragRecord) {
+    const ragRecord = matchedKey ? VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey] : null;
+    if (!matchedCrop || !matchedKey || !ragRecord) {
       return {
         status: 'UNABLE_TO_IDENTIFY_CROP',
         mediaType: 'video',
         crop: { name: 'Unable to identify crop', confidence: 0.0, key: 'unable_to_identify_crop' },
-        disease: { name: 'Not confidently detected', confidence: 0.0, confidence_level: 'LOW', severity: 'None', key: 'unknown' },
+        disease: { name: 'Unable to identify crop', confidence: 0.0, confidence_level: 'LOW', severity: 'None', key: 'unable_to_identify_crop' },
         pests: [],
         pest_status: 'No pest detected',
         symptoms: ['Could not verify crop in video stream.'],

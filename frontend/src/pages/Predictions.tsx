@@ -753,6 +753,43 @@ function CropRecommendationTab({
               : `Target Crop Recommendation: ${targetCrop} (AI Verified ≥90% Accuracy)`
           }
         >
+          {/* Agro-Climatic Zone & Documented Fallback Level Indicator */}
+          {(result?.fallback_level || result?.extracted_features?.zone) && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '8px',
+              padding: '10px 14px',
+              marginBottom: '16px',
+              background: result?.fallback_level?.includes('Fallback') ? 'rgba(245, 158, 11, 0.08)' : 'rgba(56, 189, 248, 0.08)',
+              border: `1px solid ${result?.fallback_level?.includes('Fallback') ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.25)'}`,
+              borderRadius: '12px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1rem' }}>{result?.fallback_level?.includes('Fallback') ? '🏛️' : '🎯'}</span>
+                <div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f8fafc' }}>
+                    {result?.extracted_features?.zone || 'Agro-Ecological Zone'}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: result?.fallback_level?.includes('Fallback') ? '#fbbf24' : '#38bdf8' }}>
+                    {result?.fallback_level || 'District Specific (Verified ICAR Sub-Zone)'}
+                  </div>
+                </div>
+              </div>
+              <span style={{
+                fontSize: '0.72rem',
+                color: '#94a3b8',
+                background: 'rgba(255,255,255,0.06)',
+                padding: '3px 8px',
+                borderRadius: '8px',
+              }}>
+                📍 {village ? `${village}, ` : ''}{district ? `${district}, ` : ''}{state}
+              </span>
+            </div>
+          )}
+
           <div style={{ display: 'grid', gap: '18px' }}>
             {displayedRecommendations.map((r: any, i: number) => {
               const cropProfile = getCropRiskProfile(r.crop);

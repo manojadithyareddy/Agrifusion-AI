@@ -14,6 +14,8 @@ interface Scheme {
   website?: string;
   relevance_score?: number;
   match_reasons?: string[];
+  applicability?: 'Central' | 'State';
+  eligibility_status?: string;
 }
 
 interface MandiPriceItem {
@@ -1004,6 +1006,8 @@ function SchemesTab() {
   const [filters, setFilters] = useState({ state: '', land_size: '' });
 
   const fetchSchemes = async () => {
+    // Immediately clear previous stale schemes upon filter/state change
+    setSchemes([]);
     setLoading(true);
     setError('');
     try {
@@ -1026,7 +1030,7 @@ function SchemesTab() {
   };
 
   const getOfflineMappedSchemes = (): Scheme[] => {
-    const offlineRaw = getOfflineSchemes(filters.state);
+    const offlineRaw = getOfflineSchemes(filters.state, undefined, Number(filters.land_size) || undefined);
     return offlineRaw.map((s) => ({
       id: String(s.id),
       name: s.scheme_name,
@@ -1035,8 +1039,10 @@ function SchemesTab() {
       benefit: s.financial_assistance,
       eligibility: s.eligibility_criteria,
       website: s.official_url,
-      relevance_score: 95,
-      match_reasons: s.key_benefits,
+      relevance_score: s.relevance_score,
+      match_reasons: s.match_reasons,
+      applicability: s.applicability,
+      eligibility_status: s.eligibility_status,
     }));
   };
 
@@ -1126,7 +1132,27 @@ function SchemesTab() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
               <h3 style={{ color: '#fff', fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>{scheme.name}</h3>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {scheme.applicability && (
+                  <span style={{
+                    fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', borderRadius: '20px',
+                    background: scheme.applicability === 'Central' ? 'rgba(56, 189, 248, 0.12)' : 'rgba(245, 158, 11, 0.12)',
+                    color: scheme.applicability === 'Central' ? '#38bdf8' : '#f59e0b',
+                    border: `1px solid ${scheme.applicability === 'Central' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
+                  }}>
+                    {scheme.applicability === 'Central' ? '🏛️ Central' : '📍 State Flagship'}
+                  </span>
+                )}
+                {scheme.eligibility_status && (
+                  <span style={{
+                    fontSize: '0.7rem', fontWeight: 700, padding: '4px 10px', borderRadius: '20px',
+                    background: scheme.eligibility_status === 'Fully Eligible' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(168, 85, 247, 0.12)',
+                    color: scheme.eligibility_status === 'Fully Eligible' ? '#22c55e' : '#c084fc',
+                    border: `1px solid ${scheme.eligibility_status === 'Fully Eligible' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(168, 85, 247, 0.3)'}`,
+                  }}>
+                    {scheme.eligibility_status}
+                  </span>
+                )}
                 <span style={{
                   fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase',
                   background: `${categoryColors[scheme.category] || '#64748b'}18`,

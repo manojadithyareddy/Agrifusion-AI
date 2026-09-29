@@ -1229,14 +1229,17 @@ export default function Assistant() {
       })),
     };
 
+    // 1b. Immediately clear previous diagnosis state for fresh analysis
+    setLastDiagnosedCrop(null);
+    const currentRequestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
     // 2. Add Progressive Deep Diagnostic Analyzing Card
     const analyzingMsg: ChatMessage = {
       id: assistantMsgId,
       sender: 'assistant',
       timestamp: 'Analyzing...',
       isAnalyzing: true,
-      analyzingProgress: 4,
-      analyzingRemainingSeconds: 28,
+      analyzingProgress: 15,
       analyzingStage: '📷 Initializing Media & Optical Quality Validation...',
       images: resolvedImages,
       videos: mediaToAnalyze.filter((m) => m.type === 'video').map((v) => v.src),
@@ -1258,7 +1261,6 @@ export default function Assistant() {
             ? {
                 ...msg,
                 analyzingProgress: progress,
-                analyzingRemainingSeconds: Math.max(0, Math.round((100 - progress) / 25)),
                 analyzingStage: stageText,
               }
             : msg
@@ -1271,11 +1273,10 @@ export default function Assistant() {
       let backendAssistantText: string | undefined = undefined;
 
       // Real Stage 1: Quality & Blur Validation
-      updateProgressState(20, '📷 Validating Image Quality & Optical Blur Parameters...');
-      await new Promise((r) => setTimeout(r, 60));
+      updateProgressState(25, '📷 Validating Image Quality & Optical Blur Parameters...');
 
       // Real Stage 2: Crop Species Identification
-      updateProgressState(45, '🌾 Identifying Crop Species for Submitted Image(s)...');
+      updateProgressState(50, '🌾 Identifying Crop Species for Submitted Image(s)...');
 
       const effectiveCropHint = (assistantTargetCrop && assistantTargetCrop !== 'all')
         ? assistantTargetCrop
@@ -1320,6 +1321,7 @@ export default function Assistant() {
             primaryMedia.file,
             additionalImageFiles,
             {
+              request_id: currentRequestId,
               crop_hint: effectiveCropHint,
               language: selectedLanguage,
             }
@@ -3141,9 +3143,9 @@ export default function Assistant() {
                       {/* Animated Progress Bar */}
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>
-                          <span>Diagnostic Depth Progress: {msg.analyzingProgress || 10}%</span>
-                          <span style={{ color: '#38bdf8', fontWeight: 700 }}>
-                            ⏱️ ~{msg.analyzingRemainingSeconds || 25}s remaining
+                          <span>Diagnostic Depth Progress: {msg.analyzingProgress || 15}%</span>
+                          <span style={{ color: '#38bdf8', fontWeight: 600 }}>
+                            ⚡ Real-Time Vision Processing
                           </span>
                         </div>
                         <div style={{ width: '100%', height: '8px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '9999px', overflow: 'hidden' }}>

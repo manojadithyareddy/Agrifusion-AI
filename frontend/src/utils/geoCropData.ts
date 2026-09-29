@@ -136,6 +136,42 @@ export const STATE_DISTRICTS: Record<string, string[]> = {
   ],
   'Uttarakhand': [
     'Dehradun', 'Haridwar', 'Nainital', 'Udham Singh Nagar', 'Almora', 'Pauri Garhwal', 'Tehri Garhwal'
+  ],
+  'Odisha': [
+    'Bhubaneswar (Khurda)', 'Cuttack', 'Ganjam', 'Balasore', 'Sambalpur', 'Bhadrak', 'Puri', 'Bargarh', 'Mayurbhanj', 'Kalahandi', 'Koraput', 'Jajpur', 'Angul', 'Bolangir', 'Kendrapara'
+  ],
+  'Assam': [
+    'Guwahati (Kamrup Metro)', 'Kamrup', 'Nagaon', 'Sonitpur', 'Barpeta', 'Dhubri', 'Cachar', 'Dibrugarh', 'Jorhat', 'Golaghat', 'Tinsukia', 'Sivasagar', 'Goalpara', 'Karimganj'
+  ],
+  'Chhattisgarh': [
+    'Raipur', 'Bilaspur', 'Durg', 'Rajnandgaon', 'Bastar', 'Korba', 'Janjgir-Champa', 'Raigarh', 'Dhamtari', 'Mahasamund', 'Kanker', 'Surguja', 'Kabirdham', 'Balod'
+  ],
+  'Jharkhand': [
+    'Ranchi', 'Jamshedpur (East Singhbhum)', 'Dhanbad', 'Bokaro', 'Hazaribagh', 'Deoghar', 'Giridih', 'Palamu', 'Dumka', 'West Singhbhum', 'Ramgarh', 'Koderma'
+  ],
+  'Goa': [
+    'North Goa', 'South Goa'
+  ],
+  'Arunachal Pradesh': [
+    'Itanagar (Papum Pare)', 'Tawang', 'West Kameng', 'East Kameng', 'Lower Subansiri', 'Changlang', 'Tirap', 'Lohit', 'Namsai'
+  ],
+  'Manipur': [
+    'Imphal East', 'Imphal West', 'Bishnupur', 'Thoubal', 'Churachandpur', 'Senapati', 'Ukhrul', 'Kakching'
+  ],
+  'Meghalaya': [
+    'East Khasi Hills (Shillong)', 'West Garo Hills', 'Ri-Bhoi', 'West Khasi Hills', 'East Jaintia Hills', 'South Garo Hills'
+  ],
+  'Mizoram': [
+    'Aizawl', 'Lunglei', 'Champhai', 'Kolasib', 'Serchhip', 'Mamit', 'Lawngtlai'
+  ],
+  'Nagaland': [
+    'Kohima', 'Dimapur', 'Mokokchung', 'Mon', 'Wokha', 'Zunheboto', 'Phek', 'Tuensang'
+  ],
+  'Sikkim': [
+    'Gangtok (East Sikkim)', 'Namchi (South Sikkim)', 'Gyalshing (West Sikkim)', 'Mangan (North Sikkim)', 'Pakyong', 'Soreng'
+  ],
+  'Tripura': [
+    'West Tripura (Agartala)', 'Gomati', 'South Tripura', 'North Tripura', 'Dhalai', 'Khowai', 'Sepahijala', 'Unakoti'
   ]
 };
 
@@ -143,6 +179,7 @@ export const STATE_DISTRICTS: Record<string, string[]> = {
 export const DISTRICT_VILLAGES: Record<string, string[]> = {
   // Karnataka
   'Belgaum': ['All Villages / District Central', 'Gokak', 'Athani', 'Chikkodi', 'Bailhongal', 'Hukkeri', 'Khanapur', 'Mudalagi', 'Nipani', 'Ramdurg', 'Raybag', 'Saundatti', 'Kagwad', 'Yadwad', 'Sankeshwar'],
+  'Hassan': ['All Villages / District Central', 'Channarayapatna', 'Arsikere', 'Holenarasipura', 'Sakleshpur', 'Arkalgud', 'Belur', 'Alur', 'Shravanabelagola'],
   'Bangalore Urban': ['All Villages / District Central', 'Yelahanka', 'Kengeri', 'Anekal', 'KR Puram', 'Sarjapur', 'Bidarahalli', 'Varthur', 'Begur'],
   'Bangalore Rural': ['All Villages / District Central', 'Devanahalli', 'Doddaballapur', 'Hosakote', 'Nelamangala', 'Vijayapura', 'Tubagere', 'Nandagudi'],
   'Bellary': ['All Villages / District Central', 'Hospet', 'Siruguppa', 'Sandur', 'Kampli', 'Kudligi', 'Kurugodu', 'Tekkalakote'],
@@ -199,6 +236,7 @@ export const DISTRICT_VILLAGES: Record<string, string[]> = {
 
   // Andhra Pradesh
   'Guntur': ['All Villages / District Central', 'Tenali', 'Narasaraopet', 'Sattenapalle', 'Bapatla', 'Mangalagiri', 'Ponnur', 'Vinukonda', 'Chilakaluripet'],
+  'West Godavari': ['All Villages / District Central', 'Bhimavaram', 'Tadepalligudem', 'Tanuku', 'Palakollu', 'Narasapuram', 'Akividu', 'Undi', 'Achanta', 'Jangareddigudem'],
   'Kurnool': ['All Villages / District Central', 'Adoni', 'Nandyal', 'Yemmiganur', 'Dhone', 'Allagadda', 'Nandikotkur', 'Pattikonda', 'Banaganapalle'],
 
   // Telangana

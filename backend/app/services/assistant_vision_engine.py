@@ -24,6 +24,7 @@ Replaces Google Gemini Vision API with authentic server-side Computer Vision:
 
 import os
 import cv2
+import uuid
 import numpy as np
 from PIL import Image
 import logging
@@ -48,13 +49,32 @@ class AssistantVisionEngine:
     """
 
     def __init__(self):
-        self.model_version = "opencv-pathology-v5.0"
+        self.model_version = "opencv-pathology-v6.0-multispectral"
         self.yolo_status = "STANDALONE_YOLO_WEIGHTS_NOT_FOUND"
         self.classifier_status = "OPENCV_MORPHOMETRIC_PATHOLOGY_ACTIVE"
         self.yolo_model = None
         self.yolo_weights_path = None
+        self.yolo_classes: Dict[int, str] = {}
 
-        # Check for deployed YOLO weights
+        # 1. Load canonical YOLO class ontology from agriculture_yolo.yaml
+        yolo_yaml_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "ml", "models", "vision", "agriculture_yolo.yaml")
+        )
+        if os.path.exists(yolo_yaml_path):
+            try:
+                import yaml
+                with open(yolo_yaml_path, "r", encoding="utf-8") as f:
+                    ydata = yaml.safe_load(f)
+                    if isinstance(ydata, dict) and "names" in ydata:
+                        self.yolo_classes = {int(k): str(v) for k, v in ydata["names"].items()}
+                        logger.info(
+                            f"[Vision Checkpoint Audit] Loaded YOLO ontology from {yolo_yaml_path}: "
+                            f"{len(self.yolo_classes)} classes mapped. Class IDs: {list(self.yolo_classes.items())}"
+                        )
+            except Exception as e:
+                logger.warning(f"[Vision Checkpoint Audit] Failed to parse agriculture_yolo.yaml: {e}")
+
+        # 2. Check for deployed standalone YOLO checkpoint weights (.pt / .onnx)
         possible_weights = [
             os.path.join(os.path.dirname(__file__), "..", "ml", "models", "vision", "yolov8_crop_pest.pt"),
             os.path.join(os.path.dirname(__file__), "..", "ml", "models", "vision", "yolov8_crop_pest.onnx"),
@@ -69,14 +89,25 @@ class AssistantVisionEngine:
                     self.yolo_model = YOLO(norm_path)
                     self.yolo_weights_path = norm_path
                     self.yolo_status = "ACTIVE_YOLO_WEIGHTS_LOADED"
-                    logger.info(f"Loaded trained YOLO model from: {norm_path}")
+                    model_names = getattr(self.yolo_model, "names", {})
+                    logger.info(
+                        f"[Vision Checkpoint Audit] Loaded trained YOLO checkpoint from: {norm_path}. "
+                        f"Model.names: {model_names}"
+                    )
                     break
                 except Exception as e:
-                    logger.warning(f"Found YOLO weights at {norm_path} but failed to initialize: {e}")
+                    logger.warning(f"[Vision Checkpoint Audit] Found YOLO weights at {norm_path} but failed to initialize: {e}")
+
+        if not self.yolo_model:
+            logger.info(
+                f"[Vision Checkpoint Audit] Standalone YOLO weights not on disk. Active Pipeline: "
+                f"Multi-spectral morphometric botanical CV engine + 37-crop pathology taxonomy. "
+                f"Reference ontology has {len(self.yolo_classes)} verified classes."
+            )
 
     def get_capability_report(self) -> Dict[str, Any]:
         """
-        Transparent report of actual model capabilities and loaded weights.
+        Transparent report of actual model capabilities, loaded weights, and ontology mapping.
         """
         return {
             "vision_engine": "AgriFusion OpenCV Pathology Engine",
@@ -84,12 +115,14 @@ class AssistantVisionEngine:
             "yolo_detector": {
                 "status": self.yolo_status,
                 "weights_path": self.yolo_weights_path if self.yolo_weights_path else None,
+                "ontology_classes_count": len(self.yolo_classes),
+                "ontology_classes": self.yolo_classes,
+                "model_names": getattr(self.yolo_model, "names", self.yolo_classes) if self.yolo_model else self.yolo_classes,
                 "note": (
                     "Active trained YOLO weights loaded and executing."
                     if self.yolo_status == "ACTIVE_YOLO_WEIGHTS_LOADED"
-                    else "Standalone YOLO weights (.pt/.onnx) not found on disk. Real OpenCV contour segmentation active."
+                    else "Standalone YOLO weights (.pt/.onnx) not found on disk. Pure OpenCV morphometric pathology active."
                 ),
-                "action_for_dev": "Run backend/scripts/train_yolo_crops_diseases_pests.py to train 10,000 images/crop model."
             },
             "pathology_classifier": {
                 "status": self.classifier_status,
@@ -327,6 +360,58 @@ class AssistantVisionEngine:
         # 7. Laplacian Texture Gradient
         lap_var = float(cv2.Laplacian(gray, cv2.CV_64F).var())
 
+        # 7b. Cotton White Bolls / Lint Detection
+        lower_white = np.array([0, 0, 195])
+        upper_white = np.array([180, 45, 255])
+        white_mask = cv2.inRange(img_hsv, lower_white, upper_white)
+        white_boll_px = int(np.sum(white_mask > 0))
+        white_boll_pct = round((white_boll_px / total_px) * 100, 2)
+
+        # 7c. Palmate Lobing & Convexity Sinus Analysis (Cotton Leaf / Grape Leaf Signature)
+        is_palmate_lobed = False
+        deep_defects_count = 0
+        if leaf_contours:
+            largest_leaf = max(leaf_contours, key=cv2.contourArea)
+            c_area = cv2.contourArea(largest_leaf)
+            if c_area > 600:
+                hull_indices = cv2.convexHull(largest_leaf, returnPoints=False)
+                if len(hull_indices) > 3:
+                    try:
+                        defects = cv2.convexityDefects(largest_leaf, hull_indices)
+                        if defects is not None:
+                            for di in range(defects.shape[0]):
+                                _, _, _, d = defects[di, 0]
+                                depth = d / 256.0
+                                if depth > 12.0:
+                                    deep_defects_count += 1
+                    except Exception:
+                        pass
+        # Palmate leaves have 2 to 4 deep clefts/sinuses and solidity between 0.44 and 0.74
+        is_palmate_lobed = (deep_defects_count >= 2 and 0.44 <= leaf_solidity <= 0.74)
+
+        # 7d. Banana Bunch Detection: clustered elongated curved fruit fingers
+        banana_fingers = 0
+        yellow_cnts, _ = cv2.findContours(yellow_fruit_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for c in yellow_cnts:
+            c_a = cv2.contourArea(c)
+            if 300 < c_a < 50000:
+                rect = cv2.minAreaRect(c)
+                rw, rh = rect[1]
+                ar = max(rw, rh) / max(1.0, min(rw, rh))
+                if ar >= 1.40:
+                    banana_fingers += 1
+        banana_bunch_detected = (banana_fingers >= 2 or (yellow_fruit_pct > 3.0 and fruit_aspect_ratio > 1.35))
+
+        # 7e. Banana Paddle Leaf: giant broad leaf with smooth contour (high solidity >= 0.76), broad width, and parallel venation
+        banana_paddle_leaf = (
+            (leaf_width >= 160 or leaf_area_pct >= 20.0 or (leaf_width >= 135 and leaf_solidity >= 0.78))
+            and not is_palmate_lobed
+            and leaf_aspect_ratio <= 2.5
+        )
+
+        # 7f. Monocot Linear Blade (Rice, Wheat, Sugarcane)
+        is_linear_monocot = (leaf_aspect_ratio >= 2.4 and venation_anisotropy >= 1.08)
+
         # 8. Chewing damage analysis
         chewing_damage = False
         chewing_pct = 0.0
@@ -474,6 +559,12 @@ class AssistantVisionEngine:
             "chewing_damage": chewing_damage,
             "chewing_pct": chewing_pct,
             "insect_clusters": insect_cluster_detected,
+            "white_boll_pct": white_boll_pct,
+            "is_palmate_lobed": is_palmate_lobed,
+            "deep_defects_count": deep_defects_count,
+            "banana_bunch_detected": banana_bunch_detected,
+            "banana_paddle_leaf": banana_paddle_leaf,
+            "is_linear_monocot": is_linear_monocot,
             "bounding_boxes": bounding_boxes,
         }
 
@@ -486,9 +577,14 @@ class AssistantVisionEngine:
         """
         Step 3: Scalable 37-Crop Independent Identification, Pathology & Pest Detection.
         Evaluates crop species, pathological foliar disease, and insect pests as independent dimensions.
-        Guarantees zero hardcoded crop bias (never defaults to Cotton, Rice, or any single crop).
+        MANDATORY RULES:
+        1. Every uploaded image is classified for crop BEFORE disease/pest prediction.
+        2. Never hardcode Cotton, Rice, Mango, Maize, or any crop.
+        3. Never use previous image's prediction.
+        4. Never infer crop from filename, URL, clipboard metadata, image index, or default state.
+        5. If crop confidence < 0.70, return 'UNABLE_TO_IDENTIFY_CROP' with 'Unknown/Insufficient Crop Evidence' and 0.0 confidence.
+        6. Disease and pest predictions belong strictly to the detected crop.
         """
-        combined_text = f"{crop_hint or ''} {filename}".lower()
         necrotic_pct = metrics.get("necrotic_lesion_pct", 0.0)
         chlorosis_pct = metrics.get("chlorosis_pct", 0.0)
         rust_pct = metrics.get("rust_pustule_pct", 0.0)
@@ -506,9 +602,9 @@ class AssistantVisionEngine:
             logger.info(f"[Crop Identification] Non-crop image. Total plant tissue: {total_tissue:.2f}%. Status: UNABLE_TO_IDENTIFY_CROP")
             return {
                 "status": "UNABLE_TO_IDENTIFY_CROP",
-                "crop": {"name": "Unable to identify crop", "scientific": "", "confidence": 0.0, "key": "unable_to_identify_crop"},
+                "crop": {"name": "Unknown/Insufficient Crop Evidence", "scientific": "", "confidence": 0.0, "key": "unable_to_identify_crop"},
                 "crop_confidence": 0.0,
-                "disease": {"name": "Unable to identify crop", "scientific_name": "", "confidence": 0.0, "severity": "None", "key": "unable_to_identify_crop"},
+                "disease": {"name": "Unknown/Insufficient Crop Evidence", "scientific_name": "", "confidence": 0.0, "severity": "None", "key": "unable_to_identify_crop"},
                 "disease_confidence": 0.0,
                 "pests": [],
                 "pest_confidence": None,
@@ -518,58 +614,31 @@ class AssistantVisionEngine:
                 "treatment": [],
                 "pest_control": [],
                 "prevention": [
-                    "Please upload a clear photo of one of the 37 supported crops (e.g. Rice, Wheat, Cotton, Sugarcane, Soybean, Tomato, Potato, Banana, Mango, Turmeric, Groundnut, etc.)."
+                    "Please upload a clear photo of one of the 37 supported crops (e.g. Banana, Rice, Cotton, Mango, Maize, Wheat, Tomato, Potato, Grapes, Chilli, Sugarcane, etc.)."
                 ],
-                "friendly_message": "🌱 Unable to identify crop: I couldn't detect clear agricultural plant foliage or fruit tissue in this image. Please upload a clear photo of the crop leaf, stem, or fruit."
+                "friendly_message": "🌱 Unknown/Insufficient Crop Evidence: I couldn't detect clear agricultural plant foliage or fruit tissue in this image. Please upload a clear photo of the crop leaf, stem, or fruit."
             }
 
-        # ── Step 3b: Dynamic Crop Identification Across All 37 Target Crops ──
+        # ── Step 3b: Dynamic Crop Identification (Pure Botanical & Model Inferences) ──
         identified_crop_key = None
         crop_name = None
         crop_scientific = ""
         crop_confidence = 0.0
 
-        # Build dynamic multilingual keyword map from all 37 crops in registry
-        crop_keywords: Dict[str, List[str]] = {}
-        for c_k, c_v in SUPPORTED_CROPS_REGISTRY.items():
-            kws = list(c_v.get("keywords", []))
-            kws.append(c_k)
-            kws.append(c_v.get("name", "").lower())
-            # Add common spelling variants
-            clean_name = c_v.get("name", "").split("/")[0].strip().lower()
-            kws.append(clean_name)
-            crop_keywords[c_k] = list(set([k.lower() for k in kws if len(k) > 1]))
-
-        # 1. Exact or Alias Match via User Crop Hint (Target Crop dropdown selection)
+        # 1. User Explicit Target Crop Hint from Dropdown (Strictly validated against registered crops; NEVER from filename)
         if crop_hint:
             hint_clean = crop_hint.lower().strip()
-            for c_k, words in crop_keywords.items():
-                if hint_clean == c_k or hint_clean in [w.lower() for w in words] or c_k in hint_clean:
+            # Must match a known crop registry key or primary name
+            for c_k, c_v in SUPPORTED_CROPS_REGISTRY.items():
+                if hint_clean == c_k or hint_clean == c_v.get("name", "").lower():
                     identified_crop_key = c_k
-                    crop_profile = SUPPORTED_CROPS_REGISTRY[c_k]
-                    crop_name = crop_profile["name"]
-                    crop_scientific = crop_profile.get("scientific", "")
-                    crop_confidence = 0.96
+                    crop_name = c_v["name"]
+                    crop_scientific = c_v.get("scientific", "")
+                    crop_confidence = 0.95
+                    logger.info(f"[Crop Identification] Explicit verified crop hint supplied: {crop_name}")
                     break
 
-        # 2. Check semantic keywords in filename or message text
-        if not identified_crop_key:
-            # Sort by keyword length descending to match specific multi-word crops first (e.g. 'finger millet' before 'millet')
-            sorted_crops = sorted(
-                crop_keywords.items(),
-                key=lambda item: max([len(w) for w in item[1]], default=0),
-                reverse=True
-            )
-            for c_k, words in sorted_crops:
-                if any(w in combined_text for w in words):
-                    identified_crop_key = c_k
-                    crop_profile = SUPPORTED_CROPS_REGISTRY[c_k]
-                    crop_name = crop_profile["name"]
-                    crop_scientific = crop_profile.get("scientific", "")
-                    crop_confidence = 0.94
-                    break
-
-        # 3. Optical Morphometry Heuristics (if no filename or hint match)
+        # 2. Authentic Botanical Morphometric Classification (If no explicit dropdown selection)
         if not identified_crop_key:
             yellow_fruit_pct = metrics.get("yellow_fruit_pct", 0.0)
             red_fruit_pct = metrics.get("fruit_red_pct", 0.0)
@@ -581,99 +650,119 @@ class AssistantVisionEngine:
             leaf_solidity = metrics.get("leaf_solidity", 0.5)
             leaf_area_pct = metrics.get("leaf_area_pct", 0.0)
             venation_anisotropy = metrics.get("venation_anisotropy", 1.0)
+            white_boll_pct = metrics.get("white_boll_pct", 0.0)
+            is_palmate_lobed = metrics.get("is_palmate_lobed", False)
+            deep_defects_count = metrics.get("deep_defects_count", 0)
+            banana_bunch_detected = metrics.get("banana_bunch_detected", False)
+            banana_paddle_leaf = metrics.get("banana_paddle_leaf", False)
+            is_linear_monocot = metrics.get("is_linear_monocot", False)
+            chewing_damage = metrics.get("chewing_damage", False)
 
-            # Fruit Peel Morphology
-            if yellow_fruit_pct > 3.5 and yellow_fruit_pct > foliage_pct * 0.6:
-                if fruit_aspect_ratio > 1.35:
-                    identified_crop_key = "banana"
-                    crop_confidence = 0.93
-                elif yellow_fruit_pct > 15.0:
-                    identified_crop_key = "papaya"
-                    crop_confidence = 0.91
-                else:
-                    identified_crop_key = "mango"
-                    crop_confidence = 0.91
-            elif red_fruit_pct > 3.5 and red_fruit_pct > foliage_pct * 0.6:
-                if fruit_aspect_ratio < 1.35 and (necrotic_pct > 4.0 or chlorosis_pct > 6.0):
-                    identified_crop_key = "apple"
-                    crop_confidence = 0.92
-                elif fruit_aspect_ratio > 1.25:
-                    identified_crop_key = "pomegranate"
-                    crop_confidence = 0.90
-                else:
-                    identified_crop_key = "tomato"
-                    crop_confidence = 0.91
-            elif orange_pct > 3.5 and orange_pct > foliage_pct * 0.6:
-                identified_crop_key = "orange"
-                crop_confidence = 0.92
+            # ── A. BANANA MORPHOLOGY (Bunch or Giant Paddle Leaf) ──
+            # Banana bunch: clustered curved fingers, yellow or green fruit
+            # Banana leaf: giant broad paddle lamina, high leaf solidity (>= 0.76), broad width (>= 150px), parallel venation
+            if banana_bunch_detected or (yellow_fruit_pct > 2.5 and fruit_aspect_ratio > 1.35):
+                identified_crop_key = "banana"
+                crop_confidence = 0.94
+                logger.info(f"[Botanical Classifier] Identified BANANA BUNCH (banana_bunch={banana_bunch_detected}, aspect={fruit_aspect_ratio})")
+            elif banana_paddle_leaf or (leaf_solidity >= 0.76 and leaf_width >= 150 and not is_palmate_lobed and leaf_aspect_ratio <= 2.4):
+                identified_crop_key = "banana"
+                crop_confidence = 0.93
+                logger.info(f"[Botanical Classifier] Identified BANANA PADDLE LEAF (solidity={leaf_solidity}, width={leaf_width})")
 
-            # Foliar Leaf Morphology
-            elif foliage_pct >= 3.0:
-                # Monocots with high aspect ratio
-                if rust_pct > 3.8 and leaf_aspect_ratio >= 1.8:
-                    identified_crop_key = "wheat"
-                    crop_confidence = 0.92
-                elif leaf_aspect_ratio >= 2.4 and venation_anisotropy >= 1.15:
-                    # Slender linear cereal/grass monocot
-                    if foliage_pct > 25.0:
-                        identified_crop_key = "sugarcane"
-                        crop_confidence = 0.88
-                    else:
-                        identified_crop_key = "rice"
-                        crop_confidence = 0.89
-                elif (leaf_width >= 240 or (1.35 <= leaf_aspect_ratio <= 2.4 and leaf_solidity >= 0.80 and leaf_width >= 210)) and venation_anisotropy >= 1.12:
-                    identified_crop_key = "banana"
-                    crop_confidence = 0.93
-                elif 0.75 <= leaf_aspect_ratio <= 1.40 and leaf_solidity <= 0.80:
-                    identified_crop_key = "cotton"
-                    crop_confidence = 0.89
-                elif 1.45 <= leaf_aspect_ratio <= 2.25 and leaf_solidity >= 0.72 and 105 <= leaf_width <= 210 and foliage_pct >= 13.0:
-                    identified_crop_key = "mango"
-                    crop_confidence = 0.90
-                elif necrotic_pct > 10.0 and foliage_pct > 12.0 and leaf_aspect_ratio <= 1.6:
-                    identified_crop_key = "potato"
-                    crop_confidence = 0.88
-                elif leaf_area_pct < 15.0 and foliage_pct < 25.0 and leaf_aspect_ratio < 2.0:
-                    identified_crop_key = "chilli"
-                    crop_confidence = 0.88
-                elif foliage_pct > 12.0:
-                    # General broadleaf fallback: check soybean/legumes vs tomato
-                    if leaf_solidity > 0.85:
-                        identified_crop_key = "soybean"
-                        crop_confidence = 0.82
-                    else:
-                        identified_crop_key = "tomato"
-                        crop_confidence = 0.85
-                else:
-                    crop_confidence = 0.40
+            # ── B. LINEAR MONOCOTS (Rice, Wheat, Sugarcane) ──
+            elif is_linear_monocot and leaf_aspect_ratio >= 2.6 and leaf_width < 110 and foliage_pct < 26.0:
+                identified_crop_key = "rice"
+                crop_confidence = 0.90
+                logger.info(f"[Botanical Classifier] Identified RICE (aspect={leaf_aspect_ratio}, width={leaf_width})")
+            elif is_linear_monocot and leaf_aspect_ratio >= 2.4 and foliage_pct >= 26.0:
+                identified_crop_key = "sugarcane"
+                crop_confidence = 0.89
+                logger.info(f"[Botanical Classifier] Identified SUGARCANE (aspect={leaf_aspect_ratio}, foliage={foliage_pct})")
+            elif is_linear_monocot and (rust_pct > 3.0 or leaf_aspect_ratio >= 1.9):
+                identified_crop_key = "wheat"
+                crop_confidence = 0.91
+                logger.info(f"[Botanical Classifier] Identified WHEAT (rust={rust_pct}, aspect={leaf_aspect_ratio})")
 
-            if identified_crop_key and identified_crop_key in SUPPORTED_CROPS_REGISTRY:
-                crop_profile = SUPPORTED_CROPS_REGISTRY[identified_crop_key]
-                crop_name = crop_profile["name"]
-                crop_scientific = crop_profile.get("scientific", "")
+            # ── C. COTTON (Strict Palmate Lobing with Deep Sinuses OR White Bolls) ──
+            # Cotton leaf has 3-5 pointed lobes with deep sinuses between lobes (solidity 0.44-0.74, 2+ deep recesses)
+            # NEVER identify non-palmate or high-solidity leaves as Cotton!
+            elif (is_palmate_lobed and 0.44 <= leaf_solidity <= 0.74) or white_boll_pct >= 2.5:
+                identified_crop_key = "cotton"
+                crop_confidence = 0.91
+                logger.info(f"[Botanical Classifier] Identified COTTON (palmate={is_palmate_lobed}, defects={deep_defects_count}, white_boll={white_boll_pct}%)")
 
-        # Validate that the identified crop belongs to the 37 crops
+            # ── D. MANGO (Leathery Elliptic-Lanceolate Leaf or Mango Drupe) ──
+            elif (1.5 <= leaf_aspect_ratio <= 2.6 and leaf_solidity >= 0.72 and 85 <= leaf_width <= 200 and not is_palmate_lobed and foliage_pct >= 12.0) or (yellow_fruit_pct > 3.5 and fruit_aspect_ratio <= 1.35):
+                identified_crop_key = "mango"
+                crop_confidence = 0.90
+                logger.info(f"[Botanical Classifier] Identified MANGO (aspect={leaf_aspect_ratio}, width={leaf_width}, solidity={leaf_solidity})")
+
+            # ── E. TOMATO (Round Red Fruit or Compound Serrated Foliage) ──
+            elif (red_fruit_pct > 3.5 and fruit_aspect_ratio <= 1.35) or (leaf_solidity <= 0.70 and foliage_pct > 10.0 and not is_palmate_lobed and not chewing_damage):
+                identified_crop_key = "tomato"
+                crop_confidence = 0.89
+                logger.info(f"[Botanical Classifier] Identified TOMATO (red_fruit={red_fruit_pct}%, solidity={leaf_solidity})")
+
+            # ── F. POTATO (Pinnate Rounded Foliage with Necrotic Concentric Lesions) ──
+            elif necrotic_pct > 7.0 and foliage_pct > 10.0 and leaf_aspect_ratio <= 1.6 and leaf_solidity >= 0.72:
+                identified_crop_key = "potato"
+                crop_confidence = 0.88
+                logger.info(f"[Botanical Classifier] Identified POTATO (necrotic={necrotic_pct}%, aspect={leaf_aspect_ratio})")
+
+            # ── G. GRAPES (Cordate Sharp-Dentate Palmate Leaf) ──
+            elif 0.80 <= leaf_aspect_ratio <= 1.35 and leaf_solidity <= 0.76 and deep_defects_count >= 1 and not is_palmate_lobed:
+                identified_crop_key = "grapes"
+                crop_confidence = 0.88
+                logger.info(f"[Botanical Classifier] Identified GRAPES (aspect={leaf_aspect_ratio}, solidity={leaf_solidity})")
+
+            # ── H. CHILLI (Small Ovate Entire Leaf or Elongated Pepper) ──
+            elif (leaf_area_pct < 15.0 and foliage_pct < 25.0 and leaf_aspect_ratio < 2.0 and leaf_solidity >= 0.75) or (red_fruit_pct > 2.0 and fruit_aspect_ratio > 2.0):
+                identified_crop_key = "chilli"
+                crop_confidence = 0.87
+                logger.info(f"[Botanical Classifier] Identified CHILLI (leaf_area={leaf_area_pct}%, foliage={foliage_pct}%)")
+
+            # ── I. MAIZE (Broad Linear Monocot Leaf with Conspicuous Midrib) ──
+            elif leaf_aspect_ratio >= 1.8 and leaf_width >= 40 and (venation_anisotropy >= 1.08 or foliage_pct >= 18.0) and not is_palmate_lobed:
+                identified_crop_key = "maize"
+                crop_confidence = 0.88
+                logger.info(f"[Botanical Classifier] Identified MAIZE (aspect={leaf_aspect_ratio}, width={leaf_width})")
+
+            # ── J. SOYBEAN (Smooth Rounded Trifoliate Foliage) ──
+            elif leaf_solidity >= 0.82 and foliage_pct > 12.0 and 1.2 <= leaf_aspect_ratio <= 1.8 and not is_palmate_lobed and leaf_width < 160:
+                identified_crop_key = "soybean"
+                crop_confidence = 0.84
+                logger.info(f"[Botanical Classifier] Identified SOYBEAN (solidity={leaf_solidity}, aspect={leaf_aspect_ratio})")
+
+            # ── K. UNKNOWN / INSUFFICIENT CROP EVIDENCE ──
+            else:
+                # Do NOT guess Cotton, Rice, or any default crop!
+                identified_crop_key = None
+                crop_confidence = 0.30
+                logger.info(f"[Botanical Classifier] Crop evidence insufficient. Leaf AR={leaf_aspect_ratio}, Solidity={leaf_solidity}, Width={leaf_width}. Status: UNABLE_TO_IDENTIFY_CROP")
+
+        # ── Step 3c: Crop Identification Verification ──
         if not identified_crop_key or crop_confidence < 0.70 or identified_crop_key not in SUPPORTED_CROPS_REGISTRY:
-            logger.info(f"[Crop Identification] Could not reliably identify crop (conf: {crop_confidence:.2f}). Status: UNABLE_TO_IDENTIFY_CROP")
+            logger.info(f"[Crop Identification] Verification failed (conf: {crop_confidence:.2f}). Returning UNABLE_TO_IDENTIFY_CROP")
             supported_crop_names = [v.get("name", k.capitalize()) for k, v in list(SUPPORTED_CROPS_REGISTRY.items())[:12]]
             return {
                 "status": "UNABLE_TO_IDENTIFY_CROP",
-                "crop": {"name": "Unable to identify crop", "scientific": "", "confidence": 0.0, "key": "unable_to_identify_crop"},
+                "crop": {"name": "Unknown/Insufficient Crop Evidence", "scientific": "", "confidence": 0.0, "key": "unable_to_identify_crop"},
                 "crop_confidence": 0.0,
-                "disease": {"name": "Unable to identify crop", "scientific_name": "", "confidence": 0.0, "severity": "None", "key": "unable_to_identify_crop"},
+                "disease": {"name": "Unknown/Insufficient Crop Evidence", "scientific_name": "", "confidence": 0.0, "severity": "None", "key": "unable_to_identify_crop"},
                 "disease_confidence": 0.0,
                 "pests": [],
                 "pest_confidence": None,
                 "pest_status": "No supported crop identified.",
-                "symptoms": ["Crop species could not be identified with verified confidence."],
+                "symptoms": ["Crop species could not be identified with verified visual confidence."],
                 "pest_damage": [],
                 "treatment": [],
                 "pest_control": [],
                 "prevention": [
                     f"Please select or specify your crop from the 37 supported crops (e.g. {', '.join(supported_crop_names)}, etc.).",
-                    "Upload a clear, focused photograph directly showcasing the foliage, stem, or fruit."
+                    "Upload a clear, focused photograph directly showcasing the crop leaf, stem, or fruit."
                 ],
-                "friendly_message": f"🌱 Unable to identify crop: I couldn't identify a supported crop in this image with sufficient certainty. AgriFusion AI supports all 37 major crops (including Rice, Wheat, Cotton, Sugarcane, Soybean, Tomato, Potato, Banana, Mango, Turmeric, Groundnut, etc.). Please select your crop or provide a clear photo of the affected plant."
+                "friendly_message": f"🌱 Unknown/Insufficient Crop Evidence: I couldn't identify a supported crop in this image with sufficient certainty. AgriFusion AI supports Banana, Rice, Cotton, Mango, Maize, Wheat, Tomato, Potato, Grapes, Chilli, and 27 other major crops. Please select your crop or provide a clear photo of the plant foliage."
             }
 
         crop_profile = SUPPORTED_CROPS_REGISTRY[identified_crop_key]
@@ -682,7 +771,7 @@ class AssistantVisionEngine:
         if not crop_scientific:
             crop_scientific = crop_profile.get("scientific", "")
 
-        # ── Step 3c: Dynamic Disease Classification for Any of the 37 Crops ──
+        # ── Step 3d: Dynamic Disease Classification (Strictly Scoped to Detected Crop) ──
         crop_diseases = crop_profile.get("diseases", {})
         condition_key = "healthy"
         condition_name = f"Healthy {crop_name}"
@@ -693,36 +782,22 @@ class AssistantVisionEngine:
         disease_treatment: List[str] = []
         disease_prevention: List[str] = []
 
-        # 1. Semantic Match against this crop's actual disease catalog
-        disease_matched = None
-        for d_key, d_val in crop_diseases.items():
-            if d_key == "healthy":
-                continue
-            d_name = d_val.get("name", "").lower()
-            d_sci = d_val.get("scientific_name", "").lower()
-            key_tokens = [t for t in d_key.split("_") if len(t) > 3 and t not in ["leaf", "spot", "crop"]]
-            if d_key in combined_text or any(tok in combined_text for tok in key_tokens):
-                disease_matched = d_key
-                break
-            if any(term in combined_text for term in [d_name, d_sci] if term):
-                disease_matched = d_key
-                break
-
-        # 2. Optical Pathology Diagnostics
-        if disease_matched and disease_matched in crop_diseases:
-            condition_key = disease_matched
-        elif rust_pct > 3.0:
+        # Optical Pathology Diagnostics within this crop's actual catalog
+        if rust_pct > 3.0:
             rust_keys = [k for k in crop_diseases if "rust" in k or "pustule" in k]
             if rust_keys:
                 condition_key = rust_keys[0]
             else:
                 condition_key = next((k for k in crop_diseases if k != "healthy"), "healthy")
-        elif chlorosis_pct > 14.0 and (necrotic_pct < 6.0 or "curl" in combined_text or "mosaic" in combined_text or "wilt" in combined_text):
-            viral_keys = [k for k in crop_diseases if any(w in k for w in ["curl", "mosaic", "wilt", "ring", "yellow", "shoot", "chlorosis"])]
+        elif chlorosis_pct > 14.0:
+            viral_keys = [k for k in crop_diseases if any(w in k for w in ["curl", "mosaic", "wilt", "ring", "yellow", "shoot", "chlorosis", "panama"])]
             if viral_keys:
                 condition_key = viral_keys[0]
             else:
                 condition_key = next((k for k in crop_diseases if k != "healthy"), "healthy")
+        elif identified_crop_key == "banana" and metrics.get("banana_bunch_detected") and (necrotic_pct > 1.2 or lesion_count >= 1):
+            # Anthracnose / black end rot of banana bunch
+            condition_key = "anthracnose" if "anthracnose" in crop_diseases else next((k for k in crop_diseases if k != "healthy"), "healthy")
         elif necrotic_pct > 2.5 or lesion_count >= 2:
             foliar_keys = [k for k in crop_diseases if k != "healthy" and not any(w in k for w in ["rust", "mosaic", "curl"])]
             if foliar_keys:
@@ -756,7 +831,7 @@ class AssistantVisionEngine:
                 severity = "Mild"
                 confidence = round(min(0.90, max(0.83, 0.82 + (necrotic_pct / 30.0) * 0.04)), 2)
 
-        # ── Step 3d: Dynamic Crop-Specific Pest Detection ──
+        # ── Step 3e: Dynamic Crop-Specific Pest Detection (Strictly Scoped to Detected Crop) ──
         detected_pests: List[Dict[str, Any]] = []
         pest_damage_list: List[str] = []
         pest_control_list: List[str] = []
@@ -779,7 +854,6 @@ class AssistantVisionEngine:
 
         for p_key, p_data in supported_pests.items():
             p_kws = p_data.get("keywords", [p_key, p_data.get("name", "").lower()])
-            is_semantic_match = any(kw in combined_text for kw in p_kws)
 
             # Check YOLO detections
             is_yolo_match = any(
@@ -794,15 +868,13 @@ class AssistantVisionEngine:
             elif insect_cluster_flag and (chlorosis_pct > 6.0 or necrotic_pct > 3.0) and any(w in p_key for w in ["aphid", "whitefly", "thrips", "mite", "mealybug", "hopper", "planthopper"]):
                 is_cv_match = True
 
-            if is_semantic_match or is_yolo_match or is_cv_match:
+            if is_yolo_match or is_cv_match:
                 if is_yolo_match:
                     y_conf = max(
                         [yd.get("confidence", 0.90) for yd in yolo_pest_detections if any(kw in yd.get("label", "").lower() for kw in p_kws)],
                         default=0.91
                     )
                     p_conf = round(float(y_conf), 2)
-                elif is_semantic_match:
-                    p_conf = 0.92
                 else:
                     p_conf = 0.88
 
@@ -825,7 +897,7 @@ class AssistantVisionEngine:
             pest_damage_list = ["No visible insect pest damage, feeding holes, or larvae detected on the foliage."]
             pest_control_list = ["No chemical or biological insecticide required at this time. Continue routine field scouting."]
 
-        # ── Step 3e: Combined Prevention Guidance ──
+        # ── Step 3f: Combined Prevention Guidance ──
         combined_prevention: List[str] = []
         if disease_prevention:
             combined_prevention.extend(disease_prevention)
@@ -877,17 +949,24 @@ class AssistantVisionEngine:
         self,
         image_bytes: bytes,
         filename: str = "upload.jpg",
-        crop_hint: Optional[str] = None
+        crop_hint: Optional[str] = None,
+        request_id: Optional[str] = None,
+        image_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Complete end-to-end vision analysis execution.
         """
+        req_id = request_id or str(uuid.uuid4())
+        img_id = image_id or f"{req_id}_img_1"
+
         # Step 1: Validation
-        logger.info(f"[Vision Pipeline] Received image: filename='{filename}', size={len(image_bytes)} bytes, crop_hint='{crop_hint or 'None'}'")
+        logger.info(f"[Vision Pipeline] Received image: req_id='{req_id}', img_id='{img_id}', filename='{filename}', size={len(image_bytes)} bytes, crop_hint='{crop_hint or 'None'}'")
         is_valid, error_msg, img_bgr = self.validate_image_bytes(image_bytes, filename)
         if not is_valid or img_bgr is None:
             logger.info(f"[Vision Pipeline] Image validation rejected for '{filename}': {error_msg}")
             return {
+                "request_id": req_id,
+                "image_id": img_id,
                 "status": "UNABLE_TO_IDENTIFY_CROP",
                 "error": error_msg or "Image quality insufficient for diagnosis.",
                 "crop": {"name": "Unable to identify crop", "scientific": "", "confidence": 0.0, "key": "unable_to_identify_crop"},
@@ -921,7 +1000,7 @@ class AssistantVisionEngine:
         diag = self.diagnose_crop_and_disease(metrics, filename, crop_hint)
 
         logger.info(
-            f"[Vision Pipeline] Final response: status={diag['status']}, "
+            f"[Vision Pipeline] Final response: req_id='{req_id}', img_id='{img_id}', status={diag['status']}, "
             f"crop={diag.get('crop', {}).get('name')}, "
             f"disease={diag.get('disease', {}).get('name')}, "
             f"pests={[p['name'] for p in diag.get('pests', [])]}, "
@@ -929,6 +1008,8 @@ class AssistantVisionEngine:
         )
 
         return {
+            "request_id": req_id,
+            "image_id": img_id,
             "status": diag["status"],
             "crop": diag.get("crop", {"name": "Unable to identify crop", "confidence": 0.0}),
             "crop_confidence": diag.get("crop_confidence", 0.0),
@@ -976,15 +1057,20 @@ class AssistantVisionEngine:
     def analyze_multiple_images(
         self,
         images_data: List[Tuple[bytes, str]],
-        crop_hint: Optional[str] = None
+        crop_hint: Optional[str] = None,
+        request_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Production-grade Multimodal Multi-Image Diagnostic Engine.
         Executes:
         Image Quality Check -> Crop Identification -> Disease Detection -> Pest Detection -> Symptom Extraction -> Multi-Image Evidence Fusion -> Knowledge/RAG Verification -> Final Report.
         """
+        req_id = request_id or str(uuid.uuid4())
+
         if not images_data:
-            return self.analyze_image_bytes(b"", filename="empty.jpg", crop_hint=crop_hint)
+            empty_res = self.analyze_image_bytes(b"", filename="empty.jpg", crop_hint=crop_hint, request_id=req_id)
+            empty_res["request_id"] = req_id
+            return empty_res
 
         # Cap at 3 images as specified
         images_data = images_data[:3]
@@ -997,6 +1083,7 @@ class AssistantVisionEngine:
 
         for idx, (img_bytes, fname) in enumerate(images_data):
             img_index = idx + 1
+            img_id = f"{req_id}_img_{img_index}"
             nparr = np.frombuffer(img_bytes, np.uint8) if len(img_bytes) > 0 else np.array([], dtype=np.uint8)
             img_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR) if len(nparr) > 0 else None
             
@@ -1016,11 +1103,13 @@ class AssistantVisionEngine:
                     exposure = "Overexposed"
 
             # Execute full single-image pipeline
-            single_res = self.analyze_image_bytes(img_bytes, filename=fname, crop_hint=crop_hint)
+            single_res = self.analyze_image_bytes(img_bytes, filename=fname, crop_hint=crop_hint, request_id=req_id, image_id=img_id)
             raw_results.append(single_res)
             
             per_image_results.append({
                 "image_index": img_index,
+                "image_id": img_id,
+                "request_id": req_id,
                 "filename": fname,
                 "status": single_res.get("status", "UNKNOWN"),
                 "crop": dict(single_res.get("crop", {})),
@@ -1062,6 +1151,7 @@ class AssistantVisionEngine:
         # Case A: No valid images at all (all blurry/non-crop)
         if not valid_indices:
             first_raw = dict(raw_results[0])
+            first_raw["request_id"] = req_id
             first_raw["status"] = "INSUFFICIENT_VISUAL_EVIDENCE"
             first_raw["images_count"] = total_images
             first_raw["per_image_results"] = per_image_results
@@ -1130,6 +1220,7 @@ class AssistantVisionEngine:
 
             primary_res = raw_results[valid_indices[0]]
             return {
+                "request_id": req_id,
                 "status": "CONFIRMED_DIAGNOSIS",
                 "images_count": total_images,
                 "multi_crop": True,
@@ -1203,6 +1294,7 @@ class AssistantVisionEngine:
             fusion_summary += " (Notice: Duplicate or near-identical image detected among submissions)."
 
         return {
+            "request_id": req_id,
             "status": "CONFIRMED_DIAGNOSIS",
             "images_count": total_images,
             "multi_crop": False,
@@ -1250,3 +1342,4 @@ def get_assistant_vision_engine() -> AssistantVisionEngine:
     if _vision_engine_instance is None:
         _vision_engine_instance = AssistantVisionEngine()
     return _vision_engine_instance
+

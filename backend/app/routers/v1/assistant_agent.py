@@ -10,9 +10,9 @@ Isolated API endpoints serving:
 - GET  /api/assistant/health: Health check
 """
 
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Response
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 import uuid
 import logging
 
@@ -104,10 +104,12 @@ async def get_models_capability():
 
 @router.post("/analyze-image", response_model=ImageAnalysisResponse)
 async def analyze_assistant_image(
+    response: Response,
     file: Optional[UploadFile] = File(None),
     files: Optional[List[UploadFile]] = File(None),
     language: Optional[str] = Form("en"),
     crop_hint: Optional[str] = Form(None),
+    request_id: Optional[str] = Form(None),
     additional_file_1: Optional[UploadFile] = File(None),
     additional_file_2: Optional[UploadFile] = File(None)
 ):
@@ -116,6 +118,11 @@ async def analyze_assistant_image(
     Analysis Flow:
     Image Quality Check → Crop Identification → Disease Detection → Pest Detection → Symptom Extraction → Multi-Image Evidence Fusion → Knowledge/RAG Verification → Final Report.
     """
+    # Prevent aggressive caching across requests
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
     vision = get_assistant_vision_engine()
     rag = get_agricultural_rag()
     agent = get_agriculture_ai_agent()
@@ -149,13 +156,14 @@ async def analyze_assistant_image(
     if not image_tuples:
         raise HTTPException(status_code=400, detail="Uploaded images are empty or unreadable.")
 
+    req_id = request_id or str(uuid.uuid4())
     logger.info(
-        f"[Assistant Router] Received {len(image_tuples)} image(s) for multimodal analysis: "
+        f"[Assistant Router] Received {len(image_tuples)} image(s) for multimodal analysis (req_id={req_id}): "
         f"{[name for _, name in image_tuples]}, crop_hint='{crop_hint}', language='{language}'"
     )
 
     # Execute Multimodal Multi-Image Pipeline
-    diag = vision.analyze_multiple_images(image_tuples, crop_hint=crop_hint)
+    diag = vision.analyze_multiple_images(image_tuples, crop_hint=crop_hint, request_id=req_id)
 
     # Management & RAG Retrieval
     treatment = diag.get("treatment", [])
@@ -210,6 +218,7 @@ async def analyze_assistant_image(
         )
 
     return ImageAnalysisResponse(
+        request_id=diag.get("request_id") or req_id,
         status=diag["status"],
         crop=diag.get("crop", {"name": "Unknown", "confidence": 0.0}),
         crop_confidence=diag.get("crop_confidence", 0.0),
