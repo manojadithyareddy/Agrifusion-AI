@@ -75,6 +75,47 @@ const LANGUAGES: LanguageOption[] = [
   { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', flag: '🚜' },
 ];
 
+export const TARGET_CROP_OPTIONS = [
+  { value: 'all', label: '-- Auto-Detect All Crops --', emoji: '🌱' },
+  { value: 'Rice', label: 'Rice', emoji: '🌾' },
+  { value: 'Wheat', label: 'Wheat', emoji: '🌾' },
+  { value: 'Maize', label: 'Maize', emoji: '🌽' },
+  { value: 'Cotton', label: 'Cotton', emoji: '☁️' },
+  { value: 'Sugarcane', label: 'Sugarcane', emoji: '🎋' },
+  { value: 'Soybean', label: 'Soybean', emoji: '🌱' },
+  { value: 'Chickpea', label: 'Chickpea', emoji: '🫘' },
+  { value: 'Pigeonpeas', label: 'Pigeonpeas', emoji: '🫘' },
+  { value: 'Blackgram', label: 'Blackgram', emoji: '🫘' },
+  { value: 'Mungbean', label: 'Mungbean', emoji: '🫘' },
+  { value: 'Lentil', label: 'Lentil', emoji: '🫘' },
+  { value: 'Kidneybeans', label: 'Kidneybeans', emoji: '🫘' },
+  { value: 'Mothbeans', label: 'Mothbeans', emoji: '🫘' },
+  { value: 'Groundnut', label: 'Groundnut', emoji: '🥜' },
+  { value: 'Mustard', label: 'Mustard', emoji: '🌼' },
+  { value: 'Tomato', label: 'Tomato', emoji: '🍅' },
+  { value: 'Potato', label: 'Potato', emoji: '🥔' },
+  { value: 'Onion', label: 'Onion', emoji: '🧅' },
+  { value: 'Banana', label: 'Banana', emoji: '🍌' },
+  { value: 'Mango', label: 'Mango', emoji: '🥭' },
+  { value: 'Papaya', label: 'Papaya', emoji: '🍈' },
+  { value: 'Apple', label: 'Apple', emoji: '🍎' },
+  { value: 'Grapes', label: 'Grapes', emoji: '🍇' },
+  { value: 'Pomegranate', label: 'Pomegranate', emoji: '🫐' },
+  { value: 'Watermelon', label: 'Watermelon', emoji: '🍉' },
+  { value: 'Muskmelon', label: 'Muskmelon', emoji: '🍈' },
+  { value: 'Orange', label: 'Orange', emoji: '🍊' },
+  { value: 'Coconut', label: 'Coconut', emoji: '🥥' },
+  { value: 'Jute', label: 'Jute', emoji: '🌿' },
+  { value: 'Coffee', label: 'Coffee', emoji: '☕' },
+  { value: 'Chilli', label: 'Chilli', emoji: '🌶️' },
+  { value: 'Turmeric', label: 'Turmeric', emoji: '🫚' },
+  { value: 'Sunflower', label: 'Sunflower', emoji: '🌻' },
+  { value: 'Sorghum', label: 'Sorghum', emoji: '🌾' },
+  { value: 'Pearl Millet', label: 'Pearl Millet', emoji: '🌾' },
+  { value: 'Barley', label: 'Barley', emoji: '🌾' },
+  { value: 'Finger Millet', label: 'Finger Millet', emoji: '🌾' },
+];
+
 let globalMsgCounter = 0;
 function createMsgId(prefix: string) {
   globalMsgCounter += 1;
@@ -442,6 +483,11 @@ export default function Assistant() {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const currentLang = LANGUAGES.find((l) => l.code === selectedLanguage) || LANGUAGES[0];
   const isHi = selectedLanguage === 'hi';
+
+  // Target Crop Selection (All 37 Crops or Auto-Detect)
+  const [assistantTargetCrop, setAssistantTargetCrop] = useState<string>('all');
+  const [showCropMenu, setShowCropMenu] = useState(false);
+  const selectedTargetCropObj = TARGET_CROP_OPTIONS.find((c) => c.value === assistantTargetCrop) || TARGET_CROP_OPTIONS[0];
 
   // Active Conversation ID & Messages initialized from ChatStorage Engine
   const [activeConvId, setActiveConvId] = useState<string>(() => {
@@ -1231,6 +1277,10 @@ export default function Assistant() {
       // Real Stage 2: Crop Species Identification
       updateProgressState(45, '🌾 Identifying Crop Species for Submitted Image(s)...');
 
+      const effectiveCropHint = (assistantTargetCrop && assistantTargetCrop !== 'all')
+        ? assistantTargetCrop
+        : (userQuestion || undefined);
+
       // 1. If Document: Parse with Soil Health & Agronomic Document Parser
       if (primaryMedia.type === 'document') {
         updateProgressState(70, '📄 Optical Character Recognition & Soil Index Parsing...');
@@ -1251,7 +1301,7 @@ export default function Assistant() {
           setTimeout(r, 1000);
         });
 
-        diagnosisResult = await analyzeVideoFrames(videoEl, primaryMedia.file.name, userQuestion || undefined);
+        diagnosisResult = await analyzeVideoFrames(videoEl, primaryMedia.file.name, effectiveCropHint);
         updateProgressState(90, '📚 Synthesizing Pathology & Treatment Recommendations...');
       }
       // 3. If Image: Process with Server-Side FastAPI Vision Engine, with client-side fallback
@@ -1270,7 +1320,7 @@ export default function Assistant() {
             primaryMedia.file,
             additionalImageFiles,
             {
-              crop_hint: userQuestion || undefined,
+              crop_hint: effectiveCropHint,
               language: selectedLanguage,
             }
           );
@@ -1357,7 +1407,7 @@ export default function Assistant() {
           diagnosisResult = await analyzeImageWithLocalVisionEngine(
             imgEl,
             primaryMedia.file.name,
-            userQuestion || undefined
+            effectiveCropHint
           );
         }
       }
@@ -1674,10 +1724,96 @@ export default function Assistant() {
             <span>37 Crops Registry</span>
           </button>
 
+          {/* Target Crop Selector Dropdown (Supports All 37 Crops) */}
+          <div style={{ position: 'relative' }}>
+            <button
+              id="assistant-target-crop-select-btn"
+              onClick={() => {
+                setShowCropMenu((prev) => !prev);
+                setShowLangMenu(false);
+              }}
+              title="Filter or force Target Crop detection across all 37 crops"
+              style={{
+                background: assistantTargetCrop !== 'all' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                border: assistantTargetCrop !== 'all' ? '1px solid rgba(34, 197, 94, 0.45)' : '1px solid rgba(255, 255, 255, 0.15)',
+                color: assistantTargetCrop !== 'all' ? '#86efac' : '#fff',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <span>{selectedTargetCropObj.emoji}</span>
+              <span style={{ maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {selectedTargetCropObj.label}
+              </span>
+              <span style={{ fontSize: '0.65rem' }}>▼</span>
+            </button>
+
+            {showCropMenu && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '6px',
+                  background: '#1e293b',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '10px',
+                  padding: '6px',
+                  minWidth: '220px',
+                  maxHeight: '340px',
+                  overflowY: 'auto',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                  zIndex: 55,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px',
+                }}
+              >
+                <div style={{ padding: '4px 8px', fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
+                  Target Crop
+                </div>
+                {TARGET_CROP_OPTIONS.map((cropOpt) => (
+                  <button
+                    key={cropOpt.value}
+                    onClick={() => {
+                      setAssistantTargetCrop(cropOpt.value);
+                      setShowCropMenu(false);
+                    }}
+                    style={{
+                      background: assistantTargetCrop === cropOpt.value ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                      border: 'none',
+                      color: assistantTargetCrop === cropOpt.value ? '#86efac' : '#e2e8f0',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <span>{cropOpt.emoji}</span>
+                    <span>{cropOpt.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Language Selector Dropdown */}
           <div style={{ position: 'relative' }}>
             <button
-              onClick={() => setShowLangMenu((prev) => !prev)}
+              onClick={() => {
+                setShowLangMenu((prev) => !prev);
+                setShowCropMenu(false);
+              }}
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',

@@ -91,7 +91,7 @@ class LocalAgronomicRuleAgent(LLMProvider):
 
             if status == "LOW_CONFIDENCE":
                 crop_name = vision_result.get("crop", {}).get("name", "Crop")
-                conf = max(96, int(vision_result.get("disease", {}).get("confidence", 0.96) * 100))
+                conf = int(vision_result.get("disease", {}).get("confidence", 0.65) * 100)
                 if is_te:
                     return f"🌱 **మోడల్ సూచన ({conf}%):**\n\nఈ {crop_name} ఆకుపై కొన్ని లక్షణాలు కనిపిస్తున్నాయి. మరింత కచ్చితమైన నిర్ధారణ కోసం తగినంత వెలుతురులో ఆకు దగ్గరగా మరో స్పష్టమైన ఫోటో తీయండి."
                 if is_hi:
@@ -101,7 +101,7 @@ class LocalAgronomicRuleAgent(LLMProvider):
             # Confirmed diagnosis
             crop_name = vision_result["crop"]["name"]
             disease_name = vision_result["disease"]["name"]
-            conf_pct = max(96, int(vision_result["disease"]["confidence"] * 100))
+            conf_pct = int(vision_result["disease"]["confidence"] * 100)
             conf_level = vision_result["disease"].get("confidence_level", "HIGH")
             severity = vision_result["disease"]["severity"]
             pest_status = vision_result["pest_status"]

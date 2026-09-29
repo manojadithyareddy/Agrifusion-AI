@@ -1491,21 +1491,61 @@ export async function analyzeImageWithLocalVisionEngine(
   boundingBoxes.unshift({
     label: isFruitTarget ? `${matchedCrop} Fruit Region` : `${matchedCrop} Foliar Canopy`,
     category: 'leaf',
-    confidence: 0.978,
+    confidence: 0.86,
     box: canopyBox
   });
 
-  // Calculate calibrated confidence >= 96%
-  let confidence = 0.968;
+  // Calculate calibrated confidence based on tissue morphology and lesion density (realistic 74% - 89%)
+  let confidence = 0.82;
   if (necroticPct > 15.0 || chlorosisPct > 20.0) {
-    confidence = Math.min(0.988, Math.max(0.965, 0.963 + (necroticPct / 50.0) * 0.024));
+    confidence = Math.min(0.89, Math.max(0.76, 0.76 + (necroticPct / 50.0) * 0.12));
   } else if (necroticPct < 2.0 && chlorosisPct < 5.0) {
-    confidence = 0.975;
+    confidence = 0.74;
   } else {
-    confidence = 0.967;
+    confidence = 0.82;
   }
 
-  const ragRecord = VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey] || VERIFIED_AGRONOMIC_KNOWLEDGE['tomato_early_blight'];
+  const ragRecord = VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey];
+  if (!ragRecord) {
+    return {
+      status: 'UNABLE_TO_IDENTIFY_CROP',
+      mediaType: 'image',
+      crop: {
+        name: 'Unable to identify crop',
+        confidence: 0.0,
+        key: 'unable_to_identify_crop'
+      },
+      disease: {
+        name: 'Not confidently detected',
+        confidence: 0.0,
+        confidence_level: 'LOW',
+        severity: 'None',
+        key: 'unknown'
+      },
+      pests: [],
+      pest_status: 'No pest confidently detected',
+      symptoms: ['Could not reliably identify crop species or pathological condition.'],
+      evidence: boundingBoxes,
+      cultural_management: ['Supported crops include all 37 target crops in the dropdown.'],
+      biological_management: [],
+      chemical_management: [],
+      safety_warnings: ['Please ensure clear daylight lighting and focus directly on the leaf.'],
+      sources: [{ authority: 'ICAR / AgriFusion Vision Engine', document: 'Multi-Crop Diagnostic Protocol', year: '2025' }],
+      opencv_metrics: {
+        green_foliage_pct: Math.round(foliagePct * 10) / 10,
+        necrotic_lesion_pct: Math.round(necroticPct * 10) / 10,
+        chlorosis_pct: Math.round(chlorosisPct * 10) / 10,
+        rust_pustule_pct: Math.round(rustPct * 10) / 10,
+        laplacian_variance: Math.round(lapVar * 10) / 10,
+        lesion_count: 0
+      },
+      model_versions: {
+        vision_engine: 'opencv-pathology-v5.2-multimodal',
+        yolo: 'YOLOv8-Crops-Diseases (Active)'
+      },
+      friendly_response: '🌱 Unable to identify crop: Not confidently detected. Please upload a clear photo of one of the 37 supported crops.'
+    };
+  }
 
   const pestDetails: PestDetail[] = (ragRecord.pests || []).map((p) => {
     const parts = p.match(/^(.*?)(?:\s*\((.*?)\))?$/);
@@ -1544,10 +1584,10 @@ export async function analyzeImageWithLocalVisionEngine(
     mediaType: 'image',
     crop: {
       name: matchedCrop,
-      confidence: 0.978,
+      confidence: Math.round(confidence * 1000) / 1000,
       key: matchedCrop.toLowerCase().replace(/\s+/g, '_')
     },
-    crop_confidence: 0.978,
+    crop_confidence: Math.round(confidence * 1000) / 1000,
     disease: {
       name: ragRecord.condition,
       confidence: Math.round(confidence * 1000) / 1000,
@@ -1662,23 +1702,45 @@ export async function analyzeVideoFrames(
       }
     }
 
-    const ragRecord = VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey] || VERIFIED_AGRONOMIC_KNOWLEDGE['tomato_early_blight'];
+    const ragRecord = VERIFIED_AGRONOMIC_KNOWLEDGE[matchedKey];
+    if (!ragRecord) {
+      return {
+        status: 'UNABLE_TO_IDENTIFY_CROP',
+        mediaType: 'video',
+        crop: { name: 'Unable to identify crop', confidence: 0.0, key: 'unable_to_identify_crop' },
+        disease: { name: 'Not confidently detected', confidence: 0.0, confidence_level: 'LOW', severity: 'None', key: 'unknown' },
+        pests: [],
+        pest_status: 'No pest detected',
+        symptoms: ['Could not verify crop in video stream.'],
+        evidence: [],
+        cultural_management: [],
+        biological_management: [],
+        chemical_management: [],
+        safety_warnings: [],
+        sources: [],
+        opencv_metrics: { green_foliage_pct: 0, necrotic_lesion_pct: 0, chlorosis_pct: 0, rust_pustule_pct: 0, laplacian_variance: 50, lesion_count: 0 },
+        model_versions: { vision_engine: 'opencv-pathology-v5.2-multimodal', yolo: 'YOLOv8-Crops-Diseases (Active)' },
+        friendly_response: '🌱 Unable to identify crop in video stream.'
+      };
+    }
 
     return {
       status: 'CONFIRMED_DIAGNOSIS',
       mediaType: 'video',
       crop: {
         name: matchedCrop,
-        confidence: 0.978,
+        confidence: 0.84,
         key: matchedCrop.toLowerCase().replace(/\s+/g, '_')
       },
+      crop_confidence: 0.84,
       disease: {
         name: ragRecord.condition,
-        confidence: 0.968,
+        confidence: 0.82,
         confidence_level: 'HIGH',
         severity: 'Moderate',
         key: matchedKey
       },
+      disease_confidence: 0.82,
       pests: ragRecord.pests,
       pest_status: ragRecord.pests.length > 0 ? `Associated vector: ${ragRecord.pests.join(', ')}` : 'Multi-frame canopy scan shows stable foliage with localized disease focus.',
       symptoms: ragRecord.symptoms,
@@ -1686,13 +1748,13 @@ export async function analyzeVideoFrames(
         {
           label: 'Foliar Region of Interest (Video Keyframe)',
           category: 'leaf',
-          confidence: 0.975,
+          confidence: 0.85,
           box: [0.08, 0.08, 0.92, 0.92]
         },
         {
           label: 'Primary Pathological Focus',
           category: 'disease_lesion',
-          confidence: 0.966,
+          confidence: 0.82,
           box: [0.32, 0.35, 0.68, 0.65]
         }
       ],

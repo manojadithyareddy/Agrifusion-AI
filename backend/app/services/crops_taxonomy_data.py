@@ -3101,6 +3101,20 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
     }
 }
 
+# Alias references to ensure both space, underscore, and singular keys resolve identically
+if "pearl millet" in CROPS_TAXONOMY_37:
+    CROPS_TAXONOMY_37["pearl_millet"] = CROPS_TAXONOMY_37["pearl millet"]
+    CROPS_TAXONOMY_37["pearlmillet"] = CROPS_TAXONOMY_37["pearl millet"]
+if "finger millet" in CROPS_TAXONOMY_37:
+    CROPS_TAXONOMY_37["finger_millet"] = CROPS_TAXONOMY_37["finger millet"]
+    CROPS_TAXONOMY_37["fingermillet"] = CROPS_TAXONOMY_37["finger millet"]
+if "pigeonpeas" in CROPS_TAXONOMY_37:
+    CROPS_TAXONOMY_37["pigeonpea"] = CROPS_TAXONOMY_37["pigeonpeas"]
+if "kidneybeans" in CROPS_TAXONOMY_37:
+    CROPS_TAXONOMY_37["kidneybean"] = CROPS_TAXONOMY_37["kidneybeans"]
+if "mothbeans" in CROPS_TAXONOMY_37:
+    CROPS_TAXONOMY_37["mothbean"] = CROPS_TAXONOMY_37["mothbeans"]
+
 
 def get_supported_crops_list() -> list:
     """Returns sorted list of all 37 supported crops."""

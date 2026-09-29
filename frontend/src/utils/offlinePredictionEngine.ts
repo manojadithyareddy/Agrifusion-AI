@@ -46,31 +46,45 @@ export function getOfflineCropRecommendation(
 
     // 3. Authentic Regional & District Agro-Ecological bonus
     if (distLower.includes('west godavari') || distLower.includes('east godavari')) {
-      if (['Rice', 'Coconut', 'Banana', 'Jute'].includes(cropName)) score += 0.16;
-      if (['Wheat', 'Cotton'].includes(cropName)) score -= 0.12;
+      if (cropName === 'Rice') score += 0.22;
+      else if (cropName === 'Coconut') score += 0.18;
+      else if (cropName === 'Banana') score += 0.15;
+      else if (['Wheat', 'Cotton', 'Apple'].includes(cropName)) score -= 0.20;
     } else if (distLower.includes('guntur')) {
-      if (['Cotton', 'Chilli', 'Jute'].includes(cropName)) score += 0.18;
+      if (cropName === 'Cotton') score += 0.22;
+      else if (cropName === 'Rice') score += 0.18;
+      else if (cropName === 'Chilli') score += 0.15;
+      else if (['Wheat', 'Apple'].includes(cropName)) score -= 0.20;
+    } else if (distLower.includes('warangal')) {
+      if (cropName === 'Maize') score += 0.22;
+      else if (cropName === 'Cotton') score += 0.19;
+      else if (cropName === 'Chilli') score += 0.15;
+      else if (['Wheat', 'Apple'].includes(cropName)) score -= 0.20;
+    } else if (distLower.includes('belgaum') || distLower.includes('belagavi')) {
+      if (cropName === 'Maize') score += 0.22;
+      else if (cropName === 'Soybean') score += 0.18;
+      else if (cropName === 'Sugarcane') score += 0.15;
+      else if (['Jute', 'Apple'].includes(cropName)) score -= 0.20;
+    } else if (stateLower.includes('telangana')) {
+      if (['Cotton', 'Maize', 'Chilli', 'Rice'].includes(cropName)) score += 0.14;
       if (['Wheat', 'Apple'].includes(cropName)) score -= 0.15;
-    } else if (distLower.includes('warangal') || stateLower.includes('telangana')) {
-      if (['Cotton', 'Maize', 'Pigeon Pea'].includes(cropName)) score += 0.16;
-      if (['Wheat', 'Apple'].includes(cropName)) score -= 0.15;
-    } else if (distLower.includes('belgaum') || distLower.includes('belagavi') || stateLower.includes('karnataka')) {
-      if (['Cotton', 'Maize', 'Sugarcane'].includes(cropName)) score += 0.14;
+    } else if (stateLower.includes('karnataka')) {
+      if (['Maize', 'Cotton', 'Sugarcane', 'Soybean'].includes(cropName)) score += 0.14;
       if (['Jute', 'Apple'].includes(cropName)) score -= 0.15;
     }
 
-    const clampedScore = Math.min(0.97, Math.max(0.55, Number(score.toFixed(2))));
-    const confidence = Math.min(0.96, Number((clampedScore - 0.02).toFixed(2)));
+    const clampedScore = Math.min(0.92, Math.max(0.55, Number(score.toFixed(2))));
+    const confidence = Math.min(0.90, Number((clampedScore - 0.03).toFixed(2)));
     const suitPct = Math.round(clampedScore * 100);
 
     const benchmark = getCropFinancialBenchmark(cropName);
     const risk = getCropRiskProfile(cropName);
 
-    const yieldPotPct = Number(Math.min(97.5, Math.max(65.0, 75.0 + (clampedScore * 22.0) - (idx * 0.5))).toFixed(1));
+    const yieldPotPct = Number(Math.min(94.5, Math.max(65.0, 72.0 + (clampedScore * 20.0) - (idx * 0.3))).toFixed(1));
     const climRiskPct = risk.risk_rating === 'High' ? 22.0 : risk.risk_rating === 'Moderate' ? 12.0 : 6.0;
     const climSafetyPct = Number((100.0 - climRiskPct).toFixed(1));
-    const irrigFitPct = Number(Math.min(97.0, Math.max(68.0, 78.0 + (clampedScore * 19.0))).toFixed(1));
-    const mktProfitPct = Number(Math.min(96.0, Math.max(70.0, 78.0 + (clampedScore * 18.0))).toFixed(1));
+    const irrigFitPct = Number(Math.min(94.0, Math.max(68.0, 75.0 + (clampedScore * 18.0))).toFixed(1));
+    const mktProfitPct = Number(Math.min(93.0, Math.max(70.0, 74.0 + (clampedScore * 18.0))).toFixed(1));
 
     return {
       crop: cropName,
@@ -105,7 +119,7 @@ export function getOfflineCropRecommendation(
   );
 
   let targetAssessment = null;
-  let recommendations = scored.slice(0, 5);
+  let recommendations = scored.slice(0, 3);
 
   if (isSpecificTarget) {
     const cleanCrop = targetCrop!.trim();

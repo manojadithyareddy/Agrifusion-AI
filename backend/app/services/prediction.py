@@ -193,8 +193,8 @@ DISTRICT_AGRO_ZONES: Dict[str, Dict[str, Any]] = {
     "udupi": {"zone": "Coastal Heavy Rainfall", "rainfall_mult": 2.2, "humidity_delta": 15.0, "temp_delta": 1.0, "n_target": 65.0, "p_target": 30.0, "k_target": 35.0, "ph_target": 5.8},
     "dakshina kannada": {"zone": "Coastal Heavy Rainfall", "rainfall_mult": 2.2, "humidity_delta": 15.0, "temp_delta": 1.0, "n_target": 65.0, "p_target": 30.0, "k_target": 35.0, "ph_target": 5.8},
     "uttara kannada": {"zone": "Coastal / Western Ghats", "rainfall_mult": 2.1, "humidity_delta": 14.0, "temp_delta": 0.5, "n_target": 65.0, "p_target": 32.0, "k_target": 35.0, "ph_target": 5.9},
-    "belgaum": {"zone": "Northern Transition Zone", "rainfall_mult": 0.9, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 25.0, "ph_target": 6.8},
-    "belagavi": {"zone": "Northern Transition Zone", "rainfall_mult": 0.9, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 25.0, "ph_target": 6.8},
+    "belgaum": {"zone": "Northern Transition Zone", "rainfall_mult": 0.9, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 25.0, "ph_target": 6.8, "priority_crops": ["Sugarcane", "Maize", "Soybean", "Cotton", "Sorghum"], "unsuitable_crops": ["Jute", "Apple", "Coffee", "Barley"]},
+    "belagavi": {"zone": "Northern Transition Zone", "rainfall_mult": 0.9, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 25.0, "ph_target": 6.8, "priority_crops": ["Sugarcane", "Maize", "Soybean", "Cotton", "Sorghum"], "unsuitable_crops": ["Jute", "Apple", "Coffee", "Barley"]},
     "dharwad": {"zone": "Northern Transition Zone", "rainfall_mult": 0.88, "humidity_delta": -6.0, "temp_delta": 1.5, "n_target": 112.0, "p_target": 48.0, "k_target": 26.0, "ph_target": 6.9},
     "haveri": {"zone": "Northern Transition Zone", "rainfall_mult": 0.92, "humidity_delta": -4.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 46.0, "k_target": 26.0, "ph_target": 6.8},
     "gadag": {"zone": "Northern Dry Zone", "rainfall_mult": 0.75, "humidity_delta": -12.0, "temp_delta": 2.0, "n_target": 95.0, "p_target": 45.0, "k_target": 25.0, "ph_target": 7.2},
@@ -282,20 +282,20 @@ DISTRICT_AGRO_ZONES: Dict[str, Dict[str, Any]] = {
     "kota": {"zone": "South-Eastern Chambal Basin", "rainfall_mult": 1.5, "humidity_delta": 8.0, "temp_delta": 0.0, "n_target": 80.0, "p_target": 45.0, "k_target": 30.0, "ph_target": 7.0},
 
     # ── Telangana & Andhra Pradesh ──
-    "warangal": {"zone": "Central Telangana Black Soil", "rainfall_mult": 0.95, "humidity_delta": -4.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 22.0, "ph_target": 7.2},
-    "khammam": {"zone": "Godavari Basin Transition", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.0},
-    "karimnagar": {"zone": "North Telangana Agro Zone", "rainfall_mult": 0.92, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 112.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.2},
-    "nalgonda": {"zone": "South Telangana Dry Black/Red", "rainfall_mult": 0.85, "humidity_delta": -8.0, "temp_delta": 1.8, "n_target": 110.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.4},
-    "nizamabad": {"zone": "North Telangana Black Soil Irrigated", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 1.0, "n_target": 105.0, "p_target": 46.0, "k_target": 26.0, "ph_target": 7.0},
-    "mahabubnagar": {"zone": "South Telangana Semi-Arid", "rainfall_mult": 0.78, "humidity_delta": -12.0, "temp_delta": 2.0, "n_target": 100.0, "p_target": 45.0, "k_target": 22.0, "ph_target": 7.5},
-    "adilabad": {"zone": "North Telangana High Rainfall Cotton Belt", "rainfall_mult": 1.25, "humidity_delta": 5.0, "temp_delta": 1.5, "n_target": 118.0, "p_target": 52.0, "k_target": 24.0, "ph_target": 7.3},
-    "medak": {"zone": "Central Telangana Semi-Arid", "rainfall_mult": 0.90, "humidity_delta": -6.0, "temp_delta": 1.2, "n_target": 105.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.2},
-    "hyderabad": {"zone": "Central Deccan Urban/Perennial", "rainfall_mult": 0.90, "humidity_delta": -6.0, "temp_delta": 0.5, "n_target": 70.0, "p_target": 40.0, "k_target": 30.0, "ph_target": 7.0},
-    "rangareddy": {"zone": "Central Telangana Horticulture Zone", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 42.0, "k_target": 30.0, "ph_target": 7.1},
-    "krishna": {"zone": "Krishna Delta Heavy Irrigated", "rainfall_mult": 1.6, "humidity_delta": 12.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.6},
-    "guntur": {"zone": "Krishna Delta Commercial Zone", "rainfall_mult": 1.4, "humidity_delta": 8.0, "temp_delta": 1.0, "n_target": 112.0, "p_target": 52.0, "k_target": 24.0, "ph_target": 7.1},
-    "west godavari": {"zone": "Godavari Alluvial Delta", "rainfall_mult": 1.7, "humidity_delta": 14.0, "temp_delta": 0.5, "n_target": 76.0, "p_target": 42.0, "k_target": 40.0, "ph_target": 6.7},
-    "east godavari": {"zone": "Godavari Coastal Delta", "rainfall_mult": 1.75, "humidity_delta": 15.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.6},
+    "warangal": {"zone": "Central Telangana Black Soil", "rainfall_mult": 0.95, "humidity_delta": -4.0, "temp_delta": 1.5, "n_target": 115.0, "p_target": 50.0, "k_target": 22.0, "ph_target": 7.2, "priority_crops": ["Cotton", "Maize", "Chilli", "Pigeonpeas", "Rice"], "unsuitable_crops": ["Wheat", "Apple", "Barley", "Jute"]},
+    "khammam": {"zone": "Godavari Basin Transition", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 1.0, "n_target": 110.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.0, "priority_crops": ["Cotton", "Chilli", "Rice", "Maize", "Sugarcane"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "karimnagar": {"zone": "North Telangana Agro Zone", "rainfall_mult": 0.92, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 112.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.2, "priority_crops": ["Rice", "Cotton", "Maize", "Soybean"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "nalgonda": {"zone": "South Telangana Dry Black/Red", "rainfall_mult": 0.85, "humidity_delta": -8.0, "temp_delta": 1.8, "n_target": 110.0, "p_target": 48.0, "k_target": 22.0, "ph_target": 7.4, "priority_crops": ["Cotton", "Pigeonpeas", "Sweet Orange", "Rice"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "nizamabad": {"zone": "North Telangana Black Soil Irrigated", "rainfall_mult": 1.1, "humidity_delta": 2.0, "temp_delta": 1.0, "n_target": 105.0, "p_target": 46.0, "k_target": 26.0, "ph_target": 7.0, "priority_crops": ["Soybean", "Rice", "Sugarcane", "Maize", "Turmeric"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "mahabubnagar": {"zone": "South Telangana Semi-Arid", "rainfall_mult": 0.78, "humidity_delta": -12.0, "temp_delta": 2.0, "n_target": 100.0, "p_target": 45.0, "k_target": 22.0, "ph_target": 7.5, "priority_crops": ["Cotton", "Castor", "Pigeonpeas", "Groundnut", "Sorghum"], "unsuitable_crops": ["Wheat", "Apple", "Jute"]},
+    "adilabad": {"zone": "North Telangana High Rainfall Cotton Belt", "rainfall_mult": 1.25, "humidity_delta": 5.0, "temp_delta": 1.5, "n_target": 118.0, "p_target": 52.0, "k_target": 24.0, "ph_target": 7.3, "priority_crops": ["Cotton", "Soybean", "Pigeonpeas", "Sorghum"], "unsuitable_crops": ["Wheat", "Apple", "Barley"]},
+    "medak": {"zone": "Central Telangana Semi-Arid", "rainfall_mult": 0.90, "humidity_delta": -6.0, "temp_delta": 1.2, "n_target": 105.0, "p_target": 48.0, "k_target": 24.0, "ph_target": 7.2, "priority_crops": ["Maize", "Cotton", "Sugarcane", "Pigeonpeas"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "hyderabad": {"zone": "Central Deccan Urban/Perennial", "rainfall_mult": 0.90, "humidity_delta": -6.0, "temp_delta": 0.5, "n_target": 70.0, "p_target": 40.0, "k_target": 30.0, "ph_target": 7.0, "priority_crops": ["Tomato", "Vegetables", "Maize", "Grapes"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "rangareddy": {"zone": "Central Telangana Horticulture Zone", "rainfall_mult": 0.88, "humidity_delta": -8.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 42.0, "k_target": 30.0, "ph_target": 7.1, "priority_crops": ["Tomato", "Chilli", "Vegetables", "Maize", "Cotton"], "unsuitable_crops": ["Wheat", "Apple"]},
+    "krishna": {"zone": "Krishna Delta Heavy Irrigated", "rainfall_mult": 1.6, "humidity_delta": 12.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.6, "priority_crops": ["Rice", "Sugarcane", "Cotton", "Blackgram", "Mango"], "unsuitable_crops": ["Wheat", "Apple", "Jute", "Barley"]},
+    "guntur": {"zone": "Krishna Delta Commercial Zone", "rainfall_mult": 1.4, "humidity_delta": 8.0, "temp_delta": 1.0, "n_target": 112.0, "p_target": 52.0, "k_target": 24.0, "ph_target": 7.1, "priority_crops": ["Chilli", "Cotton", "Rice", "Maize", "Blackgram"], "unsuitable_crops": ["Wheat", "Apple", "Jute", "Coffee", "Barley"]},
+    "west godavari": {"zone": "Godavari Alluvial Delta", "rainfall_mult": 1.7, "humidity_delta": 14.0, "temp_delta": 0.5, "n_target": 76.0, "p_target": 42.0, "k_target": 40.0, "ph_target": 6.7, "priority_crops": ["Rice", "Coconut", "Banana", "Sugarcane", "Papaya"], "unsuitable_crops": ["Wheat", "Cotton", "Apple", "Jute", "Barley"]},
+    "east godavari": {"zone": "Godavari Coastal Delta", "rainfall_mult": 1.75, "humidity_delta": 15.0, "temp_delta": 0.5, "n_target": 75.0, "p_target": 40.0, "k_target": 38.0, "ph_target": 6.6, "priority_crops": ["Rice", "Coconut", "Banana", "Sugarcane", "Papaya"], "unsuitable_crops": ["Wheat", "Cotton", "Apple", "Jute", "Barley"]},
     "visakhapatnam": {"zone": "North Coastal Zone", "rainfall_mult": 1.35, "humidity_delta": 10.0, "temp_delta": 0.0, "n_target": 72.0, "p_target": 38.0, "k_target": 36.0, "ph_target": 6.5},
     "prakasam": {"zone": "Southern Coastal Dry Zone", "rainfall_mult": 0.85, "humidity_delta": -5.0, "temp_delta": 1.5, "n_target": 95.0, "p_target": 46.0, "k_target": 26.0, "ph_target": 7.3},
     "nellore": {"zone": "Pennar Delta & Coastal", "rainfall_mult": 1.3, "humidity_delta": 8.0, "temp_delta": 1.0, "n_target": 80.0, "p_target": 42.0, "k_target": 36.0, "ph_target": 6.9},
@@ -347,6 +347,14 @@ CROP_BASE_YIELDS: Dict[str, float] = {
     "Barley": 2800.0,
     "Finger Millet": 1650.0,
     "Sunflower": 1450.0,
+    "Kidneybeans": 1100.0,
+    "Mothbeans": 750.0,
+    "Grapes": 18000.0,
+    "Pomegranate": 12000.0,
+    "Orange": 16000.0,
+    "Pigeonpeas": 1200.0,
+    "Blackgram": 950.0,
+    "Mungbean": 920.0,
 }
 
 # 2024-2026 MSP and APMC Mandi Modal Price Benchmarks (INR / Quintal)
@@ -359,6 +367,7 @@ MANDI_PRICE_BENCHMARKS: Dict[str, Dict[str, Any]] = {
     "Soybean": {"modal": 5150.0, "msp": 4892.0, "trend": "Stable / Range-bound", "window": "October - December"},
     "Mustard": {"modal": 5850.0, "msp": 5650.0, "trend": "Bullish (Edible Oil Support)", "window": "February - April"},
     "Pigeon Pea": {"modal": 10500.0, "msp": 7550.0, "trend": "Bullish (High Dal Demand)", "window": "December - February"},
+    "Pigeonpeas": {"modal": 10500.0, "msp": 7550.0, "trend": "Bullish (High Dal Demand)", "window": "December - February"},
     "Groundnut": {"modal": 6750.0, "msp": 6377.0, "trend": "Bullish (Export Demand)", "window": "November - January"},
     "Sugarcane": {"modal": 345.0, "msp": 315.0, "trend": "Stable (FRP Regulated)", "window": "November - March"},
     "Potato": {"modal": 1750.0, "msp": 1200.0, "trend": "Stable (Cold Storage Supported)", "window": "January - March"},
@@ -377,8 +386,19 @@ MANDI_PRICE_BENCHMARKS: Dict[str, Dict[str, Any]] = {
     "Papaya": {"modal": 1950.0, "msp": 1200.0, "trend": "Stable / Healthy Demand", "window": "Year-round"},
     "Lentil": {"modal": 6650.0, "msp": 6425.0, "trend": "Bullish (Protein Pulse Support)", "window": "March - May"},
     "Black Gram": {"modal": 7450.0, "msp": 6950.0, "trend": "Bullish (Consistent Demand)", "window": "October - December"},
+    "Blackgram": {"modal": 7450.0, "msp": 6950.0, "trend": "Bullish (Consistent Demand)", "window": "October - December"},
     "Green Gram": {"modal": 8850.0, "msp": 8558.0, "trend": "Bullish (MSP Protected)", "window": "October - November"},
+    "Mungbean": {"modal": 8850.0, "msp": 8558.0, "trend": "Bullish (MSP Protected)", "window": "October - November"},
     "Sunflower": {"modal": 6850.0, "msp": 6760.0, "trend": "Bullish (Domestic Oil Need)", "window": "April - June"},
+    "Kidneybeans": {"modal": 8200.0, "msp": 7500.0, "trend": "Bullish (Premium Pulse)", "window": "October - December"},
+    "Mothbeans": {"modal": 6200.0, "msp": 5800.0, "trend": "Stable (Arid Pulse)", "window": "October - November"},
+    "Grapes": {"modal": 4500.0, "msp": 3200.0, "trend": "Bullish (Export Demand)", "window": "January - April"},
+    "Pomegranate": {"modal": 8500.0, "msp": 6000.0, "trend": "Bullish (High Consumption)", "window": "Year-round"},
+    "Orange": {"modal": 3800.0, "msp": 2800.0, "trend": "Bullish (Citrus Season)", "window": "November - February"},
+    "Sorghum": {"modal": 3180.0, "msp": 3180.0, "trend": "Stable (Millets Year Support)", "window": "October - December"},
+    "Pearl Millet": {"modal": 2500.0, "msp": 2500.0, "trend": "Stable (Nutri-Cereal MSP)", "window": "October - December"},
+    "Barley": {"modal": 1950.0, "msp": 1850.0, "trend": "Stable / Brewing Demand", "window": "March - May"},
+    "Finger Millet": {"modal": 3846.0, "msp": 3846.0, "trend": "Bullish (Nutri-Cereal Drive)", "window": "December - February"},
 }
 
 # Standard Cultivation Cost Benchmarks (INR / Hectare) based on ICAR & CACP
@@ -413,10 +433,29 @@ CROP_DEFAULT_COSTS: Dict[str, float] = {
     "Pomegranate": 85000.0,
     "Orange": 60000.0,
     "Coconut": 40000.0,
+    "Chilli": 42000.0,
+    "Turmeric": 55000.0,
+    "Sunflower": 20000.0,
+    "Sorghum": 18000.0,
+    "Pearl Millet": 16000.0,
+    "Barley": 19000.0,
+    "Finger Millet": 17000.0,
+    "Kidneybeans": 24000.0,
+    "Mothbeans": 14000.0,
+    "Grapes": 90000.0,
 }
 
+# ── Master 37 Indian Agricultural Crops List ──
+ALL_37_CROPS = [
+    "Rice", "Wheat", "Maize", "Cotton", "Sugarcane", "Soybean", "Chickpea",
+    "Pigeonpeas", "Blackgram", "Mungbean", "Lentil", "Kidneybeans", "Mothbeans",
+    "Groundnut", "Mustard", "Tomato", "Potato", "Onion", "Banana", "Mango",
+    "Papaya", "Apple", "Grapes", "Pomegranate", "Watermelon", "Muskmelon",
+    "Orange", "Coconut", "Jute", "Coffee", "Chilli", "Turmeric", "Sunflower",
+    "Sorghum", "Pearl Millet", "Barley", "Finger Millet"
+]
 
-# ── Crop Agro-Climatic Criteria & Biological Requirements ──
+# ── Crop Agro-Climatic Criteria & Biological Requirements (All 37 Crops) ──
 CROP_AGRO_CRITERIA: Dict[str, Dict[str, Any]] = {
     "cotton": {
         "opt_temp": (21.0, 35.0), "opt_rain": (60.0, 140.0), "opt_n": (80.0, 130.0), "opt_ph": (6.2, 8.0),
@@ -525,6 +564,54 @@ CROP_AGRO_CRITERIA: Dict[str, Dict[str, Any]] = {
     "tomato": {
         "opt_temp": (18.0, 30.0), "opt_rain": (45.0, 95.0), "opt_n": (60.0, 110.0), "opt_ph": (6.0, 7.0),
         "water_need": "450 - 650 mm / season", "base_yield": 28000.0, "seasons": ["Kharif", "Rabi", "Zaid"]
+    },
+    "mungbean": {
+        "opt_temp": (24.0, 36.0), "opt_rain": (40.0, 90.0), "opt_n": (20.0, 50.0), "opt_ph": (6.2, 7.5),
+        "water_need": "350 - 550 mm / season", "base_yield": 920.0, "seasons": ["Kharif", "Zaid"]
+    },
+    "kidneybeans": {
+        "opt_temp": (15.0, 27.0), "opt_rain": (50.0, 100.0), "opt_n": (25.0, 60.0), "opt_ph": (6.0, 7.2),
+        "water_need": "400 - 600 mm / season", "base_yield": 1100.0, "seasons": ["Kharif", "Rabi"]
+    },
+    "mothbeans": {
+        "opt_temp": (24.0, 38.0), "opt_rain": (20.0, 60.0), "opt_n": (15.0, 40.0), "opt_ph": (6.5, 8.0),
+        "water_need": "200 - 400 mm / season", "base_yield": 750.0, "seasons": ["Kharif"]
+    },
+    "chilli": {
+        "opt_temp": (20.0, 35.0), "opt_rain": (50.0, 120.0), "opt_n": (80.0, 140.0), "opt_ph": (6.0, 7.5),
+        "water_need": "600 - 900 mm / season", "base_yield": 2200.0, "seasons": ["Kharif", "Rabi", "Annual"]
+    },
+    "turmeric": {
+        "opt_temp": (20.0, 35.0), "opt_rain": (100.0, 220.0), "opt_n": (60.0, 120.0), "opt_ph": (5.5, 7.5),
+        "water_need": "1,200 - 1,800 mm / season", "base_yield": 6500.0, "seasons": ["Kharif", "Annual"]
+    },
+    "sunflower": {
+        "opt_temp": (20.0, 32.0), "opt_rain": (40.0, 90.0), "opt_n": (40.0, 80.0), "opt_ph": (6.0, 7.5),
+        "water_need": "450 - 650 mm / season", "base_yield": 1450.0, "seasons": ["Kharif", "Rabi", "Zaid"]
+    },
+    "sorghum": {
+        "opt_temp": (22.0, 36.0), "opt_rain": (35.0, 85.0), "opt_n": (40.0, 90.0), "opt_ph": (6.0, 7.8),
+        "water_need": "400 - 600 mm / season", "base_yield": 1400.0, "seasons": ["Kharif", "Rabi"]
+    },
+    "pearlmillet": {
+        "opt_temp": (25.0, 38.0), "opt_rain": (25.0, 65.0), "opt_n": (30.0, 70.0), "opt_ph": (6.5, 8.2),
+        "water_need": "300 - 500 mm / season", "base_yield": 1350.0, "seasons": ["Kharif", "Zaid"]
+    },
+    "pearl millet": {
+        "opt_temp": (25.0, 38.0), "opt_rain": (25.0, 65.0), "opt_n": (30.0, 70.0), "opt_ph": (6.5, 8.2),
+        "water_need": "300 - 500 mm / season", "base_yield": 1350.0, "seasons": ["Kharif", "Zaid"]
+    },
+    "barley": {
+        "opt_temp": (12.0, 24.0), "opt_rain": (30.0, 70.0), "opt_n": (40.0, 80.0), "opt_ph": (6.5, 8.0),
+        "water_need": "350 - 500 mm / season", "base_yield": 2800.0, "seasons": ["Rabi"]
+    },
+    "fingermillet": {
+        "opt_temp": (20.0, 32.0), "opt_rain": (50.0, 100.0), "opt_n": (40.0, 80.0), "opt_ph": (5.5, 7.2),
+        "water_need": "450 - 700 mm / season", "base_yield": 1650.0, "seasons": ["Kharif"]
+    },
+    "finger millet": {
+        "opt_temp": (20.0, 32.0), "opt_rain": (50.0, 100.0), "opt_n": (40.0, 80.0), "opt_ph": (5.5, 7.2),
+        "water_need": "450 - 700 mm / season", "base_yield": 1650.0, "seasons": ["Kharif"]
     },
 }
 
@@ -966,12 +1053,26 @@ class PredictionService:
 
         crop_info = risk_db.get(crop_cap, default_profile)
 
-        # Calculate suitability score for target crop with >= 96% accuracy
-        suitability = 0.978
-        if crop_cap in ["Wheat"] and season == "Kharif":
-            suitability = 0.962
-        elif crop_cap in ["Cotton", "Rice"] and season == "Rabi" and state in ["Punjab", "Haryana"]:
-            suitability = 0.965
+        # Dynamically calculate authentic suitability score for target crop
+        crit = CROP_AGRO_CRITERIA.get(crop_cap.lower().replace(" ", "").replace("-", ""), CROP_AGRO_CRITERIA.get(crop_cap.lower(), {
+            "opt_temp": (20.0, 32.0), "opt_rain": (60.0, 140.0), "opt_n": (50.0, 100.0), "opt_ph": (6.0, 7.5),
+            "water_need": "600 - 900 mm / season", "base_yield": 2500.0, "seasons": [season]
+        }))
+        seasons = crit.get("seasons", [season])
+        season_mult = 1.0 if (season in seasons or "Annual" in seasons) else 0.35
+        t_mid = (crit["opt_temp"][0] + crit["opt_temp"][1]) / 2.0
+        t_span = max(5.0, (crit["opt_temp"][1] - crit["opt_temp"][0]) / 2.0)
+        t_diff = abs(temp - t_mid)
+        t_fit = max(0.40, 1.0 - (t_diff / (t_span * 2.5)))
+        r_mid = (crit["opt_rain"][0] + crit["opt_rain"][1]) / 2.0
+        r_span = max(25.0, (crit["opt_rain"][1] - crit["opt_rain"][0]) / 2.0)
+        r_diff = abs(rainfall - r_mid)
+        r_fit = max(0.40, 1.0 - (r_diff / (r_span * 2.8)))
+        env_fit = (t_fit * 0.50 + r_fit * 0.50)
+
+        risk_penalty = 0.30 if "High" in crop_info.get("risk_rating", "") else 0.15 if "Mod" in crop_info.get("risk_rating", "") else 0.05
+        suitability = round(min(0.95, max(0.45, (0.65 * env_fit + 0.35 * (1.0 - risk_penalty)) * season_mult)), 4)
+        conf = round(min(0.94, max(0.70, suitability - 0.02)), 4)
 
         return {
             "crop": crop_cap,
@@ -982,7 +1083,7 @@ class PredictionService:
             "soil_water_compatibility": crop_info["soil_water_fit"],
             "critical_vulnerable_stage": crop_info["critical_stage"],
             "preventive_actions": crop_info["preventive_actions"],
-            "confidence": 0.968,
+            "confidence": conf,
         }
 
     async def get_crop_recommendation(
@@ -1087,18 +1188,91 @@ class PredictionService:
             # When target crop is selected, return ONLY the target crop in recommendations
             formatted_recs = [target_rec]
         else:
-            # Auto-Recommend All Crops: dynamically evaluate model candidate crops with local agro-climatic criteria
+            # Auto-Recommend All Crops: dynamically evaluate all 37 crops for this exact location + season + soil
+            dist_lower = (params.get("district") or "").lower()
+            dist_data = DISTRICT_AGRO_ZONES.get(dist_lower, {})
+            priority_crops = dist_data.get("priority_crops", [])
+            unsuitable_crops = dist_data.get("unsuitable_crops", [])
+
+            # Extract LightGBM probabilities for all 22 classes if available
+            features = np.array([[params["nitrogen"], params["phosphorus"], params["potassium"], params["temperature"], params["humidity"], params["ph"], params["rainfall"]]])
+            lgb_probs: Dict[str, float] = {}
+            if hasattr(self.crop_engine, "lgb_booster") and self.crop_engine.lgb_booster and self.crop_engine.metadata:
+                classes = self.crop_engine.metadata.get("classes", [])
+                raw_lgb = self.crop_engine.lgb_booster.predict(features)[0]
+                for c, p in zip(classes, raw_lgb):
+                    lgb_probs[c.lower().replace(" ", "")] = float(p)
+
             candidate_metrics = []
-            for i, rec in enumerate(raw_recs):
+            for crop_item in ALL_37_CROPS:
+                crop_clean = crop_item.strip()
+                crop_key = crop_clean.lower().replace(" ", "").replace("-", "")
+                crit = CROP_AGRO_CRITERIA.get(crop_key, CROP_AGRO_CRITERIA.get(crop_clean.lower(), {
+                    "opt_temp": (20.0, 32.0), "opt_rain": (60.0, 140.0), "opt_n": (50.0, 100.0), "opt_ph": (6.0, 7.5),
+                    "water_need": "600 - 900 mm / season", "base_yield": 2500.0, "seasons": [season]
+                }))
+
+                # 1. Season match
+                seasons = crit.get("seasons", ["Kharif"])
+                if season in seasons or "Annual" in seasons:
+                    season_mult = 1.0
+                else:
+                    season_mult = 0.30  # Heavy penalty for out-of-season crop (e.g. Wheat in Kharif)
+
+                # 2. Temperature fit
+                t_mid = (crit["opt_temp"][0] + crit["opt_temp"][1]) / 2.0
+                t_span = max(5.0, (crit["opt_temp"][1] - crit["opt_temp"][0]) / 2.0)
+                t_diff = abs(params["temperature"] - t_mid)
+                t_fit = max(0.40, 1.0 - (t_diff / (t_span * 2.5)))
+
+                # 3. Rainfall fit
+                r_mid = (crit["opt_rain"][0] + crit["opt_rain"][1]) / 2.0
+                r_span = max(25.0, (crit["opt_rain"][1] - crit["opt_rain"][0]) / 2.0)
+                r_diff = abs(params["rainfall"] - r_mid)
+                r_fit = max(0.40, 1.0 - (r_diff / (r_span * 2.8)))
+
+                env_fit = (t_fit * 0.50 + r_fit * 0.50)
+
+                # 4. District priority / unsuitable
+                if crop_item in priority_crops:
+                    idx = priority_crops.index(crop_item)
+                    dist_score = 0.95 - (idx * 0.04)
+                elif crop_item in unsuitable_crops:
+                    dist_score = 0.20
+                else:
+                    dist_score = 0.60
+
+                # 5. Soil affinity
+                soil_boost = 0.0
+                s_lower = soilType.lower()
+                if "alluvial" in s_lower and crop_item in ["Rice", "Sugarcane", "Maize", "Chilli", "Banana", "Tomato", "Potato", "Wheat", "Coconut"]:
+                    soil_boost = 0.05
+                elif "black" in s_lower and crop_item in ["Cotton", "Soybean", "Sugarcane", "Pigeonpeas", "Sorghum", "Chickpea", "Chilli"]:
+                    soil_boost = 0.06
+                elif "red" in s_lower and crop_item in ["Groundnut", "Finger Millet", "Sorghum", "Pearl Millet", "Pigeonpeas", "Turmeric"]:
+                    soil_boost = 0.05
+
+                # 6. ML probability
+                ml_prob = lgb_probs.get(crop_key, 0.0)
+                ml_comp = min(1.0, ml_prob * 1.2 + 0.35) if ml_prob > 0.05 else 0.55
+
+                # 7. Composite suitability
+                base_score = (0.45 * dist_score) + (0.28 * env_fit) + (0.17 * ml_comp) + (0.10 * soil_boost)
+                final_score = base_score * season_mult
+                clamped_score = round(min(0.95, max(0.45, final_score)), 4)
+
                 crop_metric = self._calculate_crop_metrics(
-                    crop_name=rec["crop"],
-                    model_score=rec.get("suitability_score", 0.70),
+                    crop_name=crop_item,
+                    model_score=clamped_score,
                     params=params,
                     season=season,
                     soil_type=soilType,
-                    rank_index=i,
+                    rank_index=len(candidate_metrics),
                 )
+                crop_metric["suitability_score"] = clamped_score
+                crop_metric["suitability_pct"] = round(clamped_score * 100, 1)
                 candidate_metrics.append(crop_metric)
+
             # Sort strictly by recommendation score descending and return ONLY top 3 crops
             candidate_metrics.sort(key=lambda x: x["suitability_score"], reverse=True)
             formatted_recs = candidate_metrics[:3]
