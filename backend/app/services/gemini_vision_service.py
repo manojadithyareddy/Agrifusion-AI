@@ -26,12 +26,11 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Candidate Gemini multimodal vision models in priority order
+# Candidate Gemini multimodal vision models in priority order (fastest response first)
 CANDIDATE_MODELS = [
     "models/gemini-flash-lite-latest",
     "models/gemini-2.5-flash",
     "models/gemini-3.8-flash",
-    "models/gemini-flash-latest",
 ]
 
 # Suppress verbose httpx/httpcore request logging to keep API requests quiet and secure
@@ -166,7 +165,7 @@ class GeminiVisionService:
         }
 
         try:
-            with httpx.Client(timeout=10.0) as client:
+            with httpx.Client(timeout=6.0) as client:
                 for model_id in CANDIDATE_MODELS:
                     url = f"{GEMINI_API_BASE}/{model_id}:generateContent"
                     try:
@@ -218,7 +217,7 @@ class GeminiVisionService:
         }
 
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=6.0) as client:
                 for model_id in CANDIDATE_MODELS:
                     url = f"{GEMINI_API_BASE}/{model_id}:generateContent"
                     try:

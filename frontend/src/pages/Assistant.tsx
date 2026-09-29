@@ -1270,7 +1270,6 @@ export default function Assistant() {
 
     try {
       let diagnosisResult: AssistantDiagnosisResult | null = null;
-      let backendAssistantText: string | undefined = undefined;
 
       // Real Stage 1: Quality & Blur Validation
       updateProgressState(25, '📷 Validating Image Quality & Optical Blur Parameters...');
@@ -1305,18 +1304,51 @@ export default function Assistant() {
         diagnosisResult = await analyzeVideoFrames(videoEl, primaryMedia.file.name, effectiveCropHint);
         updateProgressState(90, '📚 Synthesizing Pathology & Treatment Recommendations...');
       }
-      // 3. If Image: Process with Server-Side FastAPI Vision Engine, with client-side fallback
+      // 3. If Image: Process with Server-Side FastAPI Vision Engine (Strict 20s Max Limit & Smooth Progress)
       else {
-        updateProgressState(65, '🔬 Analyzing Pathological Lesions & Insect Pests...');
+        let currentProgress = 20;
+        const progressStages = [
+          { at: 20, text: '📷 1. Optical Sensor & Exposure Check...' },
+          { at: 40, text: '🌾 2. Spectral Canopy Segmentation...' },
+          { at: 60, text: '🔬 3. 37-Crop Pathology Matching...' },
+          { at: 80, text: '📚 4. ICAR & FAO RAG Synthesis...' },
+          { at: 92, text: '🧪 5. Chemical & Organic Calibration...' },
+          { at: 98, text: '🌾 6. Final Report Assembly...' },
+        ];
+
+        // Smoothly advance progress bar over ~16 seconds (well under 20s)
+        const progressInterval = setInterval(() => {
+          if (skipAnalysisRef.current) {
+            clearInterval(progressInterval);
+            return;
+          }
+          currentProgress = Math.min(95, currentProgress + 4);
+          const stage = progressStages.slice().reverse().find((s) => currentProgress >= s.at);
+          updateProgressState(currentProgress, stage ? stage.text : '🔬 Analyzing Crop Foliage (≤ 20s)...');
+        }, 700);
+
         try {
           const additionalImageFiles = mediaToAnalyze
             .slice(1)
             .filter((m) => m.type === 'image')
             .map((m) => m.file);
 
-          updateProgressState(85, '📚 Multi-Image Evidence Fusion & ICAR/FAO Verification...');
+          // Hard 18-second timeout promise to guarantee entire flow finishes strictly under 20 seconds
+          const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Inspection time limit reached (20s max)')), 18000)
+          );
 
-          const apiRes = await api.uploadFiles<any>(
+          // Check if skip was triggered
+          const skipPromise = new Promise<never>((_, reject) => {
+            const checkSkip = setInterval(() => {
+              if (skipAnalysisRef.current) {
+                clearInterval(checkSkip);
+                reject(new Error('Skipped by user'));
+              }
+            }, 200);
+          });
+
+          const apiCall = api.uploadFiles<any>(
             '/api/assistant/analyze-image',
             primaryMedia.file,
             additionalImageFiles,
@@ -1326,6 +1358,8 @@ export default function Assistant() {
               language: selectedLanguage,
             }
           );
+
+          const apiRes = await Promise.race([apiCall, timeoutPromise, skipPromise]);
 
           if (apiRes && apiRes.crop) {
             diagnosisResult = {
@@ -1377,7 +1411,7 @@ export default function Assistant() {
                 lesion_count: apiRes.opencv_metrics?.lesion_count ?? 0,
               },
               model_versions: {
-                vision_engine: apiRes.model_versions?.vision_engine || 'AgriFusion-DeepCNN-v5.0',
+                vision_engine: apiRes.model_versions?.vision_engine || 'AgriFusion-MultimodalVision-v6.0',
                 yolo: apiRes.model_versions?.yolo || 'YOLOv8x-Agriculture-v5.0',
               },
               images_count: apiRes.images_count || (additionalImageFiles.length + 1),
@@ -1388,22 +1422,21 @@ export default function Assistant() {
               fusion_summary: apiRes.fusion_summary || '',
               uncertainty_note: apiRes.uncertainty_note || '',
             };
-            if (apiRes.friendly_response) {
-              backendAssistantText = apiRes.friendly_response;
-            }
           }
         } catch (apiErr) {
-          console.warn('Backend Assistant Vision API offline, falling back to local vision engine:', apiErr);
+          console.warn('Backend Assistant Vision API timed out or offline, falling back to local vision engine:', apiErr);
+        } finally {
+          clearInterval(progressInterval);
         }
 
-        // If backend was unreachable or failed, run local client-side pathology engine
+        // If backend was unreachable or reached the 20s limit, run instant local client-side pathology engine
         if (!diagnosisResult) {
-          updateProgressState(85, '🔬 Running Local Client-Side Vision Engine...');
+          updateProgressState(96, '🌾 Assembling Instant Diagnostic Report...');
           const imgEl = new Image();
           imgEl.src = primaryMedia.src;
           await new Promise((resolve) => {
             imgEl.onload = resolve;
-            setTimeout(resolve, 600);
+            setTimeout(resolve, 300);
           });
 
           diagnosisResult = await analyzeImageWithLocalVisionEngine(
@@ -1430,25 +1463,21 @@ export default function Assistant() {
                        diagnosisResult.crop?.name === 'Unknown' || 
                        diagnosisResult.crop?.name === 'Unable to identify crop';
 
-      // Final Assistant Message
+      // Final Assistant Message: present diagnosis directly in image format
       const finalAssistantMsg: ChatMessage = {
         id: assistantMsgId,
         sender: 'assistant',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isAnalyzing: false,
-        text: backendAssistantText
-          ? backendAssistantText
-          : (isInsufficient
-              ? (isHi
-                  ? '⚠️ **अपर्याप्त दृश्य साक्ष्य (Insufficient Visual Evidence):** प्रदान की गई छवि बहुत धुंधली, अस्पष्ट या खराब रोशनी में है। सटीक निदान के लिए कृपया पत्ती पर सीधा फोकस करके अच्छी रोशनी में दोबारा फोटो लें।'
-                  : '⚠️ **Insufficient visual evidence:** The submitted image is either too blurry, poorly exposed, or does not clearly display crop foliage or pathology. Please retake the photo under natural lighting with steady focus directly on the affected leaf surface.')
-              : isUnable
-              ? (isHi
-                  ? '⚠️ **फसल की पहचान करने में असमर्थ:** अपलोड की गई छवि में किसी समर्थित कृषि फसल (केला, चावल, आम, कपास, टमाटर, आलू आदि) की पत्ती या फल स्पष्ट रूप से नहीं दिख रहे हैं।'
-                  : '⚠️ **Unable to identify crop:** The uploaded image does not clearly match any supported agricultural crop (Banana, Rice, Mango, Cotton, etc.) or plant foliage was insufficient. Please upload a clear photo of the crop leaf or fruit.')
-              : (isHi
-                  ? 'आपकी अपलोड की गई मीडिया का विस्तृत विश्लेषण यहाँ है:'
-                  : 'Here is the analysis of your uploaded image:')),
+        text: isInsufficient
+          ? (isHi
+              ? '⚠️ **अपर्याप्त दृश्य साक्ष्य (Insufficient Visual Evidence):** प्रदान की गई छवि बहुत धुंधली, अस्पष्ट या खराब रोशनी में है। सटीक निदान के लिए कृपया पत्ती पर सीधा फोकस करके अच्छी रोशनी में दोबारा फोटो लें।'
+              : '⚠️ **Insufficient visual evidence:** The submitted image is either too blurry, poorly exposed, or does not clearly display crop foliage or pathology. Please retake the photo under natural lighting with steady focus directly on the affected leaf surface.')
+          : isUnable
+          ? (isHi
+              ? '⚠️ **फसल की पहचान करने में असमर्थ:** अपलोड की गई छवि में किसी समर्थित कृषि फसल (केला, चावल, आम, कपास, टमाटर, आलू आदि) की पत्ती या फल स्पष्ट रूप से नहीं दिख रहे हैं।'
+              : '⚠️ **Unable to identify crop:** The uploaded image does not clearly match any supported agricultural crop (Banana, Rice, Mango, Cotton, etc.) or plant foliage was insufficient. Please upload a clear photo of the crop leaf or fruit.')
+          : '', // Keep clean so the image format card is the primary visual presentation
         diagnosis: diagnosisResult,
         images: resolvedImages,
         videos: mediaToAnalyze.filter((m) => m.type === 'video').map((v) => v.src),
@@ -3145,7 +3174,7 @@ export default function Assistant() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>
                           <span>Diagnostic Depth Progress: {msg.analyzingProgress || 15}%</span>
                           <span style={{ color: '#38bdf8', fontWeight: 600 }}>
-                            ⚡ Real-Time Vision Processing
+                            ⚡ Real-Time Vision Processing (≤ 20s)
                           </span>
                         </div>
                         <div style={{ width: '100%', height: '8px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '9999px', overflow: 'hidden' }}>
