@@ -1262,7 +1262,7 @@ export async function analyzeImageWithLocalVisionEngine(
   const chlorosisPct = (yellowChlorosisPixels / totalPixels) * 100;
   const rustPct = (rustPixels / totalPixels) * 100;
 
-  const totalTissuePct = foliagePct + yellowPeelPct + redFruitPct + orangeFruitPct + whiteBollPct + Math.min(necroticPct, 4.0);
+  const totalTissuePct = foliagePct + yellowPeelPct + redFruitPct + orangeFruitPct + whiteBollPct + rustPct + Math.min(necroticPct, 4.0);
 
   // Multi-crop Matching across all 37 crops
   // 1. Only check explicit user crop hint if provided (NEVER infer crop from filename, URL, or clipboard)
@@ -1407,15 +1407,15 @@ export async function analyzeImageWithLocalVisionEngine(
         matchedCrop = 'Orange';
         matchedKey = 'orange_citrus_canker';
       }
-    } else if (foliagePct >= 3.0) {
+    } else if (foliagePct >= 3.0 || rustPct >= 1.0 || (foliagePct + rustPct) >= 3.0) {
       // ── FOLIAGE & LEAF MORPHOLOGY (CROP-FIRST) ──
       // 1. Banana Leaf: Massive broad paddle leaf lamina (broad width >= 140px, high solidity >= 0.70, or foliage >= 28% with parallel venation)
       if ((fgWidth >= 140 && fgHeight >= 140 && foliagePct >= 18.0 && fgSolidity >= 0.70) || (foliagePct >= 28.0 && venationAnisotropy >= 1.08 && fgAspect <= 2.2)) {
         matchedCrop = 'Banana';
         matchedKey = chlorosisPct > 18.0 ? 'banana_panama_wilt' : (necroticPct > 2.5 ? 'banana_sigatoka' : 'banana_sigatoka');
       }
-      // 2. Wheat: Linear monocot blade with powdery rust pustules
-      else if (rustPct > 3.8 || (chlorosisPct > 18.0 && fgAspect > 2.2)) {
+      // 2. Wheat: Linear monocot blade or earhead with powdery rust pustules / yellow-orange sporulation
+      else if (rustPct >= 1.0 || (rustPct > 0.5 && fgAspect > 1.5) || (chlorosisPct > 16.0 && fgAspect > 1.8)) {
         matchedCrop = 'Wheat';
         matchedKey = 'wheat_yellow_rust';
       }

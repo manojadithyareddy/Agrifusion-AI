@@ -596,6 +596,7 @@ class AssistantVisionEngine:
             + metrics.get("yellow_fruit_pct", 0.0)
             + metrics.get("fruit_red_pct", 0.0)
             + metrics.get("orange_pct", 0.0)
+            + metrics.get("rust_pustule_pct", 0.0)
             + min(necrotic_pct, 4.0)
         )
         if total_tissue < 3.0:
@@ -671,6 +672,11 @@ class AssistantVisionEngine:
                 logger.info(f"[Botanical Classifier] Identified BANANA PADDLE LEAF (solidity={leaf_solidity}, width={leaf_width})")
 
             # ── B. LINEAR MONOCOTS (Rice, Wheat, Sugarcane) ──
+            elif (is_linear_monocot or leaf_aspect_ratio >= 1.6) and (rust_pct > 1.2 or (chlorosis_pct > 16.0 and leaf_aspect_ratio >= 1.8)):
+                # Rust pustules or bright yellow/orange uredinia on linear blade or earhead is diagnostic of WHEAT RUST (Puccinia spp.)
+                identified_crop_key = "wheat"
+                crop_confidence = 0.93
+                logger.info(f"[Botanical Classifier] Identified WHEAT with Rust (rust={rust_pct}, aspect={leaf_aspect_ratio})")
             elif is_linear_monocot and leaf_aspect_ratio >= 2.6 and leaf_width < 110 and foliage_pct < 26.0:
                 identified_crop_key = "rice"
                 crop_confidence = 0.90
@@ -679,10 +685,10 @@ class AssistantVisionEngine:
                 identified_crop_key = "sugarcane"
                 crop_confidence = 0.89
                 logger.info(f"[Botanical Classifier] Identified SUGARCANE (aspect={leaf_aspect_ratio}, foliage={foliage_pct})")
-            elif is_linear_monocot and (rust_pct > 3.0 or leaf_aspect_ratio >= 1.9):
+            elif is_linear_monocot and leaf_aspect_ratio >= 1.9:
                 identified_crop_key = "wheat"
                 crop_confidence = 0.91
-                logger.info(f"[Botanical Classifier] Identified WHEAT (rust={rust_pct}, aspect={leaf_aspect_ratio})")
+                logger.info(f"[Botanical Classifier] Identified WHEAT (aspect={leaf_aspect_ratio})")
 
             # ── C. COTTON (Strict Palmate Lobing with Deep Sinuses OR White Bolls) ──
             # Cotton leaf has 3-5 pointed lobes with deep sinuses between lobes (solidity 0.44-0.74, 2+ deep recesses)

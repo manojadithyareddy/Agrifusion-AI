@@ -144,6 +144,40 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                     "Form 'alleyways' (skip 1 row every 2-3 meters) for sunlight penetration and aeration.",
                     "Avoid synthetic pyrethroid sprays which cause resurgence of BPH."
                 ]
+            },
+            "leaf_folder": {
+                "name": "Rice Leaf Folder",
+                "scientific_name": "Cnaphalocrocis medinalis",
+                "keywords": ["leaf folder", "leaf roller", "folded leaves", "cnaphalocrocis"],
+                "damage_signs": [
+                    "Caterpillars fold leaf blades longitudinally and feed inside on green mesophyll tissue",
+                    "Whitish longitudinal transparent streaks and membranous folded leaf blades"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Flubendiamide 39.35% SC @ 0.2 ml/L.",
+                    "Spray Cartap Hydrochloride 50% SP @ 1.5 g/L."
+                ],
+                "prevention": [
+                    "Avoid excessive application of nitrogenous fertilizers.",
+                    "Pass a rope across the canopy to dislodge larvae into floodwater during early tillering."
+                ]
+            },
+            "gall_midge": {
+                "name": "Rice Gall Midge",
+                "scientific_name": "Orseolia oryzae",
+                "keywords": ["gall midge", "silver shoot", "onion shoot", "orseolia"],
+                "damage_signs": [
+                    "Formation of tubular silvery-white hollow galls resembling onion leaf or silver shoot",
+                    "Suppression of apical growth and complete failure of infected tillers to produce panicles"
+                ],
+                "pest_control": [
+                    "Apply Fipronil 0.3% G @ 7-10 kg/acre or Chlorpyrifos 20% EC @ 2.0 ml/L at first appearance of silver shoots.",
+                    "Conserve natural platygastrid larval parasitoid Platygaster oryzae."
+                ],
+                "prevention": [
+                    "Early transplanting of recommended gall midge resistant rice varieties (e.g. Phalguna, Suraksha).",
+                    "Destroy alternative grassy weed hosts like Paspalum scrobiculatum around bunds."
+                ]
             }
         }
     },
@@ -230,8 +264,8 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
         "supported_pests": {
             "wheat_aphid": {
                 "name": "Wheat Foliar Aphid",
-                "scientific_name": "Rhopalosiphum padi",
-                "keywords": ["aphid", "wheat aphid", "rhopalosiphum", "mahun"],
+                "scientific_name": "Sitobion avenae",
+                "keywords": ["aphid", "wheat aphid", "sitobion", "mahun", "greenbug"],
                 "damage_signs": [
                     "Colonies of small greenish-black soft insects congregated on flag leaves and earheads",
                     "Yellowing and premature drying of leaves with honeydew excretion and sooty mold"
@@ -242,6 +276,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Avoid late December sowing which coincides with high aphid build-up temperatures."
+                ]
+            },
+            "termites": {
+                "name": "Wheat Termites",
+                "scientific_name": "Odontotermes spp.",
+                "keywords": ["termites", "white ants", "deemak", "odontotermes"],
+                "damage_signs": [
+                    "Subterranean feeding on root system and collar region causing wilting of seedlings",
+                    "Damaged plants dry up completely and can be pulled out effortlessly by hand"
+                ],
+                "pest_control": [
+                    "Seed treatment before sowing with Chlorpyrifos 20% EC @ 4 ml/kg seed or Fipronil 5% SC @ 5 ml/kg seed.",
+                    "Apply Chlorpyrifos 20% EC @ 1.5 L/acre with irrigation water in standing infested crops."
+                ],
+                "prevention": [
+                    "Use fully decomposed farmyard manure; avoid unrotted cow dung which attracts worker termites."
+                ]
+            },
+            "armyworm": {
+                "name": "Wheat Armyworm",
+                "scientific_name": "Mythimna separata",
+                "keywords": ["armyworm", "mythimna", "ear cutting caterpillar", "kudra"],
+                "damage_signs": [
+                    "Larvae march across fields in large swarms devouring foliage from leaf margins inward",
+                    "Extensive clipping and chewing off of developing wheat spikes and earheads during night"
+                ],
+                "pest_control": [
+                    "Spray Chlorpyrifos 20% EC @ 2.0 ml/L or Quinalphos 25% EC @ 2.0 ml/L in evening hours.",
+                    "Dig trenches around uninfested fields and dust with Malathion 5% dust."
+                ],
+                "prevention": [
+                    "Plough fields after harvest to expose overwintering pupae to predatory birds."
+                ]
+            },
+            "shoot_fly": {
+                "name": "Wheat Shoot Fly",
+                "scientific_name": "Atherigona spp.",
+                "keywords": ["shoot fly", "atherigona", "dead heart", "seedling fly"],
+                "damage_signs": [
+                    "Maggots bore into central growing point causing drying of central tiller ('dead heart')",
+                    "Proliferation of weak secondary tillers with poor grain bearing capacity"
+                ],
+                "pest_control": [
+                    "Seed treatment with Imidacloprid 70% WS @ 3 g/kg seed.",
+                    "Foliar spray of Dimethoate 30% EC @ 1.5 ml/L at seedling stage."
+                ],
+                "prevention": [
+                    "Complete sowing during normal planting window (first fortnight of November) to escape shoot fly peak."
                 ]
             }
         }
@@ -330,6 +412,55 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                     "Intercrop maize with cowpea or pigeonpea (4:1 ratio).",
                     "Erect FAW pheromone traps @ 5 traps/acre for adult moth monitoring."
                 ]
+            },
+            "stem_borer": {
+                "name": "Maize Stem Borer",
+                "scientific_name": "Chilo partellus",
+                "keywords": ["stem borer", "chilo", "pinhole damage", "shot holes"],
+                "damage_signs": [
+                    "Parallel pinholes and windowing on leaves unfolding from the whorl",
+                    "Destruction of growing point leading to 'dead heart' in seedlings up to one month old",
+                    "Stem tunneling causing lodging and reduced cob size"
+                ],
+                "pest_control": [
+                    "Whorl application of Cartap Hydrochloride 4% G @ 5 kg/acre or Chlorantraniliprole 0.4% G @ 4 kg/acre.",
+                    "Release egg parasitoid Trichogramma chilonis @ 40,000 wasps/acre."
+                ],
+                "prevention": [
+                    "Uproot and destroy stubbles after harvest to eliminate diapausing larvae."
+                ]
+            },
+            "shoot_fly": {
+                "name": "Maize Shoot Fly",
+                "scientific_name": "Atherigona soccata",
+                "keywords": ["shoot fly", "atherigona", "maize seedling fly", "dead hearts"],
+                "damage_signs": [
+                    "Maggot cuts growing tip resulting in typical 'dead heart' symptom within 4-5 weeks of emergence",
+                    "Foul-smelling rotting dead hearts that slide out easily when pulled"
+                ],
+                "pest_control": [
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed or Thiamethoxam 30% FS @ 6 ml/kg seed.",
+                    "Foliar spray of Chlorpyrifos 20% EC @ 2.0 ml/L at 7-10 days after germination."
+                ],
+                "prevention": [
+                    "Sow immediately with the onset of monsoon; avoid staggered sowing."
+                ]
+            },
+            "corn_earworm": {
+                "name": "Corn Earworm / Cob Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["earworm", "cob borer", "helicoverpa", "silk borer"],
+                "damage_signs": [
+                    "Larvae chew tender silks and bore directly into the tip of developing ears",
+                    "Extensive damage to developing kernel rows covered with wet frass facilitating fungal mold growth"
+                ],
+                "pest_control": [
+                    "Spray Emamectin Benzoate 5% SG @ 0.4 g/L or Indoxacarb 14.5% SC @ 0.5 ml/L targeting the silk stage.",
+                    "Install Helicoverpa pheromone traps @ 5 traps/acre."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae to solar heat and natural avian predators."
+                ]
             }
         }
     },
@@ -415,6 +546,57 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Terminate cotton crop by December/January; strictly avoid ratoon cotton cultivation.",
                     "Release egg parasitoid Trichogramma bactrae @ 60,000 wasps/acre."
+                ]
+            },
+            "american_bollworm": {
+                "name": "American Bollworm",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["american bollworm", "helicoverpa", "square borer", "bollworm"],
+                "damage_signs": [
+                    "Larva feeds with only its head thrust inside the square or boll while remaining body hangs out",
+                    "Extensive flaring of squares ('flared squares') followed by premature dropping of squares and young bolls"
+                ],
+                "pest_control": [
+                    "Spray Flubendiamide 39.35% SC @ 0.25 ml/L or Chlorantraniliprole 18.5% SC @ 0.3 ml/L.",
+                    "Spray HaNPV @ 250 LE/acre with 0.1% jaggery sticker in evening."
+                ],
+                "prevention": [
+                    "Grow marigold as trap crop (1 row of marigold for every 16 rows of cotton).",
+                    "Erect bird perches @ 20/acre."
+                ]
+            },
+            "whitefly": {
+                "name": "Cotton Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "leaf curl vector", "honeydew"],
+                "damage_signs": [
+                    "Nymphs and adults suck phloem sap from leaf undersides, resulting in chlorotic speckling and leaf curling",
+                    "Copious sticky honeydew secretion promoting dense black sooty mold on upper leaf surfaces and open bolls",
+                    "Primary vector of devastating Cotton Leaf Curl Virus (CLCuV)"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15-20 traps/acre.",
+                    "Spray Pyriproxyfen 10% EC @ 2.0 ml/L or Diafenthiuron 50% WP @ 1.2 g/L or Afidopyropen 50 g/L @ 2.0 ml/L."
+                ],
+                "prevention": [
+                    "Avoid synthetic pyrethroid sprays early in the season to prevent whitefly resurgence.",
+                    "Grow CLCuV-tolerant hybrid cultivars."
+                ]
+            },
+            "thrips": {
+                "name": "Cotton Thrips",
+                "scientific_name": "Thrips tabaci",
+                "keywords": ["thrips", "leaf curling", "silvery sheen", "rasping"],
+                "damage_signs": [
+                    "Rasping and sucking of tender seedlings causing upward curling of leaf margins ('cup-shaped leaves')",
+                    "Silvery white patches on lower leaf surfaces turning brownish bronze with necrotic margins"
+                ],
+                "pest_control": [
+                    "Spray Fipronil 5% SC @ 1.5 ml/L or Acetamiprid 20% SP @ 0.2 g/L or Spinetoram 11.7% SC @ 0.8 ml/L.",
+                    "Install blue sticky traps @ 10-15 traps/acre."
+                ],
+                "prevention": [
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed to protect early vegetative flush."
                 ]
             }
         }
@@ -502,6 +684,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                     "Trash mulching @ 3 tonnes/acre on cane ridges at 30 days after planting.",
                     "Early light earthing up at 45 days."
                 ]
+            },
+            "top_borer": {
+                "name": "Sugarcane Top Borer",
+                "scientific_name": "Scirpophaga excerptalis",
+                "keywords": ["top borer", "scirpophaga", "bunchy top", "shot holes"],
+                "damage_signs": [
+                    "Parallel shot holes in leaves and red tunnels in the midrib of young expanding leaves",
+                    "Central spindle dries into a dark dead heart; terminal growth stops and side buds sprout forming 'bunchy top'"
+                ],
+                "pest_control": [
+                    "Soil application of Carbofuran 3% CG @ 12 kg/acre or Chlorantraniliprole 0.4% G @ 8 kg/acre at base of cane clumps.",
+                    "Release egg parasitoid Trichogramma japonicum @ 50,000/acre."
+                ],
+                "prevention": [
+                    "Collect and destroy egg masses covered with buff-coloured hairs during early summer flush."
+                ]
+            },
+            "internode_borer": {
+                "name": "Sugarcane Internode Borer",
+                "scientific_name": "Chilo sacchariphagus indicus",
+                "keywords": ["internode borer", "chilo sacchariphagus", "bored internodes"],
+                "damage_signs": [
+                    "Larvae bore into tender internodes, plugging entry holes with excreta and frass",
+                    "Constricted internodes, reddish internal pith tissues, and breakage of canes at bored points"
+                ],
+                "pest_control": [
+                    "Detrash bottom leaves periodically (at 5th and 7th month) to expose borer entry points to natural predators.",
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Flubendiamide 39.35% SC @ 0.2 ml/L."
+                ],
+                "prevention": [
+                    "Avoid high nitrogen doses which induce succulent thick rind prone to borer penetration."
+                ]
+            },
+            "white_grub": {
+                "name": "Sugarcane White Grub",
+                "scientific_name": "Holotrichia spp.",
+                "keywords": ["white grub", "holotrichia", "root grub", "clump drying"],
+                "damage_signs": [
+                    "C-shaped fleshy subterranean grubs voraciously feed on cane root system and underground setts",
+                    "Yellowing of leaves followed by sudden wilting and drying of entire cane stools that lodge easily"
+                ],
+                "pest_control": [
+                    "Soil drenching around cane stools with Imidacloprid 17.8% SL @ 1.5 ml/L or Chlorpyrifos 20% EC @ 2.5 ml/L.",
+                    "Apply entomopathogenic fungus Metarhizium anisopliae @ 2.5 kg/acre with organic compost."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae and grubs; install light traps to capture emerging adult beetles."
+                ]
             }
         }
     },
@@ -584,6 +814,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Handpick and destroy girdled plant parts during early vegetative scouting."
+                ]
+            },
+            "stem_fly": {
+                "name": "Soybean Stem Fly",
+                "scientific_name": "Melanagromyza sojae",
+                "keywords": ["stem fly", "melanagromyza", "stem borer", "pith tunnel"],
+                "damage_signs": [
+                    "Maggots tunnel into central pith of stem, visible as red/brown internal feeding track when split",
+                    "Stunted seedling growth, reduced branching, and wilting under dry moisture stress"
+                ],
+                "pest_control": [
+                    "Seed treatment before sowing with Thiamethoxam 30% FS @ 10 ml/kg seed.",
+                    "Spray Indoxacarb 15.8% EC @ 0.7 ml/L or Chlorantraniliprole 18.5% SC @ 0.3 ml/L."
+                ],
+                "prevention": [
+                    "Maintain optimum plant population and destroy wild host plants on field margins."
+                ]
+            },
+            "tobacco_caterpillar": {
+                "name": "Tobacco Caterpillar",
+                "scientific_name": "Spodoptera litura",
+                "keywords": ["tobacco caterpillar", "spodoptera", "defoliator", "leaf caterpillar"],
+                "damage_signs": [
+                    "Gregarious early instars scrape green chlorophyll leaving papery white skeletonized leaves",
+                    "Later instars disperse and completely defoliate soybean canopy, feeding on flowers and young pods"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L or Novaluron 10% EC @ 1.5 ml/L.",
+                    "Spray SlNPV @ 250 LE/acre during evening hours."
+                ],
+                "prevention": [
+                    "Install Spodoptera pheromone traps @ 5 traps/acre for population monitoring."
+                ]
+            },
+            "semilooper": {
+                "name": "Green Semilooper",
+                "scientific_name": "Chrysodeixis spp.",
+                "keywords": ["semilooper", "chrysodeixis", "plusia", "defoliating looper"],
+                "damage_signs": [
+                    "Slender green caterpillars loop while walking and chew irregular holes into foliage",
+                    "Heavy infestation causes complete foliar skeletonization, leaving only bare veins"
+                ],
+                "pest_control": [
+                    "Spray Bacillus thuringiensis (Bt) formulation @ 1.5-2.0 g/L or Quinalphos 25% EC @ 2.0 ml/L.",
+                    "Spray Flubendiamide 39.35% SC @ 0.2 ml/L."
+                ],
+                "prevention": [
+                    "Conserve natural braconid and tachinid parasitoids by avoiding indiscriminate broad-spectrum sprays."
                 ]
             }
         }
@@ -668,6 +946,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                     "Erect bird perches (T-shaped wooden perches) @ 20 perches/acre.",
                     "Intercrop chickpea with coriander or mustard as border trap crop."
                 ]
+            },
+            "cutworm": {
+                "name": "Gram Cutworm",
+                "scientific_name": "Agrotis ipsilon",
+                "keywords": ["cutworm", "agrotis", "seedling cutting", "night caterpillar"],
+                "damage_signs": [
+                    "Caterpillars hide in soil crevices by day and cut young seedlings at soil level by night",
+                    "Severed seedlings lying flat on soil surface with withered foliage"
+                ],
+                "pest_control": [
+                    "Soil drenching around plant base with Chlorpyrifos 20% EC @ 2.5 ml/L during late afternoon.",
+                    "Apply poison bait (10 kg wheat bran + 1 kg jaggery + 100 g Malathion 50% EC) scattered in evening."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose hibernating larvae and pupae to extreme sun heat."
+                ]
+            },
+            "aphids": {
+                "name": "Cowpea / Gram Aphid",
+                "scientific_name": "Aphis craccivora",
+                "keywords": ["aphid", "aphis craccivora", "black aphid", "sooty mold"],
+                "damage_signs": [
+                    "Clusters of shiny black aphids congregating on growing tips, flowers, and tender pods",
+                    "Stunting of plants, yellowing of leaves, and sticky honeydew attracting black sooty mold"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE) at early colony detection."
+                ],
+                "prevention": [
+                    "Conserve coccinellid predator beetles; avoid excessive nitrogenous fertilization."
+                ]
+            },
+            "termites": {
+                "name": "Chickpea Termites",
+                "scientific_name": "Odontotermes spp.",
+                "keywords": ["termites", "deemak", "white ants", "root feeding"],
+                "damage_signs": [
+                    "Termites hollow out subterranean taproots and collar region",
+                    "Plants turn pale yellow, wilt suddenly, and can be pulled out effortlessly without root anchors"
+                ],
+                "pest_control": [
+                    "Seed treatment with Chlorpyrifos 20% EC @ 4 ml/kg seed or Fipronil 5% SC @ 5 ml/kg seed.",
+                    "Apply Chlorpyrifos 20% EC @ 1.5 L/acre through irrigation water in infested patches."
+                ],
+                "prevention": [
+                    "Never apply raw or uncomposted farmyard manure; remove dry plant residues from fields."
+                ]
             }
         }
     },
@@ -751,6 +1077,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Install pheromone traps @ 5 traps/acre; shake plants over cloth sheets in early morning to dislodge caterpillars."
                 ]
+            },
+            "pod_fly": {
+                "name": "Pigeonpea Pod Fly",
+                "scientific_name": "Melanagromyza obtusa",
+                "keywords": ["pod fly", "melanagromyza", "internal grain damage", "seed fly"],
+                "damage_signs": [
+                    "Female fly punctures green pods with ovipositor; apodous maggots feed entirely inside seeds",
+                    "Seeds show brown grooved feeding channels; adult exit holes visible on dry pod walls"
+                ],
+                "pest_control": [
+                    "Spray Monocrotophos 36% SL @ 1.5 ml/L or Dimethoate 30% EC @ 1.5 ml/L during pod formation.",
+                    "Spray Spinosad 45% SC @ 0.3 ml/L targeting the flowering and early pod stage."
+                ],
+                "prevention": [
+                    "Grow pod-fly resistant cultivars; avoid prolonged harvesting delays."
+                ]
+            },
+            "plume_moth": {
+                "name": "Red Gram Plume Moth",
+                "scientific_name": "Exelastis atomosa",
+                "keywords": ["plume moth", "exelastis", "spiny caterpillar", "pod scraper"],
+                "damage_signs": [
+                    "Greenish-brown spiny caterpillars scrape pod surface and bore round holes into seeds",
+                    "Infested flower buds drop and bored pods show sticky frass near entry holes"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Indoxacarb 14.5% SC @ 0.7 ml/L.",
+                    "Spray 5% NSKE (Neem Seed Kernel Extract) at pod initiation."
+                ],
+                "prevention": [
+                    "Hand collection of caterpillars during early morning hours; shake branches over collection sheets."
+                ]
+            },
+            "spotted_pod_borer": {
+                "name": "Spotted Pod Borer",
+                "scientific_name": "Maruca vitrata",
+                "keywords": ["spotted pod borer", "maruca", "webbing borer", "floral webber"],
+                "damage_signs": [
+                    "Webbing together of terminal leaves, flower clusters, and young pods into messy silk nests",
+                    "Larvae feed within the concealed webs, boring into pods and chewing developing seeds"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L.",
+                    "Direct insecticide spray with high pressure towards flower and bud clusters."
+                ],
+                "prevention": [
+                    "Avoid dense planting; maintain 90 cm row spacing to ensure penetration of sunlight and spray."
+                ]
             }
         }
     },
@@ -831,6 +1205,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Barrier cropping with 2 rows of maize or pearl millet around blackgram plots."
                 ]
+            },
+            "aphid": {
+                "name": "Blackgram Aphid",
+                "scientific_name": "Aphis craccivora",
+                "keywords": ["aphid", "aphis", "black aphid", "shoot sucking"],
+                "damage_signs": [
+                    "Dense colonies of small black insects covering apical shoots and flower buds",
+                    "Stunted shoot elongation, foliar crinkling, and premature flower shedding"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Acetamiprid 20% SP @ 0.3 g/L.",
+                    "Conserve ladybird beetles and syrphid fly predators."
+                ],
+                "prevention": [
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed."
+                ]
+            },
+            "thrips": {
+                "name": "Blackgram Thrips",
+                "scientific_name": "Thrips tabaci",
+                "keywords": ["thrips", "flower thrips", "leaf curling", "thrips tabaci"],
+                "damage_signs": [
+                    "Laceration of tender leaf tissues causing upward curling of leaf margins and silvery speckles",
+                    "Feeding inside flower buds causing heavy flower drop and twisted, empty pods"
+                ],
+                "pest_control": [
+                    "Spray Fipronil 5% SC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L.",
+                    "Install blue sticky traps @ 10-15 traps/acre."
+                ],
+                "prevention": [
+                    "Maintain field sanitation and remove border weeds that serve as alternate hosts."
+                ]
+            },
+            "pod_borer": {
+                "name": "Blackgram Pod Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["pod borer", "helicoverpa", "borer larva", "chewed pods"],
+                "damage_signs": [
+                    "Caterpillars bore circular holes into green pods and consume developing seeds",
+                    "Damage to flower racemes resulting in failure of pod setting"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Indoxacarb 14.5% SC @ 0.7 ml/L.",
+                    "Spray HaNPV @ 250 LE/acre in evening."
+                ],
+                "prevention": [
+                    "Install pheromone traps @ 5 traps/acre; avoid delayed sowing."
+                ]
             }
         }
     },
@@ -910,6 +1332,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Install pheromone traps; spray Neem formulation (10,000 ppm) @ 3 ml/L at flowering initiation."
                 ]
+            },
+            "whitefly": {
+                "name": "Mungbean Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "vector", "yellow mosaic vector"],
+                "damage_signs": [
+                    "Sap sucking by nymphs and adults causing chlorotic speckling and leaf crinkling",
+                    "Primary transmitting vector for devastating Mungbean Yellow Mosaic Virus (MYMV)"
+                ],
+                "pest_control": [
+                    "Spray Acetamiprid 20% SP @ 0.3 g/L or Thiamethoxam 25% WG @ 0.3 g/L.",
+                    "Install yellow sticky traps @ 15 traps/acre."
+                ],
+                "prevention": [
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed to protect crop during initial 30 days."
+                ]
+            },
+            "thrips": {
+                "name": "Mungbean Flower Thrips",
+                "scientific_name": "Thrips tabaci",
+                "keywords": ["thrips", "flower thrips", "bud drop", "leaf cupping"],
+                "damage_signs": [
+                    "Nymphs and adults lacerate tissues of flower petals and developing pods",
+                    "Severe flower bud abscission and distorted, deformed pod development"
+                ],
+                "pest_control": [
+                    "Spray Fipronil 5% SC @ 1.5 ml/L or Spinosad 45% SC @ 0.3 ml/L.",
+                    "Install blue sticky traps @ 10 traps/acre."
+                ],
+                "prevention": [
+                    "Avoid continuous pulse-after-pulse monoculture."
+                ]
+            },
+            "aphid": {
+                "name": "Mungbean Aphid",
+                "scientific_name": "Aphis craccivora",
+                "keywords": ["aphid", "aphis", "black aphid", "sap sucking"],
+                "damage_signs": [
+                    "Colonies congregated on tender stems and buds causing yellowing and stunted growth",
+                    "Sticky honeydew excretion causing leaves to turn black with sooty mold"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray Neem seed kernel extract (NSKE 5%) @ 50 g/L."
+                ],
+                "prevention": [
+                    "Early sowing with the onset of monsoon to escape peak aphid populations."
+                ]
             }
         }
     },
@@ -988,6 +1458,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Conserve ladybird beetles and syrphid fly larvae."
                 ]
+            },
+            "pod_borer": {
+                "name": "Lentil Pod Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["pod borer", "helicoverpa", "lentil borer", "caterpillar"],
+                "damage_signs": [
+                    "Caterpillar feeds on foliage, flowers, and bores circular holes into delicate lentil pods",
+                    "Devoured seeds inside pods, leaving empty hulls"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L.",
+                    "Spray HaNPV @ 250 LE/acre during evening hours."
+                ],
+                "prevention": [
+                    "Install pheromone traps @ 5 traps/acre; erect bird perches @ 20/acre."
+                ]
+            },
+            "cutworm": {
+                "name": "Lentil Cutworm",
+                "scientific_name": "Agrotis ipsilon",
+                "keywords": ["cutworm", "agrotis", "seedling cutting", "night feeder"],
+                "damage_signs": [
+                    "Larvae cut tender seedlings at ground level during night, dragging severed leaves into soil burrows",
+                    "Patchy seedling emergence and dead wilted stems scattered across rows"
+                ],
+                "pest_control": [
+                    "Soil application of Chlorpyrifos 20% EC @ 2.5 ml/L around root zones in late afternoon.",
+                    "Broadcast poison bait (wheat bran + jaggery + insecticide) across fields in evening."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae to predatory birds."
+                ]
+            },
+            "sitona_weevil": {
+                "name": "Lentil Sitona Weevil",
+                "scientific_name": "Sitona spp.",
+                "keywords": ["sitona weevil", "sitona", "nodule feeder", "leaf notcher"],
+                "damage_signs": [
+                    "Adult weevils chew U-shaped semicircular notches along leaf margins of young seedlings",
+                    "Grubs feed underground on nitrogen-fixing root nodules, severely impairing plant nutrition"
+                ],
+                "pest_control": [
+                    "Seed treatment with Imidacloprid 70% WS @ 3 g/kg seed.",
+                    "Foliar spray of Lambda-cyhalothrin 5% EC @ 1.0 ml/L if adult leaf notching is severe."
+                ],
+                "prevention": [
+                    "Timely planting and balanced fertilization to foster vigorous early seedling establishment."
+                ]
             }
         }
     },
@@ -1057,7 +1575,7 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
             "bean_aphid": {
                 "name": "Bean Aphid",
                 "scientific_name": "Aphis fabae",
-                "keywords": ["bean aphid", "aphid", "fabae"],
+                "keywords": ["bean aphid", "aphid", "fabae", "black bean aphid"],
                 "damage_signs": [
                     "Heavy aphid colonies covering growing tips and flower buds, stunting pod growth"
                 ],
@@ -1066,6 +1584,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Early weeding and avoidance of water stress."
+                ]
+            },
+            "bean_fly": {
+                "name": "Bean Stem Fly / Seedling Fly",
+                "scientific_name": "Ophiomyia phaseoli",
+                "keywords": ["bean fly", "ophiomyia", "stem miner", "stem crack"],
+                "damage_signs": [
+                    "Maggots mine through leaf petioles down into the collar region of stem",
+                    "Stem base swells, cracks longitudinally, and turns brown, leading to seedling collapse and lodging"
+                ],
+                "pest_control": [
+                    "Seed dressing with Thiamethoxam 30% FS @ 5 ml/kg seed before sowing.",
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Chlorpyrifos 20% EC @ 2.0 ml/L at unifoliate leaf stage."
+                ],
+                "prevention": [
+                    "Earthing up at 2-3 weeks after germination to cover cracked stem bases and induce adventitious roots."
+                ]
+            },
+            "thrips": {
+                "name": "Bean Thrips",
+                "scientific_name": "Thrips tabaci",
+                "keywords": ["thrips", "flower thrips", "leaf curling", "silvering"],
+                "damage_signs": [
+                    "Nymphs and adults feed on leaf undersides causing silvery patches that turn brown and dry",
+                    "Flower buds fail to open and fall prematurely, drastically reducing pod set"
+                ],
+                "pest_control": [
+                    "Spray Fipronil 5% SC @ 1.5 ml/L or Spinetoram 11.7% SC @ 0.8 ml/L.",
+                    "Install blue sticky traps @ 10-12 traps/acre."
+                ],
+                "prevention": [
+                    "Maintain optimum soil moisture; avoid water stress during budding and flowering."
+                ]
+            },
+            "pod_borer": {
+                "name": "Bean Pod Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["pod borer", "helicoverpa", "caterpillar", "borer"],
+                "damage_signs": [
+                    "Larvae bore circular entrance holes into fleshy green pods, eating seeds inside",
+                    "Excreta pellets deposited around entrance holes and rotting of bored pods"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Flubendiamide 39.35% SC @ 0.2 ml/L.",
+                    "Spray Indoxacarb 14.5% SC @ 0.7 ml/L during pod formation."
+                ],
+                "prevention": [
+                    "Install pheromone traps @ 5 traps/acre for adult monitoring; handpick large caterpillars."
                 ]
             }
         }
@@ -1141,6 +1707,53 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Yellow sticky traps @ 10 traps/acre."
+                ]
+            },
+            "aphid": {
+                "name": "Mothbean Aphid",
+                "scientific_name": "Aphis craccivora",
+                "keywords": ["aphid", "aphis", "craccivora", "sap feeder"],
+                "damage_signs": [
+                    "Clusters of dark aphids swarming tender leaf shoots and flower buds, sucking sap",
+                    "Foliage curling, premature leaf drop, and poor pod setting"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE)."
+                ],
+                "prevention": [
+                    "Conserve predatory ladybird beetles; avoid water stress during budding."
+                ]
+            },
+            "pod_borer": {
+                "name": "Mothbean Pod Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["pod borer", "helicoverpa", "mothbean borer", "caterpillar"],
+                "damage_signs": [
+                    "Larvae chew holes into small green pods, eating young developing grains",
+                    "Feeding damage on flowers and tender pods resulting in severe yield loss"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L.",
+                    "Spray Indoxacarb 14.5% SC @ 0.7 ml/L at early podding."
+                ],
+                "prevention": [
+                    "Install pheromone traps @ 5 traps/acre; intercrop with pearl millet."
+                ]
+            },
+            "spotted_pod_borer": {
+                "name": "Mothbean Spotted Pod Borer",
+                "scientific_name": "Maruca vitrata",
+                "keywords": ["spotted pod borer", "maruca", "webbing borer", "flower webber"],
+                "damage_signs": [
+                    "Webs together flowers and leaves into messy clusters, feeding from inside",
+                    "Larvae bore into tender green pods leaving entrance holes with frass"
+                ],
+                "pest_control": [
+                    "Spray Spinosad 45% SC @ 0.3 ml/L or Flubendiamide 39.35% SC @ 0.2 ml/L."
+                ],
+                "prevention": [
+                    "Early sowing and field sanitation to destroy wild legume weed hosts."
                 ]
             }
         }
@@ -1222,6 +1835,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Intercrop groundnut with pearl millet or cowpea (4:1 ratio)."
                 ]
+            },
+            "tobacco_caterpillar": {
+                "name": "Groundnut Tobacco Caterpillar",
+                "scientific_name": "Spodoptera litura",
+                "keywords": ["tobacco caterpillar", "spodoptera", "defoliator", "leaf skeletonizer"],
+                "damage_signs": [
+                    "Early instars feed gregariously on leaf undersides, skeletonizing foliage into papery white patches",
+                    "Grown larvae feed voraciously on leaves, flowers, and tender pegs, completely defoliating plants"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L.",
+                    "Spray SlNPV @ 250 LE/acre with jaggery sticker in evening."
+                ],
+                "prevention": [
+                    "Install Spodoptera pheromone traps @ 5 traps/acre; plant castor as border trap crop."
+                ]
+            },
+            "white_grub": {
+                "name": "Groundnut White Grub",
+                "scientific_name": "Holotrichia spp.",
+                "keywords": ["white grub", "holotrichia", "root grub", "patch wilting"],
+                "damage_signs": [
+                    "Subterranean grubs feed on taproots, rootlets, and developing underground pods",
+                    "Characteristic patchy yellowing and wilting of plants that pull out easily without roots"
+                ],
+                "pest_control": [
+                    "Seed treatment with Chlorpyrifos 20% EC @ 6.5 ml/kg seed or Imidacloprid 17.8% SL @ 3 ml/kg seed.",
+                    "Soil application of Phorate 10% G @ 10 kg/acre or Chlorpyrifos 20% EC @ 1.5 L/acre with irrigation."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae; spray host trees (neem/acacia) on field borders after first monsoon rain."
+                ]
+            },
+            "aphids": {
+                "name": "Groundnut Aphid",
+                "scientific_name": "Aphis spp.",
+                "keywords": ["aphid", "aphis", "rosette vector", "sooty mold"],
+                "damage_signs": [
+                    "Colonies suck sap from tender shoots, pegs, and leaf undersides, causing leaf curling and stunted growth",
+                    "Vector of Groundnut Rosette Virus and Peanut Mottle Virus; leaves covered with black sooty mold"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray Neem formulation (10,000 ppm) @ 3 ml/L."
+                ],
+                "prevention": [
+                    "Maintain early plant stand and optimal crop density to discourage aphid landing."
+                ]
             }
         }
     },
@@ -1301,6 +1962,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Timely sowing before 20th October to minimize flowering coincidence with peak aphid flight."
+                ]
+            },
+            "painted_bug": {
+                "name": "Mustard Painted Bug",
+                "scientific_name": "Bagrada hilaris",
+                "keywords": ["painted bug", "bagrada", "seedling wilting", "shield bug"],
+                "damage_signs": [
+                    "Nymphs and adults suck sap from tender cotyledon leaves and young seedlings",
+                    "White patches appear on leaves; seedlings wilt, dry up, and die, necessitating resowing"
+                ],
+                "pest_control": [
+                    "Spray Malathion 50% EC @ 1.5 ml/L or Quinalphos 25% EC @ 1.5 ml/L.",
+                    "Dust Malathion 5% DP @ 10 kg/acre on young seedlings."
+                ],
+                "prevention": [
+                    "Irrigate fields 3-4 weeks after sowing; bug nymphs drown in standing water."
+                ]
+            },
+            "diamondback_moth": {
+                "name": "Diamondback Moth (DBM)",
+                "scientific_name": "Plutella xylostella",
+                "keywords": ["diamondback moth", "dbm", "plutella", "windowing"],
+                "damage_signs": [
+                    "Small pale green caterpillars feed on leaf undersides, biting holes into foliage",
+                    "Transparent whitish patches ('window panes') on leaves followed by extensive shot holes"
+                ],
+                "pest_control": [
+                    "Spray Spinosad 45% SC @ 0.3 ml/L or Chlorantraniliprole 18.5% SC @ 0.3 ml/L.",
+                    "Apply Bacillus thuringiensis (Bt) kurstaki formulation @ 2.0 g/L."
+                ],
+                "prevention": [
+                    "Install DBM pheromone traps @ 5 traps/acre; intercrop with mustard and cabbage."
+                ]
+            },
+            "mustard_sawfly": {
+                "name": "Mustard Sawfly",
+                "scientific_name": "Athalia lugens proxima",
+                "keywords": ["mustard sawfly", "athalia", "grub", "leaf skeleton"],
+                "damage_signs": [
+                    "Dark green to blackish-green grubs chew foliage from margins inward during morning and evening",
+                    "Leaves completely riddled with large circular holes, leaving only major veins intact"
+                ],
+                "pest_control": [
+                    "Handpick and destroy grubs in morning hours.",
+                    "Spray Chlorpyrifos 20% EC @ 2.0 ml/L or Quinalphos 25% EC @ 1.5 ml/L."
+                ],
+                "prevention": [
+                    "Summer ploughing to expose pupae in earthen cocoons to heat and predatory birds."
                 ]
             }
         }
@@ -1401,6 +2110,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Plant African marigold as a border trap crop (1 row marigold for every 16 rows tomato)."
                 ]
+            },
+            "tuta_absoluta": {
+                "name": "Tomato Pinworm / Leafminer",
+                "scientific_name": "Tuta absoluta",
+                "keywords": ["tuta absoluta", "pinworm", "leafminer", "blotch mine"],
+                "damage_signs": [
+                    "Irregular white transparent blotch leaf mines (mesophyll layer consumed) turning necrotic brown",
+                    "Pinhead-sized bore holes near fruit calyx with dark frass pellets and unmarketable rotting fruits"
+                ],
+                "pest_control": [
+                    "Install Tuta pheromone traps @ 15-20 traps/acre for mass trapping.",
+                    "Spray Spinetoram 11.7% SC @ 0.8 ml/L or Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Cyantraniliprole 10.26% OD @ 1.8 ml/L."
+                ],
+                "prevention": [
+                    "Use insect-proof net (40-50 mesh) in greenhouses/nurseries; remove and bury infested fruits immediately."
+                ]
+            },
+            "whitefly": {
+                "name": "Tomato Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "leaf curl vector", "vector"],
+                "damage_signs": [
+                    "Sucking sap from leaf undersides causing chlorotic spots, foliar curling, and honeydew mold",
+                    "Primary vector of devastating Tomato Leaf Curl Virus (ToLCV)"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15-20 traps/acre.",
+                    "Spray Diafenthiuron 50% WP @ 1.2 g/L or Spiromesifen 22.9% SC @ 1.0 ml/L or Pyriproxyfen 10% EC @ 1.5 ml/L."
+                ],
+                "prevention": [
+                    "Raise seedlings under nylon net tunnels; avoid planting near older cucurbit or cotton fields."
+                ]
+            },
+            "thrips": {
+                "name": "Tomato Thrips",
+                "scientific_name": "Thrips tabaci",
+                "keywords": ["thrips", "spotted wilt vector", "tospo virus", "leaf curl"],
+                "damage_signs": [
+                    "Silvery rasping streaks on young leaves, upward cupping, and deformed fruit growth",
+                    "Vector transmitting Tomato Spotted Wilt Virus (TSWV / Groundnut Bud Necrosis Virus)"
+                ],
+                "pest_control": [
+                    "Spray Fipronil 5% SC @ 1.5 ml/L or Acetamiprid 20% SP @ 0.3 g/L.",
+                    "Install blue sticky traps @ 10-15 traps/acre."
+                ],
+                "prevention": [
+                    "Keep field borders clean of weeds; spray Neem formulation (10,000 ppm) @ 3 ml/L at transplanting."
+                ]
             }
         }
     },
@@ -1482,6 +2239,53 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Ensure deep earthing-up (10-15 cm soil cover) so tubers remain unexposed."
                 ]
+            },
+            "aphids": {
+                "name": "Potato Peach Aphid",
+                "scientific_name": "Myzus persicae",
+                "keywords": ["aphid", "myzus", "peach aphid", "virus vector"],
+                "damage_signs": [
+                    "Dense aphid colonies feeding on tender shoots and lower surfaces of potato leaves",
+                    "Leaf crinkling, honeydew excretion, and transmission of Potato Virus Y (PVY) and Leafroll Virus (PLRV)"
+                ],
+                "pest_control": [
+                    "Spray Thiamethoxam 25% WG @ 0.3 g/L or Imidacloprid 17.8% SL @ 0.3 ml/L or Flonicamid 50% WG @ 0.3 g/L."
+                ],
+                "prevention": [
+                    "Adopt Seed Plot Technique; rogue out virus-infected plants early and dehaulm when aphid count crosses critical threshold."
+                ]
+            },
+            "whitefly": {
+                "name": "Potato Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "apical leaf curl vector"],
+                "damage_signs": [
+                    "Sap sucking causing chlorosis, curling of leaves, and sooty mold on potato foliage",
+                    "Primary vector of Potato Apical Leaf Curl Virus"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15 traps/acre.",
+                    "Spray Diafenthiuron 50% WP @ 1.0 g/L or Spiromesifen 22.9% SC @ 1.0 ml/L."
+                ],
+                "prevention": [
+                    "Grow barrier crops like maize around potato seed plots."
+                ]
+            },
+            "cutworm": {
+                "name": "Potato Cutworm",
+                "scientific_name": "Agrotis ipsilon",
+                "keywords": ["cutworm", "agrotis", "stem cutter", "tuber gouger"],
+                "damage_signs": [
+                    "Caterpillars cut young potato stems at ground level during night hours",
+                    "Larvae bore deep, ragged, irregular cavities into shallow developing tubers"
+                ],
+                "pest_control": [
+                    "Soil drenching around plant collar with Chlorpyrifos 20% EC @ 2.5 ml/L during evening.",
+                    "Apply poison bait (wheat bran + jaggery + Malathion) along ridges."
+                ],
+                "prevention": [
+                    "Flood irrigation where possible to force larvae to soil surface for bird predation."
+                ]
             }
         }
     },
@@ -1562,6 +2366,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Sprinkle water via overhead micro-sprinklers during dry hot spells to wash thrips off foliage."
+                ]
+            },
+            "onion_maggot": {
+                "name": "Onion Maggot",
+                "scientific_name": "Delia antiqua",
+                "keywords": ["onion maggot", "delia", "bulb maggot", "decaying bulb"],
+                "damage_signs": [
+                    "Legless white maggots bore into underground seedlings and developing onion bulbs",
+                    "Yellowing and wilting of tubular leaves; bulbs rot into soft, mushy, foul-smelling masses"
+                ],
+                "pest_control": [
+                    "Soil drenching around bulb roots with Chlorpyrifos 20% EC @ 2.5 ml/L.",
+                    "Apply Carbofuran 3% CG @ 10 kg/acre or Fipronil 0.3% G @ 8 kg/acre at transplanting."
+                ],
+                "prevention": [
+                    "Avoid applying raw unfermented manure; destroy infested rotting bulbs during weeding."
+                ]
+            },
+            "tobacco_caterpillar": {
+                "name": "Onion Leaf Caterpillar",
+                "scientific_name": "Spodoptera litura",
+                "keywords": ["tobacco caterpillar", "spodoptera", "leaf borer", "hollow leaf borer"],
+                "damage_signs": [
+                    "Larvae enter hollow tubular onion leaves and feed voraciously from the inside",
+                    "Translucent scratched patches on cylindrical leaves with caterpillar frass inside leaf tubes"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Novaluron 10% EC @ 1.5 ml/L with sticker.",
+                    "Spray SlNPV @ 250 LE/acre in late evening."
+                ],
+                "prevention": [
+                    "Install pheromone traps @ 5 traps/acre for monitoring moth flights."
+                ]
+            },
+            "cutworm": {
+                "name": "Onion Cutworm",
+                "scientific_name": "Agrotis spp.",
+                "keywords": ["cutworm", "agrotis", "seedling cutting", "bulb neck cutter"],
+                "damage_signs": [
+                    "Caterpillars sever young onion seedlings and transplants right at soil line during night",
+                    "Severed tubular leaves pulled down into underground burrows"
+                ],
+                "pest_control": [
+                    "Drench plant collars with Chlorpyrifos 20% EC @ 2.5 ml/L in late evening.",
+                    "Spread poison bait (rice bran + jaggery + insecticide) across beds."
+                ],
+                "prevention": [
+                    "Summer ploughing to desiccate subterranean pupal cells."
                 ]
             }
         }
@@ -1651,6 +2503,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Remove dried leaf sheaths and maintain field sanitation."
                 ]
+            },
+            "rhizome_weevil": {
+                "name": "Banana Corm / Rhizome Weevil",
+                "scientific_name": "Cosmopolites sordidus",
+                "keywords": ["rhizome weevil", "corm weevil", "cosmopolites", "root borer"],
+                "damage_signs": [
+                    "Larvae tunnel through the underground corm/rhizome, riddling tissue with black tunnels",
+                    "Stunted suckers, slow bunch development, and complete toppling of bearing stools ('toppling disease')"
+                ],
+                "pest_control": [
+                    "Pare and dip suckers in Chlorpyrifos 20% EC @ 2.5 ml/L for 15 minutes before planting.",
+                    "Apply disc-on-stump corm traps @ 20 traps/acre treated with Beauveria bassiana."
+                ],
+                "prevention": [
+                    "Plant only clean certified tissue-culture suckers; avoid selecting suckers from infested old plantations."
+                ]
+            },
+            "banana_aphid": {
+                "name": "Banana Aphid",
+                "scientific_name": "Pentalonia nigronervosa",
+                "keywords": ["banana aphid", "pentalonia", "bunchy top vector", "black aphid"],
+                "damage_signs": [
+                    "Dense colonies of dark brown aphids hidden between pseudostem leaf sheaths and around sucker bases",
+                    "Primary transmitting vector for deadly Banana Bunchy Top Virus (BBTV); leaves become upright and rosetted"
+                ],
+                "pest_control": [
+                    "Foliar spray into leaf axils with Imidacloprid 17.8% SL @ 0.3 ml/L or Thiamethoxam 25% WG @ 0.3 g/L.",
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L on suckers and surrounding soil."
+                ],
+                "prevention": [
+                    "Strictly quarantine and rogue out all BBTV bunchy top plants; control ant colonies tending the aphids."
+                ]
+            },
+            "banana_thrips": {
+                "name": "Banana Rust Thrips / Flower Thrips",
+                "scientific_name": "Thrips spp.",
+                "keywords": ["banana thrips", "rust thrips", "fruit staining", "corky peel"],
+                "damage_signs": [
+                    "Thrips feed beneath the bracts and on tender fruit skin fingers in newly emerged bunches",
+                    "Smoky reddish-brown stains or rough corky rust patches on fruit peel, drastically lowering market price"
+                ],
+                "pest_control": [
+                    "Spray bunch with Spinosad 45% SC @ 0.3 ml/L or Chlorpyrifos 20% EC @ 2.0 ml/L at bract fall.",
+                    "Inject young unopened flower buds with Dimethoate 30% EC @ 1 ml/bud."
+                ],
+                "prevention": [
+                    "Bag banana bunches with blue polyethylene sleeves immediately after last hand emerges."
+                ]
             }
         }
     },
@@ -1720,17 +2620,67 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
         "supported_pests": {
             "mango_hopper": {
                 "name": "Mango Hopper",
-                "scientific_name": "Amritodus atkinsoni",
-                "keywords": ["mango hopper", "hopper", "atkinsoni", "blossom hopper"],
+                "scientific_name": "Idioscopus clypealis / Idioscopus nitidulus",
+                "keywords": ["mango hopper", "hopper", "idioscopus", "blossom hopper"],
                 "damage_signs": [
                     "Nymphs and adults suck sap from tender shoots and blossom panicles",
                     "Panicles wither and turn brown; heavy honeydew excretion leads to black sooty mold covering canopy"
                 ],
                 "pest_control": [
-                    "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Thiamethoxam 25% WG @ 0.3 g/L or Buprofezin 25% SC @ 1.5 ml/L."
+                    "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Thiamethoxam 25% WG @ 0.3 g/L or Buprofezin 25% SC @ 1.5 ml/L.",
+                    "First spray at flower bud emergence; second spray at fruit set (pea size)."
                 ],
                 "prevention": [
                     "Open dense canopy through pruning to allow sunlight inside."
+                ]
+            },
+            "mango_mealybug": {
+                "name": "Mango Giant Mealybug",
+                "scientific_name": "Drosicha mangiferae",
+                "keywords": ["mango mealybug", "drosicha", "white mealybug", "tree banding"],
+                "damage_signs": [
+                    "Pinkish nymphs covered with white mealy powder crawl up trunks and swarm tender panicles",
+                    "Heavy sap sucking causing premature dropping of floral panicles and drying of terminal shoots"
+                ],
+                "pest_control": [
+                    "Fasten slippery polythene bands (400 gauge, 30 cm wide) smeared with grease around tree trunk at 1 m height by mid-December.",
+                    "Dust Chlorpyrifos 1.5% DP around tree basin in November to kill emerging nymphs.",
+                    "Spray Chlorpyrifos 20% EC @ 2.5 ml/L or Dimethoate 30% EC @ 2.0 ml/L if nymphs ascend into canopy."
+                ],
+                "prevention": [
+                    "Deep hoeing and soil solarization around tree basin to destroy overwintering egg sacs."
+                ]
+            },
+            "mango_fruit_fly": {
+                "name": "Oriental Mango Fruit Fly",
+                "scientific_name": "Bactrocera dorsalis",
+                "keywords": ["fruit fly", "bactrocera", "maggot in mango", "soft fruit"],
+                "damage_signs": [
+                    "Female fly oviposits under ripening fruit skin, leaving a small puncture puncture with brown exudate",
+                    "Legless maggots feed on internal pulp; fruits rot internally, emit foul odor, and drop prematurely"
+                ],
+                "pest_control": [
+                    "Install methyl eugenol pheromone traps @ 6-8 traps/acre for mass male annihilation.",
+                    "Apply bait spray (10 ml Malathion 50% EC + 100 g jaggery in 10 L water) directed as coarse droplets on lower canopy."
+                ],
+                "prevention": [
+                    "Harvest mango fruits at green mature stage; collect and bury dropped punctured fruits deep in soil."
+                ]
+            },
+            "shoot_gall_maker": {
+                "name": "Mango Shoot Gall Psylla",
+                "scientific_name": "Apsylla cistellata",
+                "keywords": ["shoot gall", "psylla", "apsylla", "conical gall"],
+                "damage_signs": [
+                    "Nymphal feeding transforms vegetative and floral buds into hard, green, conical galls resembling pine cones",
+                    "Complete failure of flower panicle emergence from affected galled terminals"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Quinalphos 25% EC @ 2.0 ml/L in August-September during nymphal emergence.",
+                    "Prune and burn conical shoot galls before adult psylla emergence in March."
+                ],
+                "prevention": [
+                    "Regular post-harvest orchard pruning to eliminate gall clusters."
                 ]
             }
         }
@@ -1812,6 +2762,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Remove alternate weed hosts (Parthenium hysterophorus) around the plantation."
                 ]
+            },
+            "whitefly": {
+                "name": "Papaya Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "leaf curl vector", "vector"],
+                "damage_signs": [
+                    "Sap sucking on leaf undersides causing chlorotic speckles and foliar yellowing",
+                    "Primary insect vector of Papaya Leaf Curl Virus (PaLCuV)"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15 traps/acre.",
+                    "Spray Diafenthiuron 50% WP @ 1.0 g/L or Spiromesifen 22.9% SC @ 1.0 ml/L."
+                ],
+                "prevention": [
+                    "Raise nursery seedlings under 40-mesh nylon insect-proof net tunnels."
+                ]
+            },
+            "aphids": {
+                "name": "Papaya Aphid / Ringspot Vector",
+                "scientific_name": "Aphis gossypii",
+                "keywords": ["aphid", "aphis", "ringspot vector", "prsv vector"],
+                "damage_signs": [
+                    "Transient probing of leaves by winged aphids transmitting Papaya Ringspot Virus (PRSV)",
+                    "Leaves develop shoe-stringing, mottling, and water-soaked oily streaks on petioles"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray 1% mineral oil (horticultural oil) weekly to interfere with non-persistent viral stylet transmission."
+                ],
+                "prevention": [
+                    "Grow border barrier crops of maize or sorghum (3-4 rows) around papaya orchards."
+                ]
+            },
+            "red_spider_mite": {
+                "name": "Papaya Red Spider Mite",
+                "scientific_name": "Tetranychus spp.",
+                "keywords": ["red spider mite", "tetranychus", "mite webbing", "chlorotic stippling"],
+                "damage_signs": [
+                    "Minute reddish mites spinning fine delicate webs on leaf undersides and fruit surfaces",
+                    "Whitish-yellow stippling on leaf blades, which turn bronzed, leathery, and shed prematurely"
+                ],
+                "pest_control": [
+                    "Spray Fenpyroximate 5% EC @ 1.0 ml/L or Spiromesifen 22.9% SC @ 1.0 ml/L or Wettable Sulphur 80% WP @ 3.0 g/L.",
+                    "Ensure thorough coverage of leaf undersides with high-volume spray."
+                ],
+                "prevention": [
+                    "Avoid water deficit stress and dusty conditions which favor rapid mite outbreaks."
+                ]
             }
         }
     },
@@ -1892,6 +2890,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Use woolly aphid resistant rootstocks (MM 106, MM 111)."
                 ]
+            },
+            "san_jose_scale": {
+                "name": "San Jose Scale",
+                "scientific_name": "Quadraspidiotus perniciosus",
+                "keywords": ["san jose scale", "scale insect", "red halo", "quadraspidiotus"],
+                "damage_signs": [
+                    "Small circular ash-gray armored scale encrustations covering bark, twigs, leaves, and fruit",
+                    "Characteristic bright red or pink rings/halos surrounding scales on apples and green shoots"
+                ],
+                "pest_control": [
+                    "Dormant winter spray: Apply Tree Spray Oil (Horticultural Mineral Oil) @ 2% (20 ml/L) during delayed dormant stage.",
+                    "Crawler emergence spray: Chlorpyrifos 20% EC @ 2.0 ml/L or Pyriproxyfen 10% EC @ 1.0 ml/L."
+                ],
+                "prevention": [
+                    "Prune and burn heavily encrusted branches; conserve parasitoid Encarsia perniciosi."
+                ]
+            },
+            "codling_moth": {
+                "name": "Apple Codling Moth",
+                "scientific_name": "Cydia pomonella",
+                "keywords": ["codling moth", "cydia", "worm in apple", "calyx entry"],
+                "damage_signs": [
+                    "Larva bores through calyx or side of fruit straight into the core, feeding on apple seeds",
+                    "Entry holes surrounded by dark reddish-brown frass; premature drop of wormy fruits"
+                ],
+                "pest_control": [
+                    "Install Cydia pheromone traps @ 5 traps/acre for flight monitoring.",
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.4 ml/L or Emamectin Benzoate 5% SG @ 0.5 g/L at egg hatch."
+                ],
+                "prevention": [
+                    "Band trunks with corrugated cardboard in summer to trap pupating larvae; fruit thinning and sanitation."
+                ]
+            },
+            "apple_clearwing_moth": {
+                "name": "Apple Clearwing Moth / Root Borer",
+                "scientific_name": "Synanthedon myopaeformis",
+                "keywords": ["clearwing moth", "synanthedon", "bark borer", "canker borer"],
+                "damage_signs": [
+                    "Larvae tunnel under the bark and into graft unions or pruning stubs",
+                    "Reddish-brown frass extruded from bark crevices; progressive decline and branch dieback"
+                ],
+                "pest_control": [
+                    "Pheromone mating disruption dispensers; bark spray with Chlorpyrifos 20% EC @ 3.0 ml/L on lower trunk.",
+                    "Swab graft unions with copper fungicide + insecticide paste."
+                ],
+                "prevention": [
+                    "Avoid mechanical trunk injuries from weeding equipment; paint lower trunks with white latex paint."
+                ]
             }
         }
     },
@@ -1961,8 +3007,8 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
         "supported_pests": {
             "thrips": {
                 "name": "Grapevine Thrips",
-                "scientific_name": "Rhipiphorothrips cruentatus",
-                "keywords": ["thrips", "grape thrips", "scab on berries", "scab"],
+                "scientific_name": "Scirtothrips dorsalis",
+                "keywords": ["thrips", "grape thrips", "scab on berries", "scab", "scirtothrips"],
                 "damage_signs": [
                     "Rasped corky scabs on berry skin, reducing marketability; leaves curl boat-shaped upward"
                 ],
@@ -1972,6 +3018,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Overhead misting to disrupt thrips life cycle."
+                ]
+            },
+            "grape_mealybug": {
+                "name": "Grapevine Mealybug",
+                "scientific_name": "Maconellicoccus hirsutus",
+                "keywords": ["grape mealybug", "maconellicoccus", "pink mealybug", "sooty bunch"],
+                "damage_signs": [
+                    "Colonies of pink mealybugs covered in white wax cluster inside fruit bunches and under bark",
+                    "Copious honeydew covers berries, promoting dense black sooty mold and making bunches unfit for market"
+                ],
+                "pest_control": [
+                    "Release predatory Australian ladybird beetle Cryptolaemus montrouzieri @ 600-1000 beetles/acre.",
+                    "Bark swabbing with Chlorpyrifos 20% EC @ 2.5 ml/L; spray Buprofezin 25% SC @ 1.5 ml/L or Spirotetramat 15.31% OD @ 0.7 ml/L."
+                ],
+                "prevention": [
+                    "Remove loose dead bark from main stem and arms after pruning; apply sticky bands on trunk."
+                ]
+            },
+            "flea_beetle": {
+                "name": "Grapevine Flea Beetle / Udhadya",
+                "scientific_name": "Scelodonta strigicollis",
+                "keywords": ["flea beetle", "scelodonta", "udhadya", "shot hole beetle"],
+                "damage_signs": [
+                    "Shiny bronze-copper beetles eat swelling buds after October pruning, preventing shoot emergence",
+                    "Mature foliage shows characteristic rectangular or irregular shot-hole perforations"
+                ],
+                "pest_control": [
+                    "Spray Spinosad 45% SC @ 0.3 ml/L or Lambda-cyhalothrin 5% EC @ 1.0 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L immediately after forward pruning.",
+                    "Remove loose bark where adult beetles shelter during daytime."
+                ],
+                "prevention": [
+                    "Shake vines over an oil-coated tray early in the morning to drop and collect adult beetles."
+                ]
+            },
+            "grape_leafhopper": {
+                "name": "Grape Leafhopper",
+                "scientific_name": "Arboridia spp.",
+                "keywords": ["leafhopper", "arboridia", "hopperburn", "yellow stippling"],
+                "damage_signs": [
+                    "Nymphs and adults feed on leaf undersides, producing minute white or yellow stipples",
+                    "Severe feeding causes leaf margins to burn and dry up ('hopperburn'), leading to early defoliation"
+                ],
+                "pest_control": [
+                    "Spray Thiamethoxam 25% WG @ 0.3 g/L or Acetamiprid 20% SP @ 0.3 g/L.",
+                    "Install yellow sticky traps @ 10 traps/acre."
+                ],
+                "prevention": [
+                    "Maintain open canopy architecture through prompt lateral shoot tipping."
                 ]
             }
         }
@@ -2053,6 +3147,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Remove and bury punctured bored fruits."
                 ]
+            },
+            "thrips": {
+                "name": "Pomegranate Thrips",
+                "scientific_name": "Scirtothrips dorsalis",
+                "keywords": ["thrips", "scirtothrips", "corky rind", "scab on fruit"],
+                "damage_signs": [
+                    "Nymphs and adults lacerate tender leaves and calyx of young fruitlets",
+                    "Circular brown scab / corky patches form on fruit rind around the calyx, severely reducing market grade"
+                ],
+                "pest_control": [
+                    "Spray Spinetoram 11.7% SC @ 0.8 ml/L or Fipronil 5% SC @ 1.5 ml/L.",
+                    "Install blue sticky traps @ 15 traps/acre."
+                ],
+                "prevention": [
+                    "Clean orchard sanitation; avoid water stress during flowering."
+                ]
+            },
+            "aphids": {
+                "name": "Pomegranate Aphid",
+                "scientific_name": "Aphis punicae",
+                "keywords": ["aphid", "aphis punicae", "anar aphid", "curled leaves"],
+                "damage_signs": [
+                    "Colonies suck sap from new vegetative flushes, tender flowers, and small fruitlets",
+                    "Leaves curl downwards, shoots become stunted, and sooty mold covers foliage"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray Neem oil (10,000 ppm) @ 3 ml/L at early bud break."
+                ],
+                "prevention": [
+                    "Conserve ladybird beetles and chrysoperla predators."
+                ]
+            },
+            "mealybugs": {
+                "name": "Pomegranate Mealybug",
+                "scientific_name": "Phenacoccus spp.",
+                "keywords": ["mealybug", "phenacoccus", "white wax", "calyx mealybug"],
+                "damage_signs": [
+                    "White waxy cottony colonies clustered inside the fruit calyx and on fruit surface",
+                    "Fruit growth stops, skin turns yellow, and thick black sooty mold makes fruit unmarketable"
+                ],
+                "pest_control": [
+                    "Spray Buprofezin 25% SC @ 1.5 ml/L or Profenofos 50% EC @ 2.0 ml/L with sticker.",
+                    "Release predatory beetle Cryptolaemus montrouzieri @ 500/acre."
+                ],
+                "prevention": [
+                    "Apply sticky bands around tree trunks to prevent ants from moving mealybugs."
+                ]
             }
         }
     },
@@ -2133,6 +3275,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Deep summer plowing to expose pupae to predatory birds."
                 ]
+            },
+            "aphids": {
+                "name": "Melon Aphid",
+                "scientific_name": "Aphis gossypii",
+                "keywords": ["aphid", "aphis gossypii", "melon aphid", "curled leaves"],
+                "damage_signs": [
+                    "Dense aphid colonies suck sap from leaf undersides causing leaves to curl downwards and wrinkle",
+                    "Copious honeydew excretion leads to sooty mold; transmitting vector for Cucumber Mosaic Virus (CMV)"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE) at early colony detection."
+                ],
+                "prevention": [
+                    "Install yellow sticky traps @ 15 traps/acre; conserve coccinellid ladybird beetles."
+                ]
+            },
+            "whitefly": {
+                "name": "Watermelon Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "silverleaf", "yellowing"],
+                "damage_signs": [
+                    "Nymphs and adults feed on leaf undersides causing chlorotic speckles, leaf silvering, and vine stunting",
+                    "Transmits Watermelon Chlorotic Stunt Virus (WCSV)"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15-20 traps/acre.",
+                    "Spray Diafenthiuron 50% WP @ 1.0 g/L or Spiromesifen 22.9% SC @ 1.0 ml/L."
+                ],
+                "prevention": [
+                    "Use silver reflective plastic mulch to repel landing whiteflies."
+                ]
+            },
+            "melon_fruit_fly": {
+                "name": "Melon Fruit Fly",
+                "scientific_name": "Bactrocera cucurbitae",
+                "keywords": ["fruit fly", "bactrocera", "maggot in watermelon", "soft rind rot"],
+                "damage_signs": [
+                    "Female fly punctures young melon rind to lay eggs; punctured site exudes gummy drops",
+                    "Maggots tunnel into pulp causing watery decay, internal fruit rot, and premature fruit collapse"
+                ],
+                "pest_control": [
+                    "Install cue-lure pheromone traps @ 6-8 traps/acre for mass male trapping.",
+                    "Apply poison bait spray (Malathion 50% EC @ 2 ml/L + 10 g jaggery/L) on border plants."
+                ],
+                "prevention": [
+                    "Collect and destroy all punctured dropped fruits; bag young developing fruits."
+                ]
             }
         }
     },
@@ -2209,6 +3399,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Collect and deeply bury fallen and infested fruits in soil."
+                ]
+            },
+            "red_pumpkin_beetle": {
+                "name": "Muskmelon Pumpkin Beetle",
+                "scientific_name": "Aulacophora foveicollis",
+                "keywords": ["red pumpkin beetle", "aulacophora", "cotyledon feeder", "leaf holes"],
+                "damage_signs": [
+                    "Adult beetles devour young cotyledons and cut neat circular rings into mature leaves",
+                    "Subterranean grubs bore into roots and fruit surfaces resting on damp soil"
+                ],
+                "pest_control": [
+                    "Dust wood ash mixed with kerosene (1:50) on seedlings in early morning dew.",
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Chlorpyrifos 20% EC @ 2.0 ml/L."
+                ],
+                "prevention": [
+                    "Early sowing under low plastic tunnels to bypass peak spring beetle emergence."
+                ]
+            },
+            "aphids": {
+                "name": "Muskmelon Aphid",
+                "scientific_name": "Aphis gossypii",
+                "keywords": ["aphid", "aphis", "honeydew", "leaf distortion"],
+                "damage_signs": [
+                    "Dense colonies cluster on growing vine tips and under leaves, sucking sap",
+                    "Cupping and crinkling of leaves with heavy honeydew coating and black sooty mold"
+                ],
+                "pest_control": [
+                    "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Acetamiprid 20% SP @ 0.3 g/L.",
+                    "Spray Neem formulation (10,000 ppm) @ 3 ml/L."
+                ],
+                "prevention": [
+                    "Conserve syrphid fly larvae and predatory green lacewings."
+                ]
+            },
+            "whitefly": {
+                "name": "Muskmelon Whitefly",
+                "scientific_name": "Bemisia tabaci",
+                "keywords": ["whitefly", "bemisia", "cucurbit yellowing", "vector"],
+                "damage_signs": [
+                    "Continuous phloem sap draining leading to foliar yellowing and premature drying",
+                    "Transmits Cucurbit Yellow Stunting Disorder Virus (CYSDV)"
+                ],
+                "pest_control": [
+                    "Install yellow sticky traps @ 15 traps/acre.",
+                    "Spray Thiamethoxam 25% WG @ 0.3 g/L or Spiromesifen 22.9% SC @ 1.0 ml/L."
+                ],
+                "prevention": [
+                    "Avoid overlapping cucurbit crops in adjoining plots."
                 ]
             }
         }
@@ -2291,6 +3529,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Synchronize vegetative flushes through proper irrigation management."
+                ]
+            },
+            "citrus_psylla": {
+                "name": "Citrus Psylla",
+                "scientific_name": "Diaphorina citri",
+                "keywords": ["citrus psylla", "diaphorina", "hlb vector", "greening vector"],
+                "damage_signs": [
+                    "Nymphs and adults feed head-down at a 45-degree angle on tender flush, producing waxy white threads",
+                    "Primary vector of deadly Citrus Greening (Huanglongbing - HLB); foliage shows yellow mottled dieback"
+                ],
+                "pest_control": [
+                    "Spray Imidacloprid 17.8% SL @ 0.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L or Dimethoate 30% EC @ 1.5 ml/L.",
+                    "Apply spray at the very first initiation of new vegetative flush (feather flush stage)."
+                ],
+                "prevention": [
+                    "Remove ornamental alternate hosts like Murraya paniculata (Kamini/Orange Jasmine) near orchards."
+                ]
+            },
+            "citrus_blackfly": {
+                "name": "Citrus Blackfly / Whitefly",
+                "scientific_name": "Aleurocanthus woglumi",
+                "keywords": ["citrus blackfly", "aleurocanthus", "spiny nymph", "sooty black"],
+                "damage_signs": [
+                    "Nymphs are spiny and jet-black, forming dense crusts on leaf undersides",
+                    "Extreme secretion of honeydew causing heavy coal-black sooty mold covering leaves and oranges"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Acetamiprid 20% SP @ 0.3 g/L.",
+                    "Spray 2% Horticultural Mineral Oil to suffocate scale-like blackfly nymphs."
+                ],
+                "prevention": [
+                    "Conserve aphelinid parasitoids Encarsia and Amitus hesperidum."
+                ]
+            },
+            "citrus_mealybug": {
+                "name": "Citrus Mealybug",
+                "scientific_name": "Planococcus citri",
+                "keywords": ["citrus mealybug", "planococcus", "cottony wax", "fruit stem mealybug"],
+                "damage_signs": [
+                    "Cottony white oval insects cluster around fruit stalks, button joints, and under foliage",
+                    "Weakens fruit attachment causing premature fruit drop; covered in sticky honeydew and sooty mold"
+                ],
+                "pest_control": [
+                    "Spray Buprofezin 25% SC @ 1.5 ml/L or Profenofos 50% EC @ 2.0 ml/L with sticker.",
+                    "Release predatory beetle Cryptolaemus montrouzieri @ 500-1000 beetles/acre."
+                ],
+                "prevention": [
+                    "Wrap sticky barrier bands around trunks to prevent symbiotic ants from protecting mealybugs."
                 ]
             }
         }
@@ -2375,6 +3661,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Treat manure pits and compost heaps with Metarhizium anisopliae or Carbaryl to kill grubs."
                 ]
+            },
+            "red_palm_weevil": {
+                "name": "Red Palm Weevil",
+                "scientific_name": "Rhynchophorus ferrugineus",
+                "keywords": ["red palm weevil", "rhynchophorus", "trunk borer", "crown wilting"],
+                "damage_signs": [
+                    "Fermented sap oozes from small holes on trunk accompanied by extruded chewed fibrous cocoons",
+                    "Gnawing sound of grubs audible inside trunk; central crown wilts and topples off suddenly ('headless palm')"
+                ],
+                "pest_control": [
+                    "Install Ferrolure aggregation pheromone traps @ 2 traps/acre with food bait.",
+                    "Trunk injection: Drench bore holes with Imidacloprid 17.8% SL @ 2 ml/L or Chlorpyrifos 20% EC @ 5 ml/L and plug with clay."
+                ],
+                "prevention": [
+                    "Avoid cutting green fronds flush with trunk; leave petiole base (1.2 m) to prevent weevil oviposition."
+                ]
+            },
+            "eriophyid_mite": {
+                "name": "Coconut Eriophyid Mite",
+                "scientific_name": "Aceria guerreronis",
+                "keywords": ["eriophyid mite", "aceria", "nut triangular patch", "corky button"],
+                "damage_signs": [
+                    "Microscopic mites feed beneath the perianth (calyx button) of young 1-3 month old button nuts",
+                    "Pale triangular patches that turn into brown, corky, cracked fissures on nut skin; stunted malformed nuts"
+                ],
+                "pest_control": [
+                    "Crown spray or root feeding with Azadirachtin 10,000 ppm @ 10 ml in 100 ml water/palm.",
+                    "Spot spray nut bunches with Fenpyroximate 5% EC @ 1.5 ml/L or Wettable Sulphur 80% WP @ 4.0 g/L."
+                ],
+                "prevention": [
+                    "Nutrient management: Apply recommended Potassium, Magnesium, and Boron to boost nut rind resistance."
+                ]
+            },
+            "black_headed_caterpillar": {
+                "name": "Black-Headed Caterpillar",
+                "scientific_name": "Opisina arenosella",
+                "keywords": ["black headed caterpillar", "opisina", "burnt fronds", "silk galleries"],
+                "damage_signs": [
+                    "Caterpillars construct silk galleries packed with frass on undersides of lower frond leaflets",
+                    "Scraped green parenchymatous tissue causes leaflets to dry up, giving entire crown a scorched 'burnt' appearance"
+                ],
+                "pest_control": [
+                    "Release larval parasitoids Goniozus nephantidis @ 20 wasps/palm or Bracon brevicornis.",
+                    "Root feeding with Azadirachtin 5% @ 10 ml in 100 ml water/palm."
+                ],
+                "prevention": [
+                    "Cut and burn heavily infested bottom fronds during initial infestation."
+                ]
             }
         }
     },
@@ -2449,6 +3783,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Draw a kerosene-treated rope across the field canopy to dislodge caterpillars."
+                ]
+            },
+            "hairy_caterpillar": {
+                "name": "Bihar Hairy Caterpillar",
+                "scientific_name": "Spilosoma obliqua",
+                "keywords": ["hairy caterpillar", "spilosoma", "defoliator", "dense hairs"],
+                "damage_signs": [
+                    "Early instars feed gregariously on leaf undersides, leaving only papery white leaf skeletons",
+                    "Later instars disperse across field, voraciously devouring all foliage and green stem bark"
+                ],
+                "pest_control": [
+                    "Handpick and destroy gregarious leaf clusters in early stage.",
+                    "Spray Chlorpyrifos 20% EC @ 2.5 ml/L or Quinalphos 25% EC @ 2.0 ml/L."
+                ],
+                "prevention": [
+                    "Dig trenches around infested fields and dust with Malathion 5% DP."
+                ]
+            },
+            "stem_weevil": {
+                "name": "Jute Stem Weevil",
+                "scientific_name": "Apion corchori",
+                "keywords": ["stem weevil", "apion", "stem knot", "fibrous knot"],
+                "damage_signs": [
+                    "Female weevil punctures stem near leaf base to oviposit; grubs bore into stem core",
+                    "Stem swells into a characteristic knot/gall at the puncture point, causing fiber breakage during retting"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Cypermethrin 10% EC @ 1.0 ml/L at first appearance of adult weevils.",
+                    "Apply Carbofuran 3% CG @ 10 kg/acre in soil at weeding."
+                ],
+                "prevention": [
+                    "Uproot and burn stubbles after harvest; avoid leaving volunteer jute plants on field bunds."
+                ]
+            },
+            "jute_aphid": {
+                "name": "Jute Aphid",
+                "scientific_name": "Myzus persicae",
+                "keywords": ["aphid", "myzus", "jute aphid", "curled tops"],
+                "damage_signs": [
+                    "Colonies suck sap from apical buds and leaf undersides",
+                    "Terminal leaves curl, become crinkled, and internode elongation is severely stunted"
+                ],
+                "pest_control": [
+                    "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Dimethoate 30% EC @ 1.5 ml/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE)."
+                ],
+                "prevention": [
+                    "Conserve natural predators: ladybird beetles and syrphids."
                 ]
             }
         }
@@ -2529,6 +3911,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Thorough clean stripping harvest: collect all gleanings and left-over berries from trees and ground."
+                ]
+            },
+            "white_stem_borer": {
+                "name": "Coffee White Stem Borer",
+                "scientific_name": "Xylotrechus quadripes",
+                "keywords": ["white stem borer", "xylotrechus", "stem ridges", "wilting coffee"],
+                "damage_signs": [
+                    "Grubs tunnel extensively through hardwood of main stem and thick roots",
+                    "Characteristic raised ring-like ridges on trunk bark; yellowing of foliage and death of bearing bushes"
+                ],
+                "pest_control": [
+                    "Swab main stem and thick primaries up to 1 m with Chlorpyrifos 20% EC @ 6 ml/L during flight periods (April-May & Oct-Nov).",
+                    "Install cross-vane pheromone traps for adult monitoring."
+                ],
+                "prevention": [
+                    "Trace, uproot, and burn infested borer trees before flight season; maintain dense two-tier overhead shade."
+                ]
+            },
+            "green_scale": {
+                "name": "Coffee Green Scale",
+                "scientific_name": "Coccus viridis",
+                "keywords": ["green scale", "coccus", "sooty mold", "ant attended"],
+                "damage_signs": [
+                    "Flat pale green oval soft scales encrusted along leaf veins, tender green shoots, and berries",
+                    "Heavy honeydew secretion leads to thick black sooty mold; leaves wither and shed"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Dimethoate 30% EC @ 1.5 ml/L mixed with soap sticker.",
+                    "Apply sticky bands or spray Chlorpyrifos around trunk base to keep attending ants off bushes."
+                ],
+                "prevention": [
+                    "Conserve entomopathogenic fungus Lecanicillium lecanii; prune low hanging branches touching ground."
+                ]
+            },
+            "mealybugs": {
+                "name": "Coffee Root & Shoot Mealybug",
+                "scientific_name": "Planococcus spp.",
+                "keywords": ["mealybug", "planococcus", "root mealybug", "white cottony wax"],
+                "damage_signs": [
+                    "White waxy cottony colonies clustered around root collar, nodes, and flower/berry clusters",
+                    "Yellowing of leaves, blossom abortion, and drying of fruit clusters; association with root-decaying fungus"
+                ],
+                "pest_control": [
+                    "Soil drenching around bush base with Chlorpyrifos 20% EC @ 3 ml/L.",
+                    "Foliar spray: Buprofezin 25% SC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.4 g/L."
+                ],
+                "prevention": [
+                    "Control symbiotic ants (Crematogaster and Solenopsis); release Cryptolaemus ladybird beetles."
                 ]
             }
         }
@@ -2631,6 +4061,38 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Maintain adequate field moisture and eliminate alternate weed hosts."
                 ]
+            },
+            "aphids": {
+                "name": "Chilli Aphid",
+                "scientific_name": "Aphis gossypii",
+                "keywords": ["aphid", "aphis", "chilli aphid", "curled tips", "vector"],
+                "damage_signs": [
+                    "Colonies congregated on tender leaf buds and petioles sucking sap",
+                    "Leaves curl downwards with sticky honeydew attracting black sooty mold; transmits Cucumber Mosaic Virus"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Imidacloprid 17.8% SL @ 0.3 ml/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE)."
+                ],
+                "prevention": [
+                    "Install yellow sticky traps @ 15 traps/acre; conserve chrysoperla predators."
+                ]
+            },
+            "fruit_borer": {
+                "name": "Chilli Fruit Borer / Pod Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["fruit borer", "helicoverpa", "chilli borer", "pod hole"],
+                "damage_signs": [
+                    "Larvae bore round holes into developing green and ripening red chilli pods",
+                    "Seeds devoured inside pods; damaged pods turn white, rot, and fall off prematurely"
+                ],
+                "pest_control": [
+                    "Spray Chlorantraniliprole 18.5% SC @ 0.3 ml/L or Emamectin Benzoate 5% SG @ 0.4 g/L or Flubendiamide 39.35% SC @ 0.2 ml/L.",
+                    "Spray HaNPV @ 250 LE/acre during evening hours."
+                ],
+                "prevention": [
+                    "Plant African marigold as border trap crop (1 row marigold : 16 rows chilli)."
+                ]
             }
         }
     },
@@ -2709,6 +4171,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Prune and destroy bored shoots early in infestation."
                 ]
+            },
+            "rhizome_scale": {
+                "name": "Turmeric Rhizome Scale",
+                "scientific_name": "Aspidiella hartii",
+                "keywords": ["rhizome scale", "aspidiella", "storage scale", "shriveled rhizome"],
+                "damage_signs": [
+                    "Minute circular gray or light brown scales encrusted over stored seed rhizomes and underground fingers",
+                    "Rhizomes become shriveled, desiccated, and fail to sprout after planting"
+                ],
+                "pest_control": [
+                    "Dip seed rhizomes in Quinalphos 25% EC @ 1.5 ml/L for 15 minutes before storage and planting.",
+                    "Spray Chlorpyrifos 20% EC @ 2.5 ml/L if scale infestation appears in field beds."
+                ],
+                "prevention": [
+                    "Discard heavily encrusted scaly rhizomes before storing; store seed rhizomes in well-aerated pits."
+                ]
+            },
+            "thrips": {
+                "name": "Turmeric Thrips",
+                "scientific_name": "Panchaetothrips indicus",
+                "keywords": ["turmeric thrips", "panchaetothrips", "foliar rolling", "silvery leaf"],
+                "damage_signs": [
+                    "Nymphs and adults feed on leaf blades causing margins to roll inward longitudinally",
+                    "Leaves develop silvery white patches that turn yellowish-brown and wither dry"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Fipronil 5% SC @ 1.5 ml/L.",
+                    "Install blue sticky traps @ 10 traps/acre."
+                ],
+                "prevention": [
+                    "Ensure adequate field irrigation; dry spells encourage rapid thrips multiplication."
+                ]
+            },
+            "leaf_roller": {
+                "name": "Turmeric Leaf Roller / Skipper",
+                "scientific_name": "Udaspes folus",
+                "keywords": ["leaf roller", "udaspes", "skipper caterpillar", "rolled leaf tube"],
+                "damage_signs": [
+                    "Smooth green caterpillar with dark head rolls leaf blade into a tube and feeds from inside",
+                    "Extensive foliar defoliation during monsoon flush months (August-October)"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Chlorantraniliprole 18.5% SC @ 0.3 ml/L.",
+                    "Handpick and destroy rolled leaf tubes in smaller plots."
+                ],
+                "prevention": [
+                    "Eliminate wild ginger and arrowroot weed hosts from surrounding orchard boundaries."
+                ]
             }
         }
     },
@@ -2784,6 +4294,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Install pheromone traps @ 5 traps/acre."
+                ]
+            },
+            "sunflower_beetle": {
+                "name": "Sunflower Leaf Beetle",
+                "scientific_name": "Zygogramma bicolorata",
+                "keywords": ["sunflower beetle", "zygogramma", "leaf defoliator", "chrysomelid"],
+                "damage_signs": [
+                    "Adult striped beetles and grubs chew irregular notches and large holes into leaves",
+                    "Severe infestation leads to complete defoliation, stunting capitulum size and seed development"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Chlorpyrifos 20% EC @ 2.0 ml/L.",
+                    "Hand collection of beetles in early morning."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose overwintering adult beetles in the soil."
+                ]
+            },
+            "thrips": {
+                "name": "Sunflower Thrips",
+                "scientific_name": "Thrips spp.",
+                "keywords": ["thrips", "sunflower thrips", "necrosis vector", "silvering"],
+                "damage_signs": [
+                    "Rasped silver-white streaks on leaves and seedling deformation",
+                    "Primary vector transmitting devastating Sunflower Necrosis Virus (TSCV / Tobamovirus)"
+                ],
+                "pest_control": [
+                    "Spray Imidacloprid 17.8% SL @ 0.3 ml/L or Fipronil 5% SC @ 1.5 ml/L.",
+                    "Install blue and yellow sticky traps @ 10 traps/acre."
+                ],
+                "prevention": [
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed to protect early vegetative growth."
+                ]
+            },
+            "aphids": {
+                "name": "Sunflower Aphid",
+                "scientific_name": "Aphis spp.",
+                "keywords": ["aphid", "aphis", "head aphid", "curled leaves"],
+                "damage_signs": [
+                    "Colonies mass beneath leaves and around the base of developing sunflower capitulum",
+                    "Leaf curling, sticky honeydew accumulation, and malformed stunted flower heads"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L.",
+                    "Spray 5% Neem Seed Kernel Extract (NSKE)."
+                ],
+                "prevention": [
+                    "Conserve ladybird beetles (Coccinella septempunctata) and chrysoperla predators."
                 ]
             }
         }
@@ -2864,6 +4422,53 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 "prevention": [
                     "Early sowing within 10-14 days of monsoon onset; use higher seed rate (10-12 kg/ha) and thin out dead hearts."
                 ]
+            },
+            "stem_borer": {
+                "name": "Sorghum Stem Borer",
+                "scientific_name": "Chilo partellus",
+                "keywords": ["stem borer", "chilo", "shot holes", "peduncle tunneling"],
+                "damage_signs": [
+                    "Parallel shot-holes in leaves as they unfold from the central whorl",
+                    "Stem tunneling causing dead hearts in older plants and peduncle breakage with chaffy earheads"
+                ],
+                "pest_control": [
+                    "Whorl application of Cartap Hydrochloride 4% G @ 5 kg/acre or Chlorantraniliprole 0.4% G @ 4 kg/acre at 25-30 DAS.",
+                    "Release egg parasitoid Trichogramma chilonis @ 40,000 wasps/acre."
+                ],
+                "prevention": [
+                    "Uproot and destroy stubbles after harvest to kill diapausing larvae."
+                ]
+            },
+            "sorghum_midge": {
+                "name": "Sorghum Midge",
+                "scientific_name": "Stenodiplosis sorghicola",
+                "keywords": ["sorghum midge", "stenodiplosis", "empty glumes", "chaffy earhead"],
+                "damage_signs": [
+                    "Tiny orange-red midges lay eggs in spikelets at flowering; maggots consume developing ovary",
+                    "Earheads remain chaffy and empty ('blasted' head appearance) with orange pupal skins sticking to glumes"
+                ],
+                "pest_control": [
+                    "Dust Malathion 5% DP @ 10 kg/acre or spray Chlorpyrifos 20% EC @ 2.0 ml/L at 50% flowering.",
+                    "Repeat spray 4-5 days later if midge flight persists."
+                ],
+                "prevention": [
+                    "Synchronized uniform planting in a locality to avoid staggered flowering periods."
+                ]
+            },
+            "head_bug": {
+                "name": "Sorghum Earhead Bug",
+                "scientific_name": "Calocoris angustatus",
+                "keywords": ["head bug", "calocoris", "mirid bug", "shriveled grains"],
+                "damage_signs": [
+                    "Nymphs and adults suck sap from tender grains in milk stage",
+                    "Grains become shriveled, blackened, and covered with red-brown feeding punctures, dramatically lowering flour quality"
+                ],
+                "pest_control": [
+                    "Dust Quinalphos 1.5% DP @ 10 kg/acre or spray Malathion 50% EC @ 2.0 ml/L at milk stage."
+                ],
+                "prevention": [
+                    "Cultivate loose, open-panicle sorghum varieties that discourage bug aggregation."
+                ]
             }
         }
     },
@@ -2931,16 +4536,63 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
         "supported_pests": {
             "shoot_fly": {
                 "name": "Bajra Shoot Fly",
-                "scientific_name": "Atherigona soccata",
-                "keywords": ["shoot fly", "dead heart", "atherigona"],
+                "scientific_name": "Atherigona approximata",
+                "keywords": ["shoot fly", "dead heart", "atherigona", "approximata"],
                 "damage_signs": [
-                    "Seedling central leaf withers and dries into a dead heart"
+                    "Seedling central leaf withers and dries into a dead heart within 3-4 weeks of germination",
+                    "Profuse tillering of weak, stunted, unproductive tillers"
                 ],
                 "pest_control": [
-                    "Spray Chlorpyrifos 20% EC @ 2.0 ml/L."
+                    "Seed treatment with Imidacloprid 70% WS @ 5 g/kg seed or Thiamethoxam 30% FS @ 6 ml/kg seed.",
+                    "Spray Chlorpyrifos 20% EC @ 2.0 ml/L or Dimethoate 30% EC @ 1.5 ml/L at 7 and 14 days after emergence."
                 ],
                 "prevention": [
-                    "Early synchronized community sowing."
+                    "Early synchronized community sowing with the onset of monsoon."
+                ]
+            },
+            "stem_borer": {
+                "name": "Millet Stem Borer",
+                "scientific_name": "Coniesta ignefusalis",
+                "keywords": ["stem borer", "coniesta", "dead heart", "stalk borer"],
+                "damage_signs": [
+                    "Caterpillars bore into stalks, causing dead hearts in young plants and stalk lodging in mature crop",
+                    "Extensive internal stem frass and poor head development"
+                ],
+                "pest_control": [
+                    "Apply Chlorantraniliprole 0.4% G @ 4 kg/acre or Cartap Hydrochloride 4% G @ 5 kg/acre into central whorls."
+                ],
+                "prevention": [
+                    "Destroy crop residues and burn dry stalks after harvest to kill diapausing larvae."
+                ]
+            },
+            "grasshoppers": {
+                "name": "Millet Grasshopper",
+                "scientific_name": "Hieroglyphus spp.",
+                "keywords": ["grasshopper", "hieroglyphus", "phadka", "defoliator"],
+                "damage_signs": [
+                    "Nymphs and adults feed voraciously on seedling foliage, stripping leaves completely",
+                    "Chewing of developing earhead grains during flowering and dough stage"
+                ],
+                "pest_control": [
+                    "Dust Malathion 5% DP @ 10 kg/acre or Fenvalerate 0.4% DP on field bunds where hoppers hatch.",
+                    "Spray Chlorpyrifos 20% EC @ 2.5 ml/L."
+                ],
+                "prevention": [
+                    "Scrape and trim field bunds during summer to destroy egg pods buried in soil."
+                ]
+            },
+            "earhead_worm": {
+                "name": "Bajra Earhead Worm / Borer",
+                "scientific_name": "Helicoverpa armigera",
+                "keywords": ["earhead worm", "helicoverpa", "bajra borer", "grain caterpillar"],
+                "damage_signs": [
+                    "Caterpillars feed on exposed grains in cylindrical earheads, leaving webbed frass and hollowed seeds"
+                ],
+                "pest_control": [
+                    "Dust Quinalphos 1.5% DP @ 10 kg/acre or spray Spinosad 45% SC @ 0.3 ml/L on earheads at grain filling."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae in soil to natural predators."
                 ]
             }
         }
@@ -3006,17 +4658,63 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
         },
         "supported_pests": {
             "corn_leaf_aphid": {
-                "name": "Corn Leaf Aphid",
-                "scientific_name": "Rhopalosiphum maidis",
-                "keywords": ["aphid", "barley aphid", "rhopalosiphum", "jau aphid"],
+                "name": "Barley Foliar Aphid",
+                "scientific_name": "Rhopalosiphum padi",
+                "keywords": ["aphid", "barley aphid", "rhopalosiphum", "jau aphid", "bird cherry aphid"],
                 "damage_signs": [
-                    "Dark blue-green aphids clustered within the whorl and on emerging earheads sucking sap"
+                    "Dark blue-green aphids clustered within the whorl, on flag leaves, and on emerging awned spikes",
+                    "Yellowing of leaves, premature senescence, and transmission of Barley Yellow Dwarf Virus (BYDV)"
                 ],
                 "pest_control": [
-                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L."
+                    "Spray Dimethoate 30% EC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L or Imidacloprid 17.8% SL @ 0.3 ml/L."
                 ],
                 "prevention": [
                     "Conserve natural predators: chrysoperla and ladybird beetles."
+                ]
+            },
+            "armyworm": {
+                "name": "Barley Armyworm",
+                "scientific_name": "Mythimna separata",
+                "keywords": ["armyworm", "mythimna", "earhead cutter", "marching caterpillar"],
+                "damage_signs": [
+                    "Larvae march across fields in large numbers, chewing leaves from margins and clipping off earheads at night"
+                ],
+                "pest_control": [
+                    "Spray Quinalphos 25% EC @ 2.0 ml/L or Chlorpyrifos 20% EC @ 2.5 ml/L in late evening.",
+                    "Dust Malathion 5% DP @ 10 kg/acre around field perimeters."
+                ],
+                "prevention": [
+                    "Plough fields post-harvest to expose overwintering pupae to predators."
+                ]
+            },
+            "termites": {
+                "name": "Barley Termites",
+                "scientific_name": "Odontotermes spp.",
+                "keywords": ["termites", "white ants", "deemak", "root cutter"],
+                "damage_signs": [
+                    "Termites sever roots and collar region; seedlings and mature plants dry up completely and pull out easily"
+                ],
+                "pest_control": [
+                    "Seed treatment with Chlorpyrifos 20% EC @ 4 ml/kg seed before sowing.",
+                    "Apply Chlorpyrifos 20% EC @ 1.5 L/acre with irrigation water in standing infested crops."
+                ],
+                "prevention": [
+                    "Use well-rotted farmyard manure; avoid leaving dry stubble in fields."
+                ]
+            },
+            "shoot_fly": {
+                "name": "Barley Shoot Fly",
+                "scientific_name": "Delia spp.",
+                "keywords": ["shoot fly", "delia", "wheat bulb fly", "dead hearts"],
+                "damage_signs": [
+                    "Maggots tunnel into central shoots of young barley plants causing yellowing and dead hearts"
+                ],
+                "pest_control": [
+                    "Seed dressing with Imidacloprid 70% WS @ 3 g/kg seed.",
+                    "Spray Chlorpyrifos 20% EC @ 2.0 ml/L at seedling stage."
+                ],
+                "prevention": [
+                    "Timely November planting to avoid peak egg laying by adult flies."
                 ]
             }
         }
@@ -3095,6 +4793,54 @@ CROPS_TAXONOMY_37: Dict[str, Dict[str, Any]] = {
                 ],
                 "prevention": [
                     "Rogue out and destroy dead hearts during early crop growth."
+                ]
+            },
+            "shoot_fly": {
+                "name": "Ragi Shoot Fly",
+                "scientific_name": "Atherigona miliaceae",
+                "keywords": ["shoot fly", "atherigona", "ragi seedling maggot", "dead heart"],
+                "damage_signs": [
+                    "Maggots bore into young seedling central shoots causing drying and dead hearts in nursery or early tillering stage",
+                    "Excessive tillering with stunted growth in infested plants"
+                ],
+                "pest_control": [
+                    "Spray Dimethoate 30% EC @ 1.7 ml/L or Quinalphos 25% EC @ 2.0 ml/L on young seedlings if dead hearts exceed 5%."
+                ],
+                "prevention": [
+                    "Treat seed with Imidacloprid 70% WS @ 5 g/kg seed before sowing.",
+                    "Sow early with the onset of monsoon to escape shoot fly peak infestation."
+                ]
+            },
+            "finger_millet_aphid": {
+                "name": "Ragi Root / Foliar Aphid",
+                "scientific_name": "Hysteroneura setariae",
+                "keywords": ["aphid", "ragi aphid", "hysteroneura", "rusty plum aphid", "sooty mold"],
+                "damage_signs": [
+                    "Colonies of small brownish-black aphids sucking sap from tender leaves, earhead fingers, and root collar",
+                    "Stunted plant growth, yellowing, curled leaves, and black sooty mold growth on honeydew exudates"
+                ],
+                "pest_control": [
+                    "Spray Thiamethoxam 25% WG @ 0.3 g/L or Dimethoate 30% EC @ 1.7 ml/L targeting the foliage and base."
+                ],
+                "prevention": [
+                    "Conserve coccinellid predatory beetles and syrphid fly larvae in the field.",
+                    "Avoid excessive dense planting and heavy nitrogen fertilizer doses."
+                ]
+            },
+            "armyworm": {
+                "name": "Earhead Caterpillar / Armyworm",
+                "scientific_name": "Mythimna separata",
+                "keywords": ["armyworm", "mythimna", "earhead caterpillar", "swarming caterpillar"],
+                "damage_signs": [
+                    "Greedy nocturnal defoliation of leaf margins and extensive feeding on developing finger millet grains and earhead fingers",
+                    "Leaves chewed into skeletons, and severe grain shedding under heavy caterpillar infestation"
+                ],
+                "pest_control": [
+                    "Dust Quinalphos 1.5% DP @ 10 kg/acre or spray Emamectin Benzoate 5% SG @ 0.4 g/L during late evening hours."
+                ],
+                "prevention": [
+                    "Deep summer ploughing to expose pupae in the soil to scorching sun and birds.",
+                    "Dig isolation trenches around heavily infested field plots to halt caterpillar migration."
                 ]
             }
         }
