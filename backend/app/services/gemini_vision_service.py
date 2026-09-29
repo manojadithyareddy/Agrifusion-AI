@@ -28,13 +28,15 @@ logger = logging.getLogger(__name__)
 
 # Candidate Gemini multimodal vision models in priority order
 CANDIDATE_MODELS = [
-    "models/gemini-flash-latest",
-    "models/gemini-2.5-flash-lite",
     "models/gemini-flash-lite-latest",
     "models/gemini-2.5-flash",
     "models/gemini-3.8-flash",
-    "models/gemini-2.0-flash",
+    "models/gemini-flash-latest",
 ]
+
+# Suppress verbose httpx/httpcore request logging to keep API requests quiet and secure
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -158,12 +160,17 @@ class GeminiVisionService:
         key = self._api_key.strip()
         payload, _ = _build_payload(image_bytes, crop_hint, language)
 
+        headers = {
+            "x-goog-api-key": key,
+            "Content-Type": "application/json",
+        }
+
         try:
             with httpx.Client(timeout=10.0) as client:
                 for model_id in CANDIDATE_MODELS:
-                    url = f"{GEMINI_API_BASE}/{model_id}:generateContent?key={key}"
+                    url = f"{GEMINI_API_BASE}/{model_id}:generateContent"
                     try:
-                        resp = client.post(url, json=payload)
+                        resp = client.post(url, json=payload, headers=headers)
                         if resp.status_code == 200:
                             data = resp.json()
                             raw_text = (
@@ -205,13 +212,17 @@ class GeminiVisionService:
 
         key = self._api_key.strip()
         payload, _ = _build_payload(image_bytes, crop_hint, language)
+        headers = {
+            "x-goog-api-key": key,
+            "Content-Type": "application/json",
+        }
 
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 for model_id in CANDIDATE_MODELS:
-                    url = f"{GEMINI_API_BASE}/{model_id}:generateContent?key={key}"
+                    url = f"{GEMINI_API_BASE}/{model_id}:generateContent"
                     try:
-                        resp = await client.post(url, json=payload)
+                        resp = await client.post(url, json=payload, headers=headers)
                         if resp.status_code == 200:
                             data = resp.json()
                             raw_text = (
