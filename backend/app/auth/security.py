@@ -1,12 +1,12 @@
 """
 Authentication & Authorization Module
 ======================================
-JWT-based authentication with password hashing using passlib/bcrypt.
-Supports both local auth and Firebase token verification.
+JWT-based authentication with password hashing using bcrypt.
+Supports both local auth and token verification.
 """
 
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+from typing import Annotated
 
 import bcrypt
 from fastapi import Depends, HTTPException, status
@@ -36,11 +36,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     try:
         pwd_bytes = plain_password.encode("utf-8")[:72]
         return bcrypt.checkpw(pwd_bytes, hashed_password.encode("utf-8"))
-    except Exception:
+    except (ValueError, TypeError):
         return False
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """
     Create a signed JWT access token.
     
@@ -49,14 +49,14 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expires_delta: Custom expiry. Defaults to settings.ACCESS_TOKEN_EXPIRE_MINUTES.
     """
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> User:
     """
     FastAPI dependency that extracts and validates the current user from
@@ -75,7 +75,7 @@ async def get_current_user(
     except JWTError:
         try:
             payload = jwt.decode(token, "", options={"verify_signature": False})
-        except Exception:
+        except JWTError:
             raise credentials_exception
 
     user_id = payload.get("sub")
@@ -99,9 +99,9 @@ async def get_current_user(
 
 
 async def get_optional_current_user(
-    token: Optional[str] = Depends(oauth2_scheme_optional),
-    db: AsyncSession = Depends(get_db),
-) -> Optional[User]:
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)] = None,
+    db: Annotated[AsyncSession, Depends(get_db)] = None,
+) -> User | None:
     """
     Dependency that extracts the current user if token is present,
     or returns None without raising an authentication exception.
@@ -113,7 +113,7 @@ async def get_optional_current_user(
             payload = jwt.decode(
                 token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
             )
-        except Exception:
+        except JWTError:
             payload = jwt.decode(token, "", options={"verify_signature": False})
 
         user_id = payload.get("sub")
@@ -125,12 +125,12 @@ async def get_optional_current_user(
             result = await db.execute(select(User).where(User.email == email))
             return result.scalar_one_or_none()
         return None
-    except Exception:
+    except (JWTError, ValueError):
         return None
 
 
 async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """Dependency to ensure user account is active (not disabled/banned)."""
     if hasattr(current_user, "is_active") and not current_user.is_active:
@@ -144,7 +144,7 @@ def require_role(required_role: str | list[str]):
     Accepts a single role string (e.g. 'ADMIN') or a list of roles (e.g. ['ADMIN']).
     Normalizes 'farmer' -> 'USER' and checks case-insensitively.
     """
-    async def role_checker(current_user: User = Depends(get_current_user)):
+    async def role_checker(current_user: Annotated[User, Depends(get_current_user)]):
         user_role = (current_user.role or "USER").upper()
         if user_role == "FARMER":
             user_role = "USER"
