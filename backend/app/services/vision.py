@@ -923,21 +923,42 @@ class VisionService:
         # Check crops
         detected_crop = None
         crop_patterns = [
-            ("wheat", ["wheat", "gehun", "godhumalu"]),
+            ("wheat", ["wheat", "gehun", "godhumalu", "rust"]),
             ("cotton", ["cotton", "kapas", "patti", "bollworm"]),
             ("tomato", ["tomato", "tamatar", "thakkali"]),
             ("potato", ["potato", "aloo", "batata"]),
             ("maize", ["maize", "corn", "makka", "armyworm"]),
-            ("soybean", ["soybean", "soya"]),
+            ("soybean", ["soybean", "soya", "bhat"]),
             ("mustard", ["mustard", "sarson", "rai"]),
-            ("sugarcane", ["sugarcane", "ganna", "karumbu"]),
+            ("sugarcane", ["sugarcane", "ganna", "karumbu", "red_rot"]),
             ("chilli", ["chilli", "chili", "mirch", "mirapa"]),
-            ("onion", ["onion", "pyaz", "vengayam"]),
+            ("onion", ["onion", "pyaz", "vengayam", "ulli"]),
             ("groundnut", ["groundnut", "peanut", "mungfali", "verusanaga"]),
-            ("gram", ["gram", "chana", "chickpea"]),
+            ("gram", ["gram", "chana", "chickpea", "bengal gram"]),
+            ("pigeonpeas", ["pigeonpeas", "pigeonpea", "arhar", "tur", "red gram"]),
+            ("blackgram", ["blackgram", "black gram", "urad"]),
+            ("mungbean", ["mungbean", "mung bean", "moong", "green gram"]),
+            ("lentil", ["lentil", "masoor"]),
+            ("kidneybeans", ["kidneybeans", "kidney bean", "rajma"]),
+            ("mothbeans", ["mothbeans", "moth bean", "matki"]),
             ("apple", ["apple", "seb"]),
             ("banana", ["banana", "kela", "arati", "ariti", "vazhai", "bale", "sigatoka", "panama", "plantain", "musa", "అరటి", "కేలా", "केला", "केळी", "ಬಾಳೆ", "வாழை", "வாഴ"]),
             ("mango", ["mango", "aam", "mamidi", "mangifera", "alphonso", "kesar", "dasheri", "chausa", "langra", "totapuri", "himsagar", "banganapalli", "badami", "amrapali", "mallika", "neelum", "anthracnose"]),
+            ("papaya", ["papaya", "papita", "boppayi"]),
+            ("grapes", ["grapes", "grape", "angoor", "draksha"]),
+            ("pomegranate", ["pomegranate", "anar", "danimma"]),
+            ("watermelon", ["watermelon", "tarbooj", "puchakaya"]),
+            ("muskmelon", ["muskmelon", "kharbooja"]),
+            ("orange", ["orange", "citrus", "santras", "mosambi", "battayi"]),
+            ("coconut", ["coconut", "nariyal", "kobbari", "thengai"]),
+            ("jute", ["jute", "pat", "hemp"]),
+            ("coffee", ["coffee", "kafi"]),
+            ("turmeric", ["turmeric", "haldi", "pasupu"]),
+            ("sunflower", ["sunflower", "surajmukhi"]),
+            ("sorghum", ["sorghum", "jowar", "jonnalu"]),
+            ("pearl_millet", ["pearl_millet", "pearl millet", "bajra", "sajjalu"]),
+            ("barley", ["barley", "jau"]),
+            ("finger_millet", ["finger_millet", "finger millet", "ragi"]),
             ("rice", ["rice", "paddy", "dhan", "chawal", "blast"]),
         ]
 
@@ -1010,7 +1031,9 @@ class VisionService:
         engine = get_deep_vision_engine()
         explainer = get_plain_language_explainer()
 
-        logger.info(f"[Vision Service] Received image: path='{image_path}', filename='{original_filename or os.path.basename(image_path)}', crop_hint='{crop or 'None'}'")
+        clean_crop = None if (not crop or crop.strip().lower() in ["auto", "none", "null", "all", "undefined", ""]) else crop.strip()
+
+        logger.info(f"[Vision Service] Received image: path='{image_path}', filename='{original_filename or os.path.basename(image_path)}', crop_hint='{clean_crop or 'Auto-Detect'}'")
 
         # Step 0: Server-Side Multimodal AI Vision (Using Secure Server API Key)
         try:
@@ -1022,7 +1045,7 @@ class VisionService:
                 gemini_res = await gemini_svc.analyze_crop_image(
                     image_bytes=raw_bytes,
                     filename=original_filename or os.path.basename(image_path),
-                    crop_hint=crop,
+                    crop_hint=clean_crop,
                     language=language
                 )
                 if gemini_res and gemini_res.get("status") == "CONFIRMED_DIAGNOSIS":
@@ -1076,7 +1099,7 @@ class VisionService:
             deep_result = engine.analyze_image_bytes(
                 image_bytes=img_bytes,
                 filename=original_filename or os.path.basename(image_path),
-                crop_hint=crop
+                crop_hint=clean_crop
             )
         except Exception as e:
             logger.warning(f"Deep vision engine error: {e}. Using fallback pathology heuristics.")
@@ -1092,7 +1115,7 @@ class VisionService:
             )
         else:
             filename_to_inspect = f"{original_filename or ''} {os.path.basename(image_path)}"
-            detected_crop, disease_key = self._detect_crop_and_disease_key(filename_to_inspect, crop, image_path=image_path)
+            detected_crop, disease_key = self._detect_crop_and_disease_key(filename_to_inspect, crop_hint=clean_crop, image_path=image_path)
             if detected_crop == "Unable to identify crop":
                 return {
                     "analysis_id": uuid.uuid4().hex,
@@ -1235,10 +1258,12 @@ class VisionService:
         engine = get_deep_vision_engine()
         explainer = get_plain_language_explainer()
 
+        clean_crop = None if (not crop or crop.strip().lower() in ["auto", "none", "null", "all", "undefined", ""]) else crop.strip()
+
         deep_result = engine.analyze_video_file(
             video_path=video_path,
             filename=original_filename or os.path.basename(video_path),
-            crop_hint=crop
+            crop_hint=clean_crop
         )
 
         detected_crop = deep_result["detected_crop"]

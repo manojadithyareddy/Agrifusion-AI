@@ -858,7 +858,7 @@ class AssistantVisionEngine:
         chewing_flag = metrics.get("chewing_damage", False)
         insect_cluster_flag = metrics.get("insect_clusters", False)
 
-        disease_lower = disease_condition_key.lower()
+        disease_lower = condition_key.lower()
         for p_key, p_data in supported_pests.items():
             p_kws = p_data.get("keywords", [p_key, p_data.get("name", "").lower()])
 

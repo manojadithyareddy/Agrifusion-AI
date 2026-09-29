@@ -48,8 +48,111 @@ def _sanitize_log_message(msg: str, key: Optional[str]) -> str:
     return msg
 
 
+# Canonical mapping from common aliases / vernacular names to canonical AgriFusion crop names
+CROP_CANONICAL_ALIASES: Dict[str, str] = {
+    "paddy": "Rice / Paddy",
+    "rice": "Rice / Paddy",
+    "dhan": "Rice / Paddy",
+    "chawal": "Rice / Paddy",
+    "wheat": "Wheat",
+    "gehun": "Wheat",
+    "corn": "Maize",
+    "maize": "Maize",
+    "makka": "Maize",
+    "cotton": "Cotton",
+    "kapas": "Cotton",
+    "sugarcane": "Sugarcane",
+    "ganna": "Sugarcane",
+    "soybean": "Soybean",
+    "soya": "Soybean",
+    "chickpea": "Chickpea",
+    "gram": "Chickpea",
+    "chana": "Chickpea",
+    "bengal gram": "Chickpea",
+    "pigeon pea": "Pigeonpeas",
+    "pigeonpea": "Pigeonpeas",
+    "pigeonpeas": "Pigeonpeas",
+    "arhar": "Pigeonpeas",
+    "tur": "Pigeonpeas",
+    "black gram": "Blackgram",
+    "blackgram": "Blackgram",
+    "urad": "Blackgram",
+    "mung bean": "Mungbean",
+    "mungbean": "Mungbean",
+    "moong": "Mungbean",
+    "green gram": "Mungbean",
+    "lentil": "Lentil",
+    "masoor": "Lentil",
+    "kidney bean": "Kidneybeans",
+    "kidney beans": "Kidneybeans",
+    "kidneybeans": "Kidneybeans",
+    "rajma": "Kidneybeans",
+    "moth bean": "Mothbeans",
+    "moth beans": "Mothbeans",
+    "mothbeans": "Mothbeans",
+    "matki": "Mothbeans",
+    "groundnut": "Groundnut",
+    "peanut": "Groundnut",
+    "mungfali": "Groundnut",
+    "mustard": "Mustard",
+    "sarson": "Mustard",
+    "rai": "Mustard",
+    "tomato": "Tomato",
+    "tamatar": "Tomato",
+    "potato": "Potato",
+    "aloo": "Potato",
+    "onion": "Onion",
+    "pyaz": "Onion",
+    "banana": "Banana",
+    "kela": "Banana",
+    "plantain": "Banana",
+    "mango": "Mango",
+    "aam": "Mango",
+    "papaya": "Papaya",
+    "papita": "Papaya",
+    "apple": "Apple",
+    "seb": "Apple",
+    "grapes": "Grapes",
+    "grape": "Grapes",
+    "angoor": "Grapes",
+    "pomegranate": "Pomegranate",
+    "anar": "Pomegranate",
+    "watermelon": "Watermelon",
+    "tarbooj": "Watermelon",
+    "muskmelon": "Muskmelon",
+    "kharbooja": "Muskmelon",
+    "orange": "Orange",
+    "citrus": "Orange",
+    "santras": "Orange",
+    "mosambi": "Orange",
+    "coconut": "Coconut",
+    "nariyal": "Coconut",
+    "jute": "Jute",
+    "pat": "Jute",
+    "coffee": "Coffee",
+    "chilli": "Chilli",
+    "chili": "Chilli",
+    "mirch": "Chilli",
+    "pepper": "Chilli",
+    "turmeric": "Turmeric",
+    "haldi": "Turmeric",
+    "sunflower": "Sunflower",
+    "surajmukhi": "Sunflower",
+    "sorghum": "Sorghum",
+    "jowar": "Sorghum",
+    "pearl millet": "Pearl Millet",
+    "pearl_millet": "Pearl Millet",
+    "bajra": "Pearl Millet",
+    "barley": "Barley",
+    "jau": "Barley",
+    "finger millet": "Finger Millet",
+    "finger_millet": "Finger Millet",
+    "ragi": "Finger Millet",
+}
+
+
 def _build_payload(image_bytes: bytes, crop_hint: Optional[str], language: str) -> tuple[dict, str]:
-    """Helper to build Gemini multimodal payload."""
+    """Helper to build Gemini multimodal payload with 37-crop auto-detection."""
     mime_type = "image/jpeg"
     try:
         with Image.open(io.BytesIO(image_bytes)) as pil_img:
@@ -66,9 +169,34 @@ def _build_payload(image_bytes: bytes, crop_hint: Optional[str], language: str) 
     b64_data = base64.b64encode(image_bytes).decode("utf-8")
     is_hindi = (language or "en").lower() == "hi"
 
+    clean_hint = None
+    if crop_hint and crop_hint.strip().lower() not in ["auto", "none", "null", "all", "undefined", ""]:
+        clean_hint = crop_hint.strip()
+
+    if clean_hint:
+        crop_directive = (
+            f"TARGET CROP HINT: The user suspected crop is '{clean_hint}'. "
+            f"Verify if the image depicts {clean_hint} or another species. "
+            f"Identify the true botanical crop species visible in the image."
+        )
+    else:
+        crop_directive = (
+            "AUTO-DETECT CROP SPECIES (CRITICAL): The user has NOT selected a crop. "
+            "Examine the botanical morphology of foliage, leaf venation, shape, stem, or fruit "
+            "to accurately detect the crop species across all 37 supported agricultural crops:\n"
+            "1. Rice/Paddy  2. Wheat  3. Maize  4. Cotton  5. Sugarcane  6. Soybean  7. Chickpea\n"
+            "8. Pigeonpeas  9. Blackgram  10. Mungbean  11. Lentil  12. Kidneybeans  13. Mothbeans\n"
+            "14. Groundnut  15. Mustard  16. Tomato  17. Potato  18. Onion  19. Banana  20. Mango\n"
+            "21. Papaya  22. Apple  23. Grapes  24. Pomegranate  25. Watermelon  26. Muskmelon\n"
+            "27. Orange  28. Coconut  29. Jute  30. Coffee  31. Chilli  32. Turmeric  33. Sunflower\n"
+            "34. Sorghum  35. Pearl Millet  36. Barley  37. Finger Millet.\n"
+            "Return the specific identified crop in 'crop'."
+        )
+
     prompt = (
         "You are a world-class agricultural plant pathologist and agronomist for AgriFusion AI.\n"
         "Analyze this agricultural crop/plant image in deep detail.\n\n"
+        f"{crop_directive}\n\n"
         "CRITICAL BOTANICAL & PATHOLOGY RULES:\n"
         "1. CROP IDENTIFICATION: Accurately identify the crop species (e.g. Banana, Rice, Cotton, Tomato, Potato, "
         "Wheat, Maize, Sugarcane, Mango, Chilli, Soybean, Groundnut, Grapes, Onion, etc.).\n"
@@ -313,13 +441,20 @@ class GeminiVisionService:
         severity = str(parsed.get("severity", "Moderate")).capitalize()
         d_lower = disease_name.lower()
 
+        # Canonical alias resolution
+        norm_key = crop_raw.lower().strip()
+        alias_match = CROP_CANONICAL_ALIASES.get(norm_key) or CROP_CANONICAL_ALIASES.get(norm_key.replace(" ", "_"))
+        if alias_match:
+            crop_raw = alias_match
+
         # Match crop in 37-crop botanical taxonomy
-        crop_clean = crop_raw.lower().replace(" ", "_")
+        crop_clean = crop_raw.lower().replace(" ", "_").replace("/", "_")
         crop_info = CROPS_TAXONOMY_37.get(crop_clean) or CROPS_TAXONOMY_37.get(crop_raw.lower())
         if not crop_info:
             for k, v in CROPS_TAXONOMY_37.items():
                 if k in crop_clean or crop_clean in k or v.get("name", "").lower() == crop_raw.lower():
                     crop_info = v
+                    crop_raw = v.get("name", crop_raw)
                     break
 
         # Chemical & organic treatments
@@ -383,7 +518,7 @@ class GeminiVisionService:
             "status": "CONFIRMED_DIAGNOSIS",
             "crop": {
                 "name": crop_raw,
-                "scientific": parsed.get("crop_scientific", ""),
+                "scientific": parsed.get("crop_scientific") or (crop_info.get("scientific", "") if crop_info else ""),
                 "confidence": crop_conf,
                 "key": crop_raw.lower().replace(" ", "_"),
             },
