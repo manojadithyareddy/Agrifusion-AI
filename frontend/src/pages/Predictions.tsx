@@ -16,6 +16,7 @@ import {
 } from '../utils/geoCropData';
 import { getBackgroundForCrop } from '../utils/backgroundMedia';
 import {
+  getOfflineCropRecommendation,
   getOfflineYieldPrediction,
   getOfflineClimateRisk,
   getOfflineIrrigationAdvice,
@@ -492,9 +493,22 @@ function CropRecommendationTab({
       if (activeRequestIdRef.current !== currentRequestId) {
         return;
       }
-      console.error('Crop recommendation inference failed:', err);
-      setError(err?.message || 'Failed to generate recommendations from AI inference model. Please check network connection and try again.');
-      setResult(null);
+      console.warn('Backend inference unavailable or 404, falling back to client agronomy engine:', err);
+      try {
+        const fallback = getOfflineCropRecommendation(
+          curState,
+          curDistrict,
+          curSoil,
+          curSeason,
+          isSpecific ? cropChoice.trim() : undefined
+        );
+        setResult(fallback);
+        setError('');
+      } catch (fallbackErr: any) {
+        console.error('Crop recommendation inference failed:', fallbackErr);
+        setError(err?.message || 'Failed to generate recommendations from AI inference model. Please check network connection and try again.');
+        setResult(null);
+      }
     } finally {
       if (activeRequestIdRef.current === currentRequestId) {
         setLoading(false);
