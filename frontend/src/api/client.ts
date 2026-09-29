@@ -6,8 +6,9 @@ const isLocalhost = isBrowser && (
   window.location.hostname === ''
 );
 
-// If running in browser on localhost or same-origin unified server, use relative path '' so requests hit the local FastAPI backend
-const API_BASE_URL = isLocalhost
+// If running in browser on localhost, Vercel, or any same-origin deployment, use relative path '' so requests hit the same origin API
+const isVercelSameOrigin = isBrowser && window.location.hostname.endsWith('.vercel.app');
+const API_BASE_URL = (isLocalhost || isVercelSameOrigin || !import.meta.env.VITE_API_URL)
   ? ''
   : (import.meta.env.VITE_API_URL || (isBrowser ? '' : 'http://localhost:8000'));
 
