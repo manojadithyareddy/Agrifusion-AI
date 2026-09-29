@@ -1455,7 +1455,7 @@ export async function analyzeImageWithLocalVisionEngine(
       pest_status: 'No supported crop identified.',
       symptoms: ['Could not reliably identify crop species with verified confidence.'],
       evidence: boundingBoxes,
-      cultural_management: ['Supported crops include Banana, Rice, Mango, Cotton, Tomato, Potato, Wheat, Chilli, and Maize.'],
+      cultural_management: ['Supported crops include all 37 target crops: Rice, Wheat, Maize, Cotton, Sugarcane, Soybean, Chickpea, Pigeonpeas, Blackgram, Mungbean, Lentil, Kidneybeans, Mothbeans, Groundnut, Mustard, Tomato, Potato, Onion, Banana, Mango, Papaya, Apple, Grapes, Pomegranate, Watermelon, Muskmelon, Orange, Coconut, Jute, Coffee, Chilli, Turmeric, Sunflower, Sorghum, Pearl Millet, Barley, and Finger Millet.'],
       biological_management: [],
       chemical_management: [],
       safety_warnings: ['Please upload a clearer close-up photo of the crop leaf or fruit in natural daylight.'],

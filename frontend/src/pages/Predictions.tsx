@@ -144,7 +144,7 @@ export default function Predictions({ onBgChange, initialTab = 'crop' }: Predict
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'crop' && <CropRecommendationTab onCropSelect={setSelectedCrop} activeCrop={selectedCrop} />}
+        {activeTab === 'crop' && <CropRecommendationTab onCropSelect={setSelectedCrop} />}
         {activeTab === 'yield' && <YieldPredictionTab onCropSelect={setSelectedCrop} activeCrop={selectedCrop} />}
         {activeTab === 'climate' && <ClimateRiskTab onCropSelect={setSelectedCrop} activeCrop={selectedCrop} />}
         {activeTab === 'irrigation' && <IrrigationTab onCropSelect={setSelectedCrop} activeCrop={selectedCrop} />}
@@ -412,16 +412,22 @@ function CropRiskCard({
    ═════════════════════════════════════════════ */
 function CropRecommendationTab({
   onCropSelect,
-  activeCrop,
 }: {
   onCropSelect: (crop: string) => void;
-  activeCrop?: string;
 }) {
   const [state, setState] = useState('Karnataka');
   const [district, setDistrict] = useState('Belgaum');
   const initialVillages = getVillagesForDistrict('Belgaum');
   const [village, setVillage] = useState(initialVillages[0] || 'All Villages / District Central');
-  const [targetCrop, setTargetCrop] = useState(activeCrop && CROPS_LIST.includes(activeCrop) ? activeCrop : '');
+  const [targetCrop, setTargetCrop] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('agrifusion_target_crop');
+      if (saved !== null) {
+        return saved && CROPS_LIST.includes(saved) ? saved : '';
+      }
+    } catch {}
+    return '';
+  });
   const [soilType, setSoilType] = useState('Alluvial');
   const [season, setSeason] = useState('Kharif');
   const [loading, setLoading] = useState(false);
@@ -429,16 +435,6 @@ function CropRecommendationTab({
   const [result, setResult] = useState<any>(null);
   const hasEvaluatedRef = React.useRef(false);
   const activeRequestIdRef = React.useRef<string>('');
-
-  // Sync if external activeCrop changes and is valid
-  useEffect(() => {
-    if (activeCrop && CROPS_LIST.includes(activeCrop) && activeCrop !== targetCrop) {
-      setTargetCrop(activeCrop);
-      setResult(null);
-      setError('');
-      activeRequestIdRef.current = '';
-    }
-  }, [activeCrop]);
 
   const districts = getDistrictsForState(state);
   const villages = getVillagesForDistrict(district);
@@ -490,9 +486,8 @@ function CropRecommendationTab({
       }
 
       setResult(res);
-      if (!isSpecific && res.recommendations && res.recommendations.length > 0) {
-        onCropSelect(res.recommendations[0].crop);
-      }
+      // NOTE: targetCrop selection is strictly user-controlled and MUST NOT be overwritten
+      // by the top recommendation.
     } catch (err: any) {
       if (activeRequestIdRef.current !== currentRequestId) {
         return;
@@ -573,7 +568,14 @@ function CropRecommendationTab({
 
   const handleTargetCropChange = (crop: string) => {
     setTargetCrop(crop);
-    onCropSelect(crop);
+    try {
+      localStorage.setItem('agrifusion_target_crop', crop);
+    } catch {}
+    if (crop && CROPS_LIST.includes(crop)) {
+      onCropSelect(crop);
+    } else {
+      onCropSelect('');
+    }
     // Invalidate stale recommendation state when selected crop changes
     setResult(null);
     setError('');
